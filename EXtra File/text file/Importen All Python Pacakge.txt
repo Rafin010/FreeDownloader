@@ -1,0 +1,36 @@
+source Name_venv/Scripts/activate
+python.exe -m pip install --upgrade pip
+
+pip install yt-dlp
+pip install youtube-dl
+pip install pytube
+pip install instaloader
+pip install tiktokapipy
+
+pip install requests
+pip install httpx
+pip install aiohttp
+
+pip install beautifulsoup4
+pip install lxml
+pip install parsel
+
+pip install flask
+
+pip install tqdm
+pip install moviepy
+pip install opencv-python
+
+pip install fake-useragent
+pip install python-dotenv
+pip install pysocks
+
+pip install celery
+pip install redis
+pip install gunicorn
+
+pip install uvicorn
+pip install starlette
+pip install python-multipart
+pip install pillow
+pip install numpy
