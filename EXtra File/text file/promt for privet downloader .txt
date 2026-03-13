@@ -1,0 +1,23 @@
+
+
+"I want to build a professional-grade Facebook Video Downloader using Python Flask and yt-dlp, similar to SnapSave. The tool must handle high-quality video downloads (1080p, 2K, 4K) where Facebook often separates audio and video streams.
+
+Key Requirements:
+
+Backend (Flask): - Integrate FFmpeg with yt-dlp to merge best video and best audio streams automatically.
+
+Use UUID to generate unique filenames for concurrent users to avoid file overwriting.
+
+Implement an Auto-Delete mechanism using @after_this_request or a background thread to delete the video file from the server immediately after the download is completed to save disk space.
+
+Add a proxy-capable download route that bypasses Facebook's 403 Forbidden errors by using custom browser headers (User-Agent, Referer).
+
+Frontend (Tailwind CSS): - A modern, responsive UI with a paste button, a loading spinner, and a quality selection card.
+
+Display video thumbnail and title once the link is processed.
+
+Functionality: - It should support all Facebook URL types (fb.watch, facebook.com/videos, reels).
+
+Error handling for private videos or invalid links.
+
+Please provide the complete app.py and a structured index.html file."

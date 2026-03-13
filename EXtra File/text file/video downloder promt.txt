@@ -1,0 +1,202 @@
+আপনি আমাকে একটি ভিডিভিও ডাউনলোডার বানিয়ে দিন "https://snapsave.app/" মত করে
+
+ওয়েবসাইটের নাম
+Free YouTube Video Downloader
+
+লোগো
+ওয়েবসাইটের উপরে বাম পাশে (Top Left Corner) লোগো থাকবে।
+
+লোগো লিংক:
+https://i.ibb.co.com/DH3LrGb6/free-downloder-logo.jpg
+
+লোগোর পাশে ওয়েবসাইটের নাম দেখাতে হবে:
+
+Free Downloader এইটা বর করে থাকেবে এবং তার পাশে তোলনয়া মোলক ইকটো ছোট করে থাকবে। Facebook video downloader
+
+মূল ফিচার
+1. Facebook Downloader সেকশন
+একটি প্রফেশনাল ডাউনলোডার ইন্টারফেস তৈরি করতে হবে।
+
+এই সেকশনের উপরে থাকবে:
+
+facebook এর অফিসিয়াল লোগো
+
+টাইটেল: facebook Video Downloader
+
+টাইটেলের কালার হবে facebook এর অফিসিয়াল  রঙ এবং টাইটেল এর সাতে থাকবে আফিসিয়াল লোগ
+
+হালকা মডার্ন এনিমেশন থাকবে মানে রবং মনে হবয়ে যেন লেগার মধ্যে দিয়ে মোভ করছে।
+
+এর নিচে থাকবে:
+
+একটি URL Input Box
+
+যেখানে ইউজার facebook ভিডিও লিংক পেস্ট করবে
+
+Input Box এর পাশে থাকবে:
+
+একটি Psast Button
+একটি Download Button
+আর এই পেস্ট আইকনটি এবং URL Input Box, Download Button এক সাতে এটাচ থাকবে। স্ক্রিন ছোট বর করলেউ সরবয়ে নাহ।
+
+মোবিয়া রেস্পন্সিভ থাকবে।
+
+বাটনের রঙ হবে ফেইসবোক অফিসিয়াল  রঙ.
+
+বাটনের ডিজাইন হবে ইউনিক এবং আধুনিক
+যেটা ডিজান আর কেউ কখন ইউজ করে নি।
+
+Input Box এ Hover effect এবং  থাকবে
+
+ভিডিও ডাউনলোড প্রসেস
+যখন একজন ইউজার:
+
+facebook ভিডিওর লিংক পেস্ট করবে
+
+তারপর Download বাটনে ক্লিক করবে
+
+তখন:
+
+ভিডিওটি Input Box এর নিচে ছোট করে দেখাবে
+past করার বাটন ওযাতে থাকে
+
+ভিডিওর Thumbnail দেখাবে
+
+নিচে ডাউনলোড করার রেজোলিউশনগুলো প্রফেশনালি দেখাবে
+
+যেমন:
+
+1080p
+
+720p
+
+360p
+
+যখন ইউজার কোনো একটি রেজোলিউশনে ক্লিক করবে:
+
+প্রথমে একটি Video Advertisement দেখাবে
+
+Advertisement শেষ হলে
+
+ভিডিও ডাউনলোড শুরু হবে
+
+Advertisement System
+ওয়েবসাইটে দুই ধরনের বিজ্ঞাপন থাকবে।
+
+1. Video Ads
+ইউজার যখন Download ক্লিক করবে তখনই দেখাবে
+
+ভিডিও শেষ হওয়ার পর ডাউনলোড শুরু হবে
+
+2. Banner Ads
+ওয়েবসাইটের মাযে মানে বস্ক এর ইনপোট বস্ক এর নিছে Banner Ad থাকবে
+
+Tutorial Video Section
+ওয়েবসাইটের নিচে একটি ভিডিও টিউটোরিয়াল সেকশন থাকবে। আইকন সহ।
+
+যেখানে ইউজার দেখতে পারবে:
+
+কিভাবে ভিডিও ডাউনলোড করতে হয়
+
+Navigation Bar
+একটি প্রফেশনাল Navbar তৈরি করতে হবে।
+
+Navbar এ থাকবে: (মানে seo জন্য যা যা লাগে শুধু মাত্র ক্লিক করলেই শোহবয়ে এই পেজেই) 
+
+Home
+
+More Downloaders
+
+Blog
+
+Contact Us
+
+More Downloaders Dropdown
+এখানে থাকবে:
+
+Facebook Downloader
+
+YouTube Downloader
+
+TikTok Reels Downloader
+
+Instagram Reels Downloader
+
+প্রতিটির সাথে তাদের অফিসিয়াল লোগো থাকবে।
+
+ক্লিক করলে তাদের নিজ নিজ Downloader পেজে চলে যাবে।
+
+আরহে ফোটার এড করে দেবেন যাতে দেখতে পফেশ্নাল মনে হয়। 
+
+ওয়েবসাইট ডিজাইন
+Background
+ওয়েবসাইটের Background হবে ইউনিক এবং স্টাইলিশ প্রফেশনাল । ইউজার দেখেই যাতে আবাক হয়ে এবং ডাউনলোড করতে ইচ্ছা হয় ।
+
+আর হে লজিক যাতে ভাল ভাবে কাজ করে। 
+
+UI Design Style
+ডিজাইন হবে:
+
+Modern
+
+Clean
+
+Professional
+
+Smooth animation
+
+Attractive color scheme
+
+Mobile Responsive
+ওয়েবসাইটটি সম্পূর্ণ Mobile Responsive হতে হবে যাতে মোবাইল ইউজাররাও সহজে ব্যবহার করতে পারে।
+
+SEO Optimization
+ওয়েবসাইটে সমস্ত গুরুত্বপূর্ণ SEO উপাদান যোগ করতে হবে।
+
+যেমন:
+
+Meta Title
+
+Meta Description
+
+Keywords
+
+Open Graph Tags
+
+Structured Heading Tags (H1, H2, H3)
+
+Technology Stack
+Frontend
+HTML
+
+Tailwind CSS
+
+JavaScript
+
+Backend
+Python
+
+Flask
+
+Video Download Engine
+yt-dlp
+
+Video Processing
+FFmpeg
+
+Server Setup
+Ubuntu VPS
+
+Nginx
+
+অতিরিক্ত শর্ত:
+সবছেয়ে গুরুত্ত পূর্ন কথা - এইখানে যাতে শুধু মাত্র facebook এর ভিডিও ডাউনলোড করা যায়
+
+ভিডিও Watermark ছাড়া ডাউনলোড হতে হবে
+
+High Quality ভিডিও ডাউনলোড সাপোর্ট থাকতে হবে
+
+প্রয়োজনীয় সব Library এবং Dependency যুক্ত করতে হবে
+
+কোড হবে Clean, Optimized এবং Production Ready।
+আর কোথাউ কি কাজ করে ছেন তা কমেন্ট করে যানাবেন।

@@ -1,0 +1,25 @@
+HTML + Tailwind + JavaScript + Python (FastAPI) + yt-dlp + FFmpeg
+
+
+✅ Frontend
+HTML
+
+Tailwind CSS
+
+JavaScript
+
+✅ Backend
+Python
+
+FastAPI
+
+✅ Video Download Engine
+yt-dlp
+
+✅ Video Processing
+FFmpeg
+
+✅ Server
+Ubuntu VPS
+
+Nginx
