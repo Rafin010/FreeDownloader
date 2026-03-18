@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TikTok Video Downloader - Without Watermark</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Inter', 'Hind Siliguri', sans-serif !important; }
+        
+        .shine-text {
+            /* TikTok Gradient: Black, Pink, Cyan */
+            background: linear-gradient(90deg, #000000 0%, #FE2C55 50%, #25F4EE 100%);
+            background-size: 200% auto;
+            color: transparent;
+            -webkit-background-clip: text;
+            animation: shine 3s linear infinite;
+        }
+        @keyframes shine {
+            to { background-position: 200% center; }
+        }
+        .btn-modern {
+            /* TikTok Pink to Black Gradient */
+            background: linear-gradient(135deg, #FE2C55 0%, #000000 100%);
+            box-shadow: 0 4px 15px rgba(254, 44, 85, 0.4);
+            transition: all 0.3s ease;
+        }
+        .btn-modern:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(254, 44, 85, 0.6);
+        }
+        .input-glow:focus-within {
+            box-shadow: 0 0 15px rgba(254, 44, 85, 0.3);
+            border-color: #FE2C55;
+        }
+        body {
+            background-color: #f8fafc;
+            background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        details > summary::-webkit-details-marker { display: none; }
+    </style>
+</head>
+<body class="font-sans antialiased text-gray-800">
+
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center gap-3">
+                    <i class="fa-brands fa-tiktok text-black text-3xl"></i>
+                    <div class="flex flex-col">
+                        <span class="text-xl font-bold text-gray-900 leading-tight">Free Downloader</span>
+                        <span class="text-xs font-semibold text-[#FE2C55]">TikTok video downloader</span>
+                    </div>
+                </div>
+
+                <div class="hidden md:flex space-x-8 items-center">
+                    <a href="/" class="text-gray-700 hover:text-[#FE2C55] font-medium transition">Home</a>
+                    <a href="#seo-blog" class="text-gray-700 hover:text-[#FE2C55] font-medium transition">Blog</a>
+                    <a href="#faq" class="text-gray-700 hover:text-[#FE2C55] font-medium transition">FAQ</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-4xl mx-auto px-4 py-12 text-center">
+        <h1 class="text-2xl sm:text-3xl md:text-5xl font-extrabold mb-4 flex flex-wrap justify-center items-center gap-2 sm:gap-3 leading-tight">
+            <i class="fa-brands fa-tiktok text-black"></i>
+            <span class="shine-text">TikTok Video Downloader</span>
+        </h1>
+        <p class="text-gray-500 mb-8 px-2 text-sm sm:text-base">Download high-quality TikTok videos easily without any watermark!</p>
+
+        <div class="flex items-center bg-white rounded-xl p-2 border border-gray-300 input-glow transition-all duration-300 w-full max-w-xl mx-auto shadow-sm">
+            <input type="text" id="videoUrl" placeholder="Paste TikTok video URL here..." class="flex-grow px-2 py-2 outline-none bg-transparent w-full text-sm sm:text-base">
+            <button onclick="fetchVideoInfo()" class="btn-modern text-white rounded-xl px-4 py-2 ml-2 font-bold flex items-center gap-2 text-sm sm:text-base">
+                <i class="fa-solid fa-download"></i> <span class="hidden sm:inline">Download</span>
+            </button>
+        </div>
+
+        <div id="loading" class="hidden mt-8 text-[#FE2C55]">
+            <i class="fa-solid fa-spinner fa-spin text-4xl"></i>
+            <p class="mt-2 font-medium">Fetching video information...</p>
+        </div>
+
+        <div id="resultSection" class="hidden mt-10 bg-white p-6 rounded-2xl shadow-lg border border-gray-100 text-left max-w-3xl mx-auto flex flex-col md:flex-row gap-6">
+            <div class="w-full md:w-1/2">
+                <img id="videoThumb" src="" alt="Video Thumbnail" class="w-full rounded-lg shadow-md object-cover h-48">
+                <h3 id="videoTitle" class="mt-3 font-semibold text-gray-800 line-clamp-2"></h3>
+            </div>
+            
+            <div class="w-full md:w-1/2 flex flex-col gap-3 justify-center">
+                <h4 class="font-bold text-gray-700 mb-2 border-b pb-2">Available Qualities:</h4>
+                <div id="resolutionsList" class="flex flex-col gap-3">
+                    </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white py-16 border-t border-gray-200 relative">
+        <div class="max-w-5xl mx-auto px-4">
+            <h2 class="text-2xl font-bold text-center mb-10"><i class="fa-solid fa-circle-question text-[#FE2C55]"></i> How to Download TikTok Videos?</h2>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="text-center p-6 bg-gray-50 rounded-xl border border-gray-100 hover:shadow-md transition">
+                    <div class="w-16 h-16 mx-auto bg-pink-100 text-[#FE2C55] rounded-full flex items-center justify-center text-xl font-bold mb-4">1 <i class="fa-solid fa-link ml-1.5"></i></div>
+                    <h3 class="font-bold mb-2">Copy Video Link</h3>
+                    <p class="text-gray-500 text-sm">Find the TikTok video, click Share, and select 'Copy Link'.</p>
+                </div>
+                <div class="text-center p-6 bg-gray-50 rounded-xl border border-gray-100 hover:shadow-md transition">
+                    <div class="w-16 h-16 mx-auto bg-pink-100 text-[#FE2C55] rounded-full flex items-center justify-center text-xl font-bold mb-4">2 <i class="fa-solid fa-paste ml-1.5"></i></div>
+                    <h3 class="font-bold mb-2">Paste the Link</h3>
+                    <p class="text-gray-500 text-sm">Paste the link in the input box above.</p>
+                </div>
+                <div class="text-center p-6 bg-gray-50 rounded-xl border border-gray-100 hover:shadow-md transition">
+                    <div class="w-16 h-16 mx-auto bg-pink-100 text-[#FE2C55] rounded-full flex items-center justify-center text-xl font-bold mb-4">3 <i class="fa-solid fa-download ml-1.5"></i></div>
+                    <h3 class="font-bold mb-2">Download</h3>
+                    <p class="text-gray-500 text-sm">Choose your quality and save without a watermark.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section id="faq" class="py-16 bg-gray-50 border-t border-gray-200">
+        <div class="max-w-4xl mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-10"><i class="fa-solid fa-comments text-[#FE2C55]"></i> Frequently Asked Questions</h2>
+            <div class="space-y-4">
+                <details class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm cursor-pointer group">
+                    <summary class="font-bold text-lg text-gray-800 flex justify-between items-center outline-none">
+                        How to download TikTok videos online?
+                        <i class="fa-solid fa-plus text-[#FE2C55] transition-transform duration-300 group-open:rotate-45"></i>
+                    </summary>
+                    <p class="mt-4 text-gray-600 border-t pt-4">Simply copy the URL from the TikTok app, paste it above, and hit download to get your video watermark-free.</p>
+                </details>
+                <details class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm cursor-pointer group">
+                    <summary class="font-bold text-lg text-gray-800 flex justify-between items-center outline-none">
+                        Is it completely watermark-free?
+                        <i class="fa-solid fa-plus text-[#FE2C55] transition-transform duration-300 group-open:rotate-45"></i>
+                    </summary>
+                    <p class="mt-4 text-gray-600 border-t pt-4">Yes! Our tool fetches the highest quality original video without the TikTok logo or username overlay.</p>
+                </details>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        async function fetchVideoInfo() {
+            const url = document.getElementById('videoUrl').value;
+            if (!url) {
+                alert("Please paste a TikTok link first!");
+                return;
+            }
+
+            document.getElementById('loading').classList.remove('hidden');
+            document.getElementById('resultSection').classList.add('hidden');
+
+            try {
+                const res = await fetch('/api/get_info', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url })
+                });
+
+                const data = await res.json();
+                document.getElementById('loading').classList.add('hidden');
+
+                if (data.error) {
+                    alert(data.error);
+                    return;
+                }
+
+                document.getElementById('videoTitle').innerText = data.title;
+                document.getElementById('videoThumb').src = data.thumbnail;
+                
+                const list = document.getElementById('resolutionsList');
+                list.innerHTML = ''; // Clear previous
+
+                data.formats.forEach(f => {
+                    const btn = document.createElement('a');
+                    btn.href = `/api/download?url=${encodeURIComponent(url)}&res=${f.height}`;
+                    btn.className = "block text-center bg-gray-100 hover:bg-[#FE2C55] hover:text-white text-gray-800 font-semibold py-2 px-4 rounded-lg transition border border-gray-200";
+                    btn.innerHTML = `<i class="fa-solid fa-download mr-2"></i> Download ${f.resolution}`;
+                    list.appendChild(btn);
+                });
+
+                document.getElementById('resultSection').classList.remove('hidden');
+                document.getElementById('resultSection').classList.add('flex');
+            } catch (err) {
+                document.getElementById('loading').classList.add('hidden');
+                alert("Something went wrong!");
+            }
+        }
+    </script>
+</body>
+</html>

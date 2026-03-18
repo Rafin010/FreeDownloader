@@ -34,3 +34,46 @@ pip install starlette
 pip install python-multipart
 pip install pillow
 pip install numpy
+
+
+# Core
+pip install flask flask-cors flask-limiter
+
+# Downloader Engine
+pip install yt-dlp pytube instaloader tiktokapipy
+
+# FFmpeg (MUST)
+pip install ffmpeg-python imageio-ffmpeg ffprobe-python
+
+# High-speed download
+pip install aria2p aiofiles
+
+# Streaming support
+pip install m3u8 streamlink
+
+# Network
+pip install requests httpx aiohttp
+
+# Parsing
+pip install beautifulsoup4 lxml
+
+# Video processing
+pip install moviepy opencv-python pydub
+
+# Cookies / private access
+pip install browser-cookie3 pysocks
+
+# Utility
+pip install fake-useragent python-dotenv validators tenacity loguru diskcache
+
+# Background jobs
+pip install celery redis
+
+# Database
+pip install sqlalchemy
+
+# Deployment
+pip install gunicorn
+
+# Extra
+pip install tqdm pillow numpy
