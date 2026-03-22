@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bulk Mailer Pro | Premium Edition</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            background-color: #0B0F19;
+            background-image: radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+                              radial-gradient(circle at 90% 80%, rgba(139, 92, 246, 0.15) 0%, transparent 50%);
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+        }
+        
+        .glass-panel {
+            background: rgba(17, 25, 40, 0.7);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .input-glow {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .input-glow:focus {
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+            border-color: #3B82F6;
+            outline: none;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #4B5563; border-radius: 10px; }
+        
+        .progress-bar-animated {
+            transition: width 0.4s ease;
+        }
+    </style>
+</head>
+<body class="antialiased flex flex-col min-h-screen">
+
+    <header class="glass-panel fixed w-full top-0 z-40 border-b-0">
+        <div class="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <img src="https://i.ibb.co.com/Z62pwyYL/Gemini-Generated-Image-zclb1jzclb1jzclb-removebg-preview.png" alt="Logo" class="h-12 w-12 drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]">
+                <span class="font-display font-bold text-2xl tracking-tight">Bulk<span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">Mailer</span></span>
+            </div>
+            <div class="text-sm font-medium text-gray-400">
+                <i class="fa-solid fa-bolt text-yellow-400 mr-1"></i> Pro Edition
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl mx-auto w-full px-4 pt-28 pb-12 grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        <div class="lg:col-span-7 space-y-6">
+            
+            <div class="glass-panel rounded-2xl p-6">
+                <h2 class="text-lg font-bold text-white mb-4 border-b border-gray-700 pb-2"><i class="fa-solid fa-user-shield text-blue-400 mr-2"></i> Sender Details</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm text-gray-300 mb-1">Your Email Address</label>
+                        <input type="email" id="senderEmail" placeholder="you@gmail.com" class="w-full input-glow rounded-lg px-4 py-2.5 text-sm text-white">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-300 mb-1">App Password <i class="fa-solid fa-circle-info text-gray-500 cursor-help" title="Use Gmail App Password, NOT your real password"></i></label>
+                        <input type="password" id="senderPassword" placeholder="16-digit app password" class="w-full input-glow rounded-lg px-4 py-2.5 text-sm text-white">
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-panel rounded-2xl p-6">
+                <h2 class="text-lg font-bold text-white mb-4 border-b border-gray-700 pb-2"><i class="fa-solid fa-envelope-open-text text-purple-400 mr-2"></i> Email Content</h2>
+                
+                <div class="mb-4">
+                    <label class="block text-sm text-gray-300 mb-1">Email Subject / Title</label>
+                    <input type="text" id="emailSubject" placeholder="e.g., Important Update from Our Team" class="w-full input-glow rounded-lg px-4 py-2.5 text-sm text-white font-medium">
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-sm text-gray-300 mb-1">Message Body</label>
+                    <textarea id="emailMessage" rows="5" placeholder="Write your email content here..." class="w-full input-glow rounded-lg px-4 py-3 text-sm text-white resize-none custom-scrollbar"></textarea>
+                </div>
+
+                <div>
+                    <div class="flex justify-between mb-1">
+                        <label class="text-sm text-gray-300">Recipient Emails</label>
+                        <span id="emailCount" class="text-xs bg-blue-500/20 text-blue-400 px-2 py-1 rounded border border-blue-500/30">0/100 Valid Emails</span>
+                    </div>
+                    <textarea id="recipientEmails" rows="4" placeholder="Paste emails here (separated by comma or enter)..." class="w-full input-glow rounded-lg px-4 py-3 text-sm text-white resize-none custom-scrollbar" oninput="countEmails()"></textarea>
+                </div>
+
+                <button onclick="triggerAdPopup()" id="preSendBtn" class="w-full mt-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-bold py-3.5 rounded-xl transition-all duration-300 transform hover:-translate-y-1 shadow-[0_4px_20px_rgba(59,130,246,0.3)] flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-rocket"></i> Launch Campaign
+                </button>
+            </div>
+        </div>
+
+        <div class="lg:col-span-5 glass-panel rounded-2xl p-6 flex flex-col h-[750px]">
+            <h2 class="text-lg font-bold text-white mb-4 border-b border-gray-700 pb-2 flex justify-between items-center">
+                <span><i class="fa-solid fa-satellite-dish text-green-400 mr-2 animate-pulse"></i> Live Tracking</span>
+                <span id="progressText" class="text-sm text-gray-400 font-normal">Waiting...</span>
+            </h2>
+            
+            <div class="w-full bg-gray-800 rounded-full h-2.5 mb-4 border border-gray-700 overflow-hidden">
+                <div id="progressBar" class="bg-gradient-to-r from-blue-500 to-purple-500 h-2.5 rounded-full progress-bar-animated" style="width: 0%"></div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 mb-4">
+                <div class="bg-green-500/10 border border-green-500/20 rounded-lg p-3 text-center">
+                    <div class="text-2xl font-bold text-green-400" id="successCount">0</div>
+                    <div class="text-xs text-gray-400 uppercase tracking-wide mt-1">Sent</div>
+                </div>
+                <div class="bg-red-500/10 border border-red-500/20 rounded-lg p-3 text-center">
+                    <div class="text-2xl font-bold text-red-400" id="failCount">0</div>
+                    <div class="text-xs text-gray-400 uppercase tracking-wide mt-1">Failed</div>
+                </div>
+            </div>
+
+            <div class="flex-grow bg-[#050B14] rounded-xl border border-gray-800 p-4 font-mono text-sm overflow-y-auto custom-scrollbar flex flex-col" id="consoleLog">
+                <div class="text-gray-500 text-center mt-20">
+                    <i class="fa-solid fa-terminal text-3xl mb-3 opacity-50"></i>
+                    <p>System ready. Waiting for campaign launch...</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="adModal" class="fixed inset-0 z-[100] hidden bg-black/90 backdrop-blur-md flex flex-col items-center justify-center p-4">
+        <div class="bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl transform scale-95 transition-transform duration-300" id="adContent">
+            
+            <div class="bg-gray-800 px-4 py-2 flex justify-between items-center border-b border-gray-700">
+                <span class="text-xs text-gray-400 uppercase tracking-widest">Sponsored Advertisement</span>
+                <span class="text-xs bg-gray-700 text-gray-300 px-2 py-1 rounded" id="adTimer">5s</span>
+            </div>
+            
+            <div class="p-8 flex flex-col items-center justify-center h-64 bg-gradient-to-br from-gray-800 to-gray-900 text-center">
+                <i class="fa-brands fa-google text-4xl text-gray-600 mb-4"></i>
+                <h3 class="text-xl font-bold text-gray-300 mb-2">Google AdSense Space</h3>
+                <p class="text-gray-500 text-sm">Place your actual ad script here to monetize your tool.</p>
+            </div>
+
+            <div class="p-4 bg-gray-900 border-t border-gray-800">
+                <button id="skipAdBtn" disabled onclick="startSendingProcess()" class="w-full bg-gray-700 text-gray-400 font-bold py-3 rounded-xl transition-all duration-300 flex justify-center items-center gap-2 cursor-not-allowed">
+                    <i class="fa-solid fa-spinner fa-spin"></i> Please Wait...
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let uniqueEmailsArray = [];
+        
+        // Count valid emails live
+        function countEmails() {
+            const text = document.getElementById('recipientEmails').value;
+            const emails = text.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g) || [];
+            uniqueEmailsArray = [...new Set(emails)].slice(0, 100);
+            
+            const countEl = document.getElementById('emailCount');
+            countEl.innerText = `${uniqueEmailsArray.length}/100 Valid Emails`;
+            
+            if(uniqueEmailsArray.length > 0) {
+                countEl.classList.replace('text-blue-400', 'text-green-400');
+                countEl.classList.replace('bg-blue-500/20', 'bg-green-500/20');
+                countEl.classList.replace('border-blue-500/30', 'border-green-500/30');
+            } else {
+                countEl.classList.replace('text-green-400', 'text-blue-400');
+                countEl.classList.replace('bg-green-500/20', 'bg-blue-500/20');
+                countEl.classList.replace('border-green-500/30', 'border-blue-500/30');
+            }
+        }
+
+        // Validate and Show Ad
+        function triggerAdPopup() {
+            const sEmail = document.getElementById('senderEmail').value;
+            const sPass = document.getElementById('senderPassword').value;
+            const sub = document.getElementById('emailSubject').value;
+            const msg = document.getElementById('emailMessage').value;
+
+            if(!sEmail || !sPass || !sub || !msg || uniqueEmailsArray.length === 0) {
+                alert("Please fill out all fields correctly and ensure there is at least 1 valid recipient email.");
+                return;
+            }
+
+            // Show Ad Modal
+            const modal = document.getElementById('adModal');
+            const adContent = document.getElementById('adContent');
+            const skipBtn = document.getElementById('skipAdBtn');
+            const timerEl = document.getElementById('adTimer');
+            
+            modal.classList.remove('hidden');
+            setTimeout(() => { adContent.classList.remove('scale-95'); adContent.classList.add('scale-100'); }, 10);
+
+            // 5 Second Countdown logic
+            let timeLeft = 5;
+            skipBtn.disabled = true;
+            skipBtn.classList.add('cursor-not-allowed', 'bg-gray-700', 'text-gray-400');
+            skipBtn.classList.remove('bg-blue-600', 'hover:bg-blue-500', 'text-white');
+            
+            const countdown = setInterval(() => {
+                timeLeft--;
+                timerEl.innerText = `${timeLeft}s`;
+                skipBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Please Wait (${timeLeft}s)...`;
+                
+                if(timeLeft <= 0) {
+                    clearInterval(countdown);
+                    timerEl.innerText = "Ready";
+                    skipBtn.disabled = false;
+                    skipBtn.classList.remove('cursor-not-allowed', 'bg-gray-700', 'text-gray-400');
+                    skipBtn.classList.add('bg-blue-600', 'hover:bg-blue-500', 'text-white', 'shadow-[0_0_15px_rgba(37,99,235,0.5)]');
+                    skipBtn.innerHTML = `Skip Ad & Send Emails <i class="fa-solid fa-arrow-right"></i>`;
+                }
+            }, 1000);
+        }
+
+        // Main Sending Logic (Real-time Tracker)
+        async function startSendingProcess() {
+            // Close Ad Modal
+            document.getElementById('adModal').classList.add('hidden');
+            
+            const sEmail = document.getElementById('senderEmail').value;
+            const sPass = document.getElementById('senderPassword').value;
+            const sub = document.getElementById('emailSubject').value;
+            const msg = document.getElementById('emailMessage').value;
+            
+            const consoleLog = document.getElementById('consoleLog');
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            
+            // UI Reset for sending
+            document.getElementById('preSendBtn').disabled = true;
+            document.getElementById('preSendBtn').innerHTML = '<i class="fa-solid fa-cog fa-spin"></i> Campaign Running...';
+            consoleLog.innerHTML = ''; // clear console
+            
+            let success = 0;
+            let failed = 0;
+            const total = uniqueEmailsArray.length;
+
+            addLogMsg(`[SYSTEM] Initializing campaign for ${total} recipients...`, 'text-blue-400');
+
+            // Send sequentially to update UI in real-time
+            for(let i = 0; i < total; i++) {
+                const currentEmail = uniqueEmailsArray[i];
+                const currentCount = i + 1;
+                
+                // Update Progress UI
+                const percent = Math.round((currentCount / total) * 100);
+                progressBar.style.width = `${percent}%`;
+                progressText.innerText = `${currentCount} / ${total}`;
+                
+                addLogMsg(`[PENDING] Sending to: ${currentEmail}...`, 'text-yellow-400');
+
+                try {
+                    const response = await fetch('/send-single', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            sender_email: sEmail,
+                            sender_password: sPass,
+                            recipient: currentEmail,
+                            subject: sub,
+                            message: msg
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if(response.ok && data.status === 'success') {
+                        success++;
+                        document.getElementById('successCount').innerText = success;
+                        replaceLastLog(`[SUCCESS] Email delivered to: ${currentEmail} <i class="fa-solid fa-check ml-1"></i>`, 'text-green-400');
+                    } else {
+                        failed++;
+                        document.getElementById('failCount').innerText = failed;
+                        replaceLastLog(`[FAILED] Could not send to: ${currentEmail} (${data.message || 'Unknown error'}) <i class="fa-solid fa-xmark ml-1"></i>`, 'text-red-400');
+                    }
+                } catch (error) {
+                    failed++;
+                    document.getElementById('failCount').innerText = failed;
+                    replaceLastLog(`[ERROR] Server connection failed for: ${currentEmail}`, 'text-red-500 font-bold');
+                }
+            }
+
+            // Campaign Finished
+            addLogMsg(`[SYSTEM] Campaign completed! Total Sent: ${success}, Failed: ${failed}.`, 'text-purple-400 font-bold mt-4');
+            document.getElementById('preSendBtn').disabled = false;
+            document.getElementById('preSendBtn').innerHTML = '<i class="fa-solid fa-rocket"></i> Launch New Campaign';
+            progressText.innerText = "Completed";
+        }
+
+        // Helper for Console Log
+        function addLogMsg(text, colorClass) {
+            const div = document.createElement('div');
+            div.className = `mb-1 ${colorClass}`;
+            div.innerHTML = `<span class="text-gray-600 mr-2">[${new Date().toLocaleTimeString()}]</span> ${text}`;
+            const consoleBox = document.getElementById('consoleLog');
+            consoleBox.appendChild(div);
+            consoleBox.scrollTop = consoleBox.scrollHeight;
+        }
+
+        // Helper to replace the "PENDING" message with Success/Fail without cluttering
+        function replaceLastLog(text, colorClass) {
+            const consoleBox = document.getElementById('consoleLog');
+            const lastLog = consoleBox.lastElementChild;
+            if(lastLog) {
+                lastLog.className = `mb-1 ${colorClass}`;
+                lastLog.innerHTML = `<span class="text-gray-600 mr-2">[${new Date().toLocaleTimeString()}]</span> ${text}`;
+            }
+        }
+    </script>
+</body>
+</html>

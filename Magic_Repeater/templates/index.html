@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Magic Repeater | Premium Text & Email Duplicator</title>
+    <meta name="description" content="Instantly duplicate text and emails up to 500 times with Magic Repeater. A lightning-fast utility tool.">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            dark: '#0B0F19',
+                            primary: '#3B82F6',
+                            secondary: '#8B5CF6'
+                        }
+                    },
+                    animation: {
+                        'gradient-x': 'gradient-x 3s ease infinite',
+                        'marquee': 'marquee 35s linear infinite',
+                    },
+                    keyframes: {
+                        'gradient-x': {
+                            '0%, 100%': {
+                                'background-size': '200% 200%',
+                                'background-position': 'left center'
+                            },
+                            '50%': {
+                                'background-size': '200% 200%',
+                                'background-position': 'right center'
+                            }
+                        },
+                        marquee: {
+                            '0%': { transform: 'translateX(0%)' },
+                            '100%': { transform: 'translateX(-100%)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #0B0F19;
+            background-image: radial-gradient(circle at top right, rgba(59, 130, 246, 0.15), transparent 40%),
+                              radial-gradient(circle at bottom left, rgba(139, 92, 246, 0.15), transparent 40%);
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .glass-effect {
+            background: rgba(17, 25, 40, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .input-glow:focus {
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+            border-color: #3B82F6;
+            outline: none;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); border-radius: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: linear-gradient(to bottom, #3B82F6, #8B5CF6); border-radius: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: linear-gradient(to bottom, #2563EB, #7C3AED); }
+
+        .animate-marquee {
+            display: flex;
+            animation: marquee 30s linear infinite;
+        }
+
+        .group:hover #news-ticker {
+            animation-play-state: paused;
+        }
+    </style>
+</head>
+
+<body class="antialiased selection:bg-brand-primary selection:text-white flex flex-col min-h-screen">
+    
+    <header class="bg-gray-900/95 backdrop-blur-xl border-b border-gray-800 shadow-lg fixed w-full top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-6 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="border-white/10 shadow-inner">
+                    <img src="https://i.ibb.co.com/Z62pwyYL/Gemini-Generated-Image-zclb1jzclb1jzclb-removebg-preview.png" alt="Magic Repeater Logo" class="h-16 w-16 object-contain">
+                </div>
+                <span class="font-display font-bold text-2xl tracking-tight">Magic<span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">Repeater</span></span>
+            </div>
+
+            <nav class="hidden md:flex gap-6 text-sm font-medium text-gray-300">
+                <a href="#" class="hover:text-white transition-colors">Home</a>
+                <a href="#" class="hover:text-white transition-colors">Features</a>
+                <a href="#" class="hover:text-white transition-colors">Contact Us</a>
+                <a href="#" class="hover:text-white transition-colors">Blog</a>
+                <a href="#" class="hover:text-white transition-colors">API</a>
+                <a href="#" class="hover:text-white transition-colors">FAQ</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="relative flex overflow-hidden bg-slate-950/80 backdrop-blur-md border-y border-cyan-500/20 py-3 group mt-16">
+        <div class="absolute left-0 z-20 bg-gradient-to-r from-cyan-600 to-blue-600 text-white px-5 py-3 font-bold text-xs tracking-widest uppercase flex items-center shadow-2xl">
+            <span class="relative flex h-2 w-2 mr-3">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+            </span>
+            NEW
+        </div>
+
+        <div id="news-ticker" class="flex whitespace-nowrap items-center animate-marquee cursor-pointer space-x-12 ml-28">
+            <span class="text-slate-200 text-sm md:text-base font-medium flex items-center">
+                <span class="text-cyan-400 mr-2">✨</span> 
+                Instantly generate messages with one click — impress your crush, fix arguments, or send unlimited texts effortlessly! 💬❤️
+            </span>
+            <span class="h-1.5 w-1.5 bg-slate-700 rounded-full mx-6"></span>
+            <span class="text-slate-100 text-sm md:text-base font-medium flex items-center">
+                <span class="text-yellow-400 mr-2">🚀</span> 
+                এক ক্লিকেই মেসেজ তৈরি করুন — আপনার ক্রাশকে ইম্প্রেস করুন, রাগ ভাঙান বা সহজেই হাজারো মেসেজ পাঠান!
+            </span>
+            <span class="h-1.5 w-1.5 bg-slate-700 rounded-full mx-6"></span>
+            <span class="text-slate-200 text-sm md:text-base font-medium">✨ Instantly generate messages with one click... | Prank for friend | বন্ধু সাতে স্পেম মেসজে তৈরি মজয়া করুন </span>
+        </span>
+        </div>
+    </div>
+
+    <div class="w-full max-w-4xl mx-auto mt-10 px-4">
+        <div class="bg-gray-800/50 border border-dashed border-gray-600 rounded-xl h-24 flex items-center justify-center text-gray-500 text-sm">
+            <i class="fa-solid fa-ad mr-2"></i> Top Banner Advertisement Space
+        </div>
+    </div>
+
+    <main class="flex-grow flex items-center justify-center px-4 pt-8 pb-12">
+        <div class="w-full max-w-3xl relative">
+            <div class="absolute top-0 -left-4 w-72 h-72 bg-purple-500 rounded-full mix-blend-multiply filter blur-[128px] opacity-20 animate-pulse"></div>
+            <div class="absolute bottom-0 -right-4 w-72 h-72 bg-blue-500 rounded-full mix-blend-multiply filter blur-[128px] opacity-20 animate-pulse" style="animation-delay: 2s;"></div>
+
+            <div class="glass-effect rounded-2xl p-6 md:p-10 relative z-10 transition-all duration-300">
+                <div class="text-center mb-8">
+                    <h1 class="text-3xl md:text-4xl font-display font-bold mb-3 text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400">Magic Text Generator</h1>
+                    <p class="text-gray-400 text-sm md:text-base">Instantly multiply your message, or emojis.</p>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-300 mb-2">Message or Email <span class="text-red-400">*</span></label>
+                            <textarea id="inputText" rows="3" placeholder="Type text or email..." class="w-full bg-gray-900/80 border border-gray-700 rounded-xl px-4 py-3 text-white placeholder-gray-500 input-glow transition-all duration-200 resize-none"></textarea>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">Repetitions (Max 500) <span class="text-red-400">*</span></label>
+                            <input type="number" id="repeatCount" placeholder="e.g., 10" min="1" max="500" class="w-full bg-gray-900/80 border border-gray-700 rounded-xl px-4 py-3 text-white placeholder-gray-500 input-glow transition-all duration-200">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">Separator Type</label>
+                            <select id="separatorType" class="w-full bg-gray-900/80 border border-gray-700 rounded-xl px-4 py-3 text-white input-glow transition-all duration-200">
+                                <option value="newline" selected>New Line</option>
+                                <option value="space">Space</option>
+                                <option value="newline">New Line</option>
+                                <option value="comma">Comma (,)</option>
+                                <option value="none">No Space</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button onclick="triggerPopupAndGenerate()" class="w-full bg-gradient-to-r from-brand-primary to-brand-secondary hover:from-blue-500 hover:to-purple-600 text-white font-bold py-4 px-6 rounded-xl transition-all duration-200 transform hover:-translate-y-1 hover:shadow-[0_10px_25px_rgba(59,130,246,0.4)] active:translate-y-0 flex items-center justify-center gap-2 text-lg">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Generate Magic
+                    </button>
+                </div>
+
+                <div id="outputContainer" class="mt-10 hidden animate-[fadeIn_0.5s_ease-out]">
+                    <div class="flex justify-between items-center mb-3">
+                        <label class="text-sm font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">✨ Your Generated Result:</label>
+                        <span id="charCount" class="text-xs font-medium bg-gray-800 px-3 py-1 rounded-full text-gray-300 border border-gray-700">0 characters</span>
+                    </div>
+                    
+                    <div class="relative group p-[2px] rounded-xl bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 animate-gradient-x shadow-[0_0_20px_rgba(139,92,246,0.2)]">
+                        <div class="relative bg-gray-900 rounded-xl h-full w-full">
+                            <textarea id="outputText" readonly class="w-full bg-transparent border-none rounded-xl p-5 text-gray-100 custom-scrollbar resize-none h-56 focus:outline-none text-lg leading-relaxed"></textarea>
+                            
+                            <button onclick="copyResult()" id="copyBtn" class="absolute bottom-5 right-5 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white px-5 py-3 rounded-xl shadow-lg transition-all duration-300 flex items-center gap-2 hover:scale-105">
+                                <i class="fa-regular fa-copy text-lg" id="copyIcon"></i>
+                                <span id="copyText" class="font-bold">Copy Result</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="w-full max-w-4xl mx-auto mb-8 px-4">
+        <div class="bg-gray-800/50 border border-dashed border-gray-600 rounded-xl h-24 flex items-center justify-center text-gray-500 text-sm">
+            <i class="fa-solid fa-ad mr-2"></i> Bottom Banner Advertisement Space
+        </div>
+    </div>
+
+    <section class="max-w-4xl mx-auto px-4 py-12">
+        <h2 class="text-3xl font-bold text-center mb-10 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
+            Frequently Asked Questions
+        </h2>
+
+        <div class="space-y-4">
+            <div class="faq-item border border-gray-700 rounded-2xl bg-gray-800/60 overflow-hidden">
+                <button class="faq-btn w-full flex justify-between items-center p-5 text-left text-white font-semibold">
+                    What is Magic Repeater?
+                    <span class="faq-icon transition-transform">+</span>
+                </button>
+                <div class="faq-content max-h-0 overflow-hidden transition-all duration-300 px-5">
+                    <p class="text-gray-400 text-sm pb-5">
+                        Magic Repeater is a fast and user-friendly tool that allows you to duplicate any text, email, or message up to 500 times within seconds.
+                    </p>
+                </div>
+            </div>
+
+            <div class="faq-item border border-gray-700 rounded-2xl bg-gray-800/60 overflow-hidden">
+                <button class="faq-btn w-full flex justify-between items-center p-5 text-left text-white font-semibold">
+                    How do I use it?
+                    <span class="faq-icon transition-transform">+</span>
+                </button>
+                <div class="faq-content max-h-0 overflow-hidden transition-all duration-300 px-5">
+                    <p class="text-gray-400 text-sm pb-5">
+                        Enter your text, choose the number of repetitions, and click the “Generate Magic” button.
+                    </p>
+                </div>
+            </div>
+
+            <div class="faq-item border border-gray-700 rounded-2xl bg-gray-800/60 overflow-hidden">
+                <button class="faq-btn w-full flex justify-between items-center p-5 text-left text-white font-semibold">
+                    What is the maximum repetition limit?
+                    <span class="faq-icon transition-transform">+</span>
+                </button>
+                <div class="faq-content max-h-0 overflow-hidden transition-all duration-300 px-5">
+                    <p class="text-gray-400 text-sm pb-5">
+                        You can repeat your text up to 500 times per request.
+                    </p>
+                </div>
+            </div>
+
+            <div class="faq-item border border-gray-700 rounded-2xl bg-gray-800/60 overflow-hidden">
+                <button class="faq-btn w-full flex justify-between items-center p-5 text-left text-white font-semibold">
+                    Is Magic Repeater free to use?
+                    <span class="faq-icon transition-transform">+</span>
+                </button>
+                <div class="faq-content max-h-0 overflow-hidden transition-all duration-300 px-5">
+                    <p class="text-gray-400 text-sm pb-5">
+                        Yes, it is completely free. Premium features may be added in the future.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="border-t border-gray-800/50 bg-brand-dark pt-10 pb-6 mt-auto z-10">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+                <div>
+                    <h2 class="font-display text-2xl font-bold text-white">
+                        Magic<span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">Repeater</span>
+                    </h2>
+                    <p class="text-gray-400 text-sm mt-3">
+                        Instantly duplicate your text, emails, and messages with lightning speed. Simple, fast, and powerful.
+                    </p>
+                </div>
+                <div>
+                    <h3 class="text-white font-semibold mb-3">Quick Links</h3>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><a href="#" class="hover:text-white transition">Home</a></li>
+                        <li><a href="#" class="hover:text-white transition">Features</a></li>
+                        <li><a href="#" class="hover:text-white transition">Blog</a></li>
+                        <li><a href="#" class="hover:text-white transition">API</a></li>
+                        <li><a href="#" class="hover:text-white transition">FAQ</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-white font-semibold mb-3">Connect</h3>
+                    <div class="flex gap-4 text-gray-400 text-lg">
+                        <a href="#" class="hover:text-blue-400 transition"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="hover:text-sky-400 transition"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="hover:text-pink-400 transition"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="hover:text-gray-300 transition"><i class="fab fa-github"></i></a>
+                    </div>
+                    <p class="text-gray-500 text-xs mt-4">Email: support@magicrepeater.com</p>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-800 pt-4 flex flex-col md:flex-row items-center justify-between text-sm text-gray-500">
+                <p>© 2026 <span class="text-white font-medium">Magic Repeater</span>. All rights reserved.</p>
+                <p class="mt-2 md:mt-0">
+                    Powered by 
+                    <span class="font-semibold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
+                        FreeDownloader.TOP
+                    </span>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <div id="adModal" class="fixed inset-0 z-[100] hidden bg-black/80 backdrop-blur-sm flex items-center justify-center">
+        <div class="bg-gray-900 border border-gray-700 rounded-2xl w-[90%] max-w-md p-6 relative shadow-2xl transform scale-95 transition-transform duration-300" id="adContent">
+            <div class="text-right mb-2">
+                <span class="text-xs text-gray-500 uppercase tracking-wider">Advertisement</span>
+            </div>
+            
+            <div class="bg-gray-800 rounded-xl h-48 flex flex-col items-center justify-center text-gray-400 mb-6 border border-gray-700">
+                <i class="fa-solid fa-bullhorn text-4xl mb-3 text-gray-600"></i>
+                <p>Your Ad Space Here</p>
+                <p class="text-xs mt-2 text-gray-500">(Integrate Adsense/Custom Ad)</p>
+            </div>
+
+            <button onclick="closeAdAndShowResult()" class="w-full bg-gray-800 hover:bg-gray-700 text-white font-medium py-3 rounded-xl border border-gray-600 transition-colors flex justify-center items-center gap-2">
+                Continue to Result <i class="fa-solid fa-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Store generated data temporarily while ad is showing
+        let pendingResult = "";
+
+        // Ticker Animation Logic
+        const ticker = document.getElementById('news-ticker');
+        ticker.addEventListener('mouseenter', () => { ticker.style.animationPlayState = 'paused'; });
+        ticker.addEventListener('mouseleave', () => { ticker.style.animationPlayState = 'running'; });
+
+        // FAQ Logic
+        const faqButtons = document.querySelectorAll(".faq-btn");
+        faqButtons.forEach(button => {
+            button.addEventListener("click", () => {
+                const content = button.nextElementSibling;
+                const icon = button.querySelector(".faq-icon");
+
+                // close others
+                document.querySelectorAll(".faq-content").forEach(item => {
+                    if (item !== content) {
+                        item.style.maxHeight = null;
+                    }
+                });
+
+                document.querySelectorAll(".faq-icon").forEach(i => {
+                    if (i !== icon) i.textContent = "+";
+                });
+
+                // toggle current
+                if (content.style.maxHeight) {
+                    content.style.maxHeight = null;
+                    icon.textContent = "+";
+                } else {
+                    content.style.maxHeight = content.scrollHeight + "px";
+                    icon.textContent = "−";
+                }
+            });
+        });
+
+        // App Logic
+        function triggerPopupAndGenerate() {
+            const textInput = document.getElementById('inputText').value;
+            let countInput = document.getElementById('repeatCount').value;
+            const separatorType = document.getElementById('separatorType').value;
+
+            // Validation
+            if (!textInput.trim()) {
+                alert("Please enter a message or email first.");
+                return;
+            }
+            if (!countInput || countInput <= 0) {
+                alert("Please enter a valid number greater than 0.");
+                return;
+            }
+
+            if (countInput > 500) {
+                countInput = 500;
+                document.getElementById('repeatCount').value = 500;
+            }
+
+            // Determine Separator
+            let separator = " ";
+            if (separatorType === "comma") separator = ", ";
+            else if (separatorType === "newline") separator = "\n";
+            else if (separatorType === "none") separator = "";
+            else if (separatorType === "space") separator = " ";
+
+            // Generate Logic
+            pendingResult = Array(parseInt(countInput)).fill(textInput).join(separator);
+
+            // Show Ad Popup instead of direct result
+            const modal = document.getElementById('adModal');
+            const adContent = document.getElementById('adContent');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                adContent.classList.remove('scale-95');
+                adContent.classList.add('scale-100');
+            }, 10);
+        }
+
+        function closeAdAndShowResult() {
+            // Close Ad
+            const modal = document.getElementById('adModal');
+            modal.classList.add('hidden');
+
+            // Show Result
+            const outputContainer = document.getElementById('outputContainer');
+            const outputText = document.getElementById('outputText');
+            const charCount = document.getElementById('charCount');
+
+            outputText.value = pendingResult;
+            charCount.innerText = `${pendingResult.length} characters`;
+            
+            outputContainer.classList.remove('hidden');
+            
+            // Scroll to result smoothly
+            setTimeout(() => {
+                outputContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 100);
+        }
+
+        function copyResult() {
+            const outputText = document.getElementById('outputText');
+            const copyIcon = document.getElementById('copyIcon');
+            const copyTextBtn = document.getElementById('copyText');
+
+            outputText.select();
+            navigator.clipboard.writeText(outputText.value).then(() => {
+                // Cool UI Feedback
+                copyIcon.classList.replace('fa-copy', 'fa-check');
+                copyTextBtn.innerText = "Copied Successfully!";
+                
+                setTimeout(() => {
+                    copyIcon.classList.replace('fa-check', 'fa-copy');
+                    copyTextBtn.innerText = "Copy Result";
+                }, 2500);
+            });
+        }
+    </script>
+</body>
+</html>
