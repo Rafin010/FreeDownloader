@@ -1,48 +1,158 @@
-from flask import Flask, render_template, request, jsonify
-import smtplib
+from flask import Flask, redirect, url_for, session, request, jsonify, render_template
+from authlib.integrations.flask_client import OAuth
 from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
+from googleapiclient.discovery import build
+import base64
+import time
 
 app = Flask(__name__)
+app.secret_key = "SUPER_SECRET_KEY_CHANGE_IT"
 
+# Session fix
+app.config['SESSION_COOKIE_NAME'] = 'google-login-session'
+
+# ==============================
+# 🔐 Google OAuth Setup
+# ==============================
+oauth = OAuth(app)
+
+google = oauth.register(
+    name='google',
+    client_id="938781722162-90bqak8phjbfigh4o539jcp7clugqjfb.apps.googleusercontent.com",
+    client_secret="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",
+    access_token_url='https://oauth2.googleapis.com/token',
+    authorize_url='https://accounts.google.com/o/oauth2/auth',
+    api_base_url='https://www.googleapis.com/oauth2/v1/',
+    client_kwargs={
+        'scope': 'openid email profile https://www.googleapis.com/auth/gmail.send'
+    }
+)
+
+"""
+938781722162-90bqak8phjbfigh4o539jcp7clugqjfb.apps.googleusercontent.com
+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
+"""
+
+# ==============================
+# 🏠 Home Route
+# ==============================
 @app.route('/')
-def index():
+def home():
     return render_template('index.html')
 
-# এই রাউটটি প্রতিবার একটি করে ইমেইল রিসিভ করবে এবং সেন্ড করবে
-@app.route('/send-single', methods=['POST'])
-def send_single():
+# ==============================
+# 🔑 Login Route
+# ==============================
+@app.route('/login')
+def login():
+    return google.authorize_redirect(url_for('callback', _external=True))
+
+
+# ==============================
+# 🔁 Callback Route
+# ==============================
+@app.route('/callback')
+def callback():
+    token = google.authorize_access_token()
+    resp = google.get('userinfo')
+    user_info = resp.json()
+
+    session['user'] = user_info
+    session['token'] = token
+
+    return redirect("http://localhost:5000")  # frontend URL
+
+
+# ==============================
+# 👤 Get User Info
+# ==============================
+@app.route('/get-user')
+def get_user():
+    if 'user' in session:
+        return jsonify({
+            "logged_in": True,
+            "email": session['user']['email']
+        })
+    return jsonify({"logged_in": False})
+
+
+# ==============================
+# 📩 Send Single Email
+# ==============================
+def send_single_email(service, recipient, subject, message):
+    msg = MIMEText(message, 'html')
+    msg['to'] = recipient
+    msg['subject'] = subject
+
+    raw = base64.urlsafe_b64encode(msg.as_bytes()).decode()
+
+    return service.users().messages().send(
+        userId="me",
+        body={'raw': raw}
+    ).execute()
+
+
+# ==============================
+# 🚀 Bulk Email API (Optimized)
+# ==============================
+@app.route('/send-bulk-email', methods=['POST'])
+def send_bulk_email():
+    if 'token' not in session:
+        return jsonify({"success": False, "error": "Not authenticated"})
+
     data = request.json
-    sender_email = data.get('sender_email')
-    sender_password = data.get('sender_password')
-    recipient = data.get('recipient')
+    emails = data.get('emails', [])
     subject = data.get('subject')
-    message_body = data.get('message')
+    message = data.get('message')
 
-    if not all([sender_email, sender_password, recipient, subject, message_body]):
-        return jsonify({"status": "error", "message": "সবগুলো তথ্য দেওয়া হয়নি!"}), 400
+    credentials = session['token']
+    service = build('gmail', 'v1', credentials=credentials)
 
-    try:
-        # জিমেইলের SMTP সার্ভার সেটআপ
-        server = smtplib.SMTP('smtp.gmail.com', 587)
-        server.starttls()
-        # লগিন করা (এখানে জিমেইলের App Password ব্যবহার করতে হবে)
-        server.login(sender_email, sender_password)
+    success = 0
+    failed = 0
+    results = []
 
-        # ইমেইল তৈরি করা
-        msg = MIMEMultipart()
-        msg['From'] = sender_email
-        msg['To'] = recipient
-        msg['Subject'] = subject
-        msg.attach(MIMEText(message_body, 'plain'))
+    # 🔥 Rate limit safe config
+    BATCH_SIZE = 10       # প্রতি 10 টা করে
+    DELAY = 2             # 2 sec delay
 
-        # ইমেইল সেন্ড করা
-        server.send_message(msg)
-        server.quit()
+    for i, email in enumerate(emails):
+        try:
+            send_single_email(service, email, subject, message)
+            success += 1
+            results.append({"email": email, "status": "sent"})
+            print(f"[SUCCESS] {email}")
 
-        return jsonify({"status": "success", "email": recipient})
-    except Exception as e:
-        return jsonify({"status": "error", "email": recipient, "message": str(e)}), 500
+        except Exception as e:
+            failed += 1
+            results.append({"email": email, "status": "failed", "error": str(e)})
+            print(f"[FAILED] {email} - {e}")
 
-if __name__ == '__main__':
+        # 🔐 Rate limit protection
+        if (i + 1) % BATCH_SIZE == 0:
+            print("⏳ Cooling down...")
+            time.sleep(DELAY)
+
+    return jsonify({
+        "success": True,
+        "total": len(emails),
+        "sent": success,
+        "failed": failed,
+        "details": results
+    })
+
+
+# ==============================
+# 🚪 Logout
+# ==============================
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect("/")
+
+
+# ==============================
+# ▶ Run App
+# ==============================
+if __name__ == "__main__":
     app.run(debug=True)
