@@ -112,9 +112,9 @@ def send_bulk_email():
     failed = 0
     results = []
 
-    # 🔥 Rate limit safe config
-    BATCH_SIZE = 10       # প্রতি 10 টা করে
-    DELAY = 2             # 2 sec delay
+    #  Rate limit safe config
+    BATCH_SIZE = 10       
+    DELAY = 2             
 
     for i, email in enumerate(emails):
         try:
@@ -143,7 +143,7 @@ def send_bulk_email():
 
 
 # ==============================
-# 🚪 Logout
+# Logout
 # ==============================
 @app.route('/logout')
 def logout():
@@ -153,6 +153,6 @@ def logout():
 
 # ==============================
 # ▶ Run App
-# ==============================
+# ==============================                    ----------------------------------------------------------
 if __name__ == "__main__":
     app.run(debug=True)
