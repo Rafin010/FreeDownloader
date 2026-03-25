@@ -114,12 +114,12 @@
     </header>
 
     <div class="relative flex overflow-hidden bg-slate-950/80 backdrop-blur-md border-y border-cyan-500/20 py-3 group mt-16">
-        <div class="absolute left-0 z-20 bg-gradient-to-r from-cyan-600 to-blue-600 text-white px-5 py-3 font-bold text-xs tracking-widest uppercase flex items-center shadow-2xl">
-            <span class="relative flex h-2 w-2 mr-3">
+        <div class="absolute left-0 z-20 bg-gradient-to-r from-cyan-600 to-blue-600 text-white px-2 py-3 font-bold text-xs tracking-widest uppercase flex items-center shadow-2xl">
+            <span class="relative flex h-auto w-2 mr-3">
                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
                 <span class="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
             </span>
-            NEW
+            sms
         </div>
 
         <div id="news-ticker" class="flex whitespace-nowrap items-center animate-marquee cursor-pointer space-x-12 ml-28">
@@ -151,15 +151,15 @@
 
             <div class="glass-effect rounded-2xl p-6 md:p-10 relative z-10 transition-all duration-300">
                 <div class="text-center mb-8">
-                    <h1 class="text-3xl md:text-4xl font-display font-bold mb-3 text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400">Magic Text Generator</h1>
+                    <h1 class="text-3xl md:text-4xl font-display font-bold mb-3 text-transparent bg-clip-text bg-gradient-to-r bg-gradient-to-r from-blue-500 to-rose-600 to-purple-500">Magic Text Generator</h1>
                     <p class="text-gray-400 text-sm md:text-base">Instantly multiply your message, or emojis.</p>
                 </div>
 
                 <div class="space-y-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="md:col-span-2">
-                            <label class="block text-sm font-medium text-gray-300 mb-2">Message or Email <span class="text-red-400">*</span></label>
-                            <textarea id="inputText" rows="3" placeholder="Type text or email..." class="w-full bg-gray-900/80 border border-gray-700 rounded-xl px-4 py-3 text-white placeholder-gray-500 input-glow transition-all duration-200 resize-none"></textarea>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">Message or Eomji🙃 <span class="text-red-400">*</span></label>
+                            <textarea id="inputText" rows="3" placeholder="Type text or 🫣..." class="w-full bg-gray-900/80 border border-gray-700 rounded-xl px-4 py-3 text-white placeholder-gray-500 input-glow transition-all duration-200 resize-none"></textarea>
                         </div>
                         
                         <div>
@@ -194,9 +194,9 @@
                         <div class="relative bg-gray-900 rounded-xl h-full w-full">
                             <textarea id="outputText" readonly class="w-full bg-transparent border-none rounded-xl p-5 text-gray-100 custom-scrollbar resize-none h-56 focus:outline-none text-lg leading-relaxed"></textarea>
                             
-                            <button onclick="copyResult()" id="copyBtn" class="absolute bottom-5 right-5 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white px-5 py-3 rounded-xl shadow-lg transition-all duration-300 flex items-center gap-2 hover:scale-105">
+                            <button onclick="copyResult()" id="copyBtn" class="absolute bottom-5 right-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white px-3 py-2 rounded-xl shadow-lg transition-all duration-300 flex items-center gap-2 hover:scale-105">
                                 <i class="fa-regular fa-copy text-lg" id="copyIcon"></i>
-                                <span id="copyText" class="font-bold">Copy Result</span>
+                                <span id="copyText" class="font-bold"></span>
                             </button>
                         </div>
                     </div>
@@ -438,12 +438,12 @@
             outputText.select();
             navigator.clipboard.writeText(outputText.value).then(() => {
                 // Cool UI Feedback
-                copyIcon.classList.replace('fa-copy', 'fa-check');
-                copyTextBtn.innerText = "Copied Successfully!";
+                copyIcon.classList.replace('', '');
+                copyTextBtn.innerText = "Copied";
                 
                 setTimeout(() => {
                     copyIcon.classList.replace('fa-check', 'fa-copy');
-                    copyTextBtn.innerText = "Copy Result";
+                    copyTextBtn.innerText = "";
                 }, 2500);
             });
         }
