@@ -69,15 +69,51 @@ youtube video downloader professional,youtube downloader enterprise,youtube vide
 </head>
 <body class="font-sans antialiased text-gray-800">
 
-    <div id="videoAdModal" class="fixed inset-0 bg-black/90 z-[100] hidden flex-col items-center justify-center p-4 backdrop-blur-sm">
-        <p class="text-white mb-4 text-lg font-bold animate-pulse text-center">
-            Please wait, your download will start in <span id="timeCount" class="text-[#FF0000] text-3xl font-extrabold mx-2">5</span> seconds...
-        </p>
-        <video id="adVideo" class="max-w-full max-h-[70vh] rounded-lg shadow-2xl border-2 border-[#FF0000]" playsinline autoplay muted loop>
-            <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
-            Your browser does not support HTML video.
-        </video>
-        <p class="text-gray-400 mt-4 text-sm">Download starts automatically when ad ends</p>
+    <div id="videoAdModal" class="fixed inset-0 bg-black/95 z-[100] hidden flex-col items-center justify-center p-4 backdrop-blur-md transition-all duration-500">
+        
+        <!-- Ad State -->
+        <div id="adState" class="flex flex-col items-center justify-center w-full animate-fade-in">
+            <p class="text-white mb-4 text-lg font-bold animate-pulse text-center">
+                Please wait, your download will start in <span id="timeCount" class="text-[#FF0000] text-3xl font-extrabold mx-2">5</span> seconds...
+            </p>
+            <video id="adVideo" class="max-w-full max-h-[70vh] rounded-lg shadow-2xl border-2 border-[#FF0000]" playsinline autoplay muted loop>
+                <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+                Your browser does not support HTML video.
+            </video>
+            <p class="text-gray-400 mt-4 text-sm">Download starts automatically when ad ends</p>
+        </div>
+
+        <!-- Professional Processing State (Hidden initially) -->
+        <div id="processingState" class="hidden flex-col items-center justify-center w-full max-w-md p-8 bg-gray-900/80 border border-gray-700 rounded-2xl shadow-2xl">
+            <div class="relative w-24 h-24 mb-6 flex items-center justify-center">
+                <!-- Outer spinning ring -->
+                <div class="absolute inset-0 rounded-full border-t-4 border-[#FF0000] animate-spin shadow-[0_0_15px_rgba(255,0,0,0.5)]"></div>
+                <!-- Inner spinning ring -->
+                <div class="absolute inset-2 border-b-4 border-l-4 border-white rounded-full animate-[spin_1.5s_linear_infinite_reverse]"></div>
+                <!-- Center icon -->
+                <div class="absolute inset-0 flex items-center justify-center text-white text-3xl">
+                    <i class="fa-solid fa-cloud-arrow-down animate-pulse"></i>
+                </div>
+            </div>
+            
+            <h3 class="text-white text-2xl font-bold mb-2 tracking-wide text-center">Processing Video...</h3>
+            <p id="processingText" class="text-gray-300 text-center text-sm font-medium h-5">
+                Fetching highest quality streams
+            </p>
+            
+            <div class="w-full h-2 bg-gray-800 rounded-full mt-6 overflow-hidden relative shadow-inner shadow-black">
+                <div id="fakeProgressBar" class="absolute top-0 left-0 h-full bg-gradient-to-r from-[#FF0000] to-red-500 rounded-full transition-all duration-1000 w-[5%]"></div>
+            </div>
+            
+            <p class="text-xs text-gray-500 mt-4 text-center px-4 leading-relaxed">
+                Please do not close this page. High-quality videos may take up to a minute to merge audio and video layers.
+            </p>
+            
+            <button onclick="closeProcessingModal()" class="mt-6 px-6 py-2 border border-gray-600 rounded-full text-gray-400 hover:text-white hover:bg-gray-800 hover:border-gray-500 transition-all text-sm font-semibold">
+                Close Dialog
+            </button>
+        </div>
+
     </div>
 
 <nav class="bg-white shadow-md sticky top-0 z-50">
@@ -421,19 +457,13 @@ youtube video downloader professional,youtube downloader enterprise,youtube vide
                 const resList = document.getElementById('resolutionsList');
                 resList.innerHTML = ''; 
                 
-                const fixedQualities = [
-                    { label: '4K (Ultra HD)', height: 2160 },
-                    { label: '1080p (HD)', height: 1080 },
-                    { label: '720p (SD)', height: 720 },
-                    { label: '420p (Basic)', height: 420 }
-                ];
-
-                fixedQualities.forEach(q => {
+                // Use dynamic formats from backend
+                data.formats.forEach(q => {
                     const btn = document.createElement('button');
                     btn.className = 'w-full flex justify-between items-center px-4 py-3 border border-gray-200 rounded-lg bg-white hover:bg-red-50 transition-all duration-300 font-medium text-gray-800 shadow-sm hover:shadow-md transform hover:-translate-y-1 hover-bounce text-sm sm:text-base';
                     
                     btn.innerHTML = `
-                        <span class="flex items-center"><i class="fa-solid fa-video text-[#FF0000] mr-3 text-lg"></i> ${q.label}</span> 
+                        <span class="flex items-center"><i class="fa-solid fa-video text-[#FF0000] mr-3 text-lg"></i> ${q.resolution}</span> 
                         <span class="bg-green-100 text-green-700 border border-green-200 text-xs sm:text-sm px-3 sm:px-4 py-2 rounded-md font-bold transition-all duration-300 hover:bg-green-600 hover:text-white flex items-center gap-2 shadow-sm">
                             <i class="fa-solid fa-download transition-transform duration-300"></i> Download
                         </span>`;
@@ -458,7 +488,15 @@ youtube video downloader professional,youtube downloader enterprise,youtube vide
         selectedHeight = height;
         
         const modal = document.getElementById('videoAdModal');
+        const adState = document.getElementById('adState');
+        const processingState = document.getElementById('processingState');
         
+        // Reset states
+        adState.classList.remove('hidden');
+        adState.classList.add('flex');
+        processingState.classList.add('hidden');
+        processingState.classList.remove('flex');
+
         // Tailwind এর hidden রিমুভ করে flex অ্যাড করা হলো, যাতে মোডালটি ঠিকমত সেন্টারে আসে
         modal.classList.remove('hidden');
         modal.classList.add('flex');
@@ -473,15 +511,66 @@ youtube video downloader professional,youtube downloader enterprise,youtube vide
             if(timeLeft <= 0) {
                 clearInterval(timer);
                 
-                // মোডাল হাইড করা
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
+                // Switch to professional processing state instead of closing modal
+                adState.classList.add('hidden');
+                adState.classList.remove('flex');
+                processingState.classList.remove('hidden');
+                processingState.classList.add('flex');
                 
-                // ডাউনলোড শুরু
-                const downloadUrl = `/api/download?url=${encodeURIComponent(currentVideoUrl)}&res=${selectedHeight}`;
+                // Animate progress and processing text dynamically
+                const texts = [
+                    "Connecting to server...",
+                    "Fetching highest quality streams...",
+                    "Downloading video and audio...",
+                    "Merging streams (this takes time)...",
+                    "Finalizing your file..."
+                ];
+                let textIndex = 0;
+                let textInterval = setInterval(() => {
+                    textIndex = (textIndex + 1) % texts.length;
+                    document.getElementById('processingText').innerText = texts[textIndex];
+                }, 4000);
+                
+                // Fake progress bar animation (goes up to 95%)
+                const pb = document.getElementById('fakeProgressBar');
+                let curProg = 5;
+                let pbInterval = setInterval(() => {
+                    curProg += Math.random() * 5;
+                    if(curProg > 95) curProg = 95;
+                    pb.style.width = curProg + "%";
+                }, 800);
+                
+                // Save intervals logic to clear it later if needed
+                window._downloadIntervals = [textInterval, pbInterval];
+
+                // Start actual download request
+                let vidTitle = document.getElementById('videoTitle').innerText || 'YouTube_Video';
+                const downloadUrl = `/api/download?url=${encodeURIComponent(currentVideoUrl)}&res=${selectedHeight}&title=${encodeURIComponent(vidTitle)}`;
+                
+                // Clear old cookie
+                document.cookie = "download_status=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+                
+                // Poll for the new cookie to close the modal automatically
+                let checkCookie = setInterval(() => {
+                    if (document.cookie.includes("download_status=completed")) {
+                        clearInterval(checkCookie);
+                        document.cookie = "download_status=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+                        closeProcessingModal();
+                    }
+                }, 1000);
+                window._downloadIntervals.push(checkCookie);
+
                 window.location.href = downloadUrl;
             }
         }, 1000);
+    }
+
+    function closeProcessingModal() {
+        if(window._downloadIntervals) {
+            window._downloadIntervals.forEach(clearInterval);
+        }
+        document.getElementById('videoAdModal').classList.add('hidden');
+        document.getElementById('videoAdModal').classList.remove('flex');
     }
 
     // ড্রপডাউন পরিবর্তন হলে গুগল ট্রান্সলেটরকে ট্রিগার করার ফাংশন
@@ -503,24 +592,7 @@ youtube video downloader professional,youtube downloader enterprise,youtube vide
     }
 
 
-    // আগের fixedQualities অংশটুকু মুছে এই কোডটি দিন
-const resList = document.getElementById('resolutionsList');
-resList.innerHTML = ''; 
 
-// ব্যাকএন্ড থেকে আসা ডাইনামিক formats ব্যবহার করা হচ্ছে
-data.formats.forEach(q => {
-    const btn = document.createElement('button');
-    btn.className = 'w-full flex justify-between items-center px-4 py-3 border border-gray-200 rounded-lg bg-white hover:bg-red-50 transition-all duration-300 font-medium text-gray-800 shadow-sm hover:shadow-md transform hover:-translate-y-1 hover-bounce text-sm sm:text-base';
-    
-    btn.innerHTML = `
-        <span class="flex items-center"><i class="fa-solid fa-video text-[#FF0000] mr-3 text-lg"></i> ${q.resolution}</span> 
-        <span class="bg-green-100 text-green-700 border border-green-200 text-xs sm:text-sm px-3 sm:px-4 py-2 rounded-md font-bold transition-all duration-300 hover:bg-green-600 hover:text-white flex items-center gap-2 shadow-sm">
-            <i class="fa-solid fa-download transition-transform duration-300"></i> Download
-        </span>`;
-    
-    btn.onclick = () => handleDownloadClick(q.height);
-    resList.appendChild(btn);
-});
 </script>
 
 <script src="../static/js/seo.js"></script>

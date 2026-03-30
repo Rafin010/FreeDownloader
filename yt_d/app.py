@@ -3,7 +3,7 @@ import uuid
 import threading
 import time
 import re
-from flask import Flask, render_template, request, jsonify, send_file
+from flask import Flask, render_template, request, jsonify, send_file, make_response
 import yt_dlp
 
 # ফ্লাস্ক অ্যাপ ইনিশিয়ালাইজেশন
@@ -84,8 +84,7 @@ def get_info():
         'quiet': True,
         'no_warnings': True,
         'http_headers': headers,
-        'cookiefile': 'cookies.txt', 
-        'extractor_args': {'youtube': {'player_client': ['android', 'web']}} 
+        'cookiefile': 'cookies.txt'
     }
 
     try:
@@ -126,13 +125,21 @@ def get_info():
 def download_video():
     video_url = request.args.get('url')
     res_height = request.args.get('res', '1080')
+    req_title = request.args.get('title', 'YouTube_Video')
 
     if not video_url:
         return "URL Missing", 400
 
-    # Generate unique UUID filename for concurrent users (YouTube specific name)
+    # Clean the title of invalid filename characters to avoid issues across OS
+    safe_title = re.sub(r'[\\/*?:"<>|]', "", req_title).strip()
+    if not safe_title:
+        safe_title = "YouTube_Video"
+
+    # Generate UUID filename for the server (safe concurrent processing)
+    # But we will use safe_title for the user's downloaded file
     unique_filename = f"YT_Video_{uuid.uuid4().hex[:8]}.mp4"
     filepath = os.path.join(DOWNLOAD_DIR, unique_filename)
+    user_download_name = f"{safe_title}.mp4"
 
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
@@ -141,13 +148,13 @@ def download_video():
 
     # yt-dlp অপশন আপডেট করা হয়েছে (Cookies & Client Impersonation)
     ydl_opts = {
-        'format': f'bestvideo[height<={res_height}]+bestaudio/best',
+        # Select exact resolution or fallback to the closest best below it
+        'format': f'bestvideo[height={res_height}]+bestaudio/bestvideo[height<={res_height}]+bestaudio/best',
         'merge_output_format': 'mp4',
         'outtmpl': filepath,
         'quiet': True,
         'http_headers': headers,
-        'cookiefile': 'cookies.txt', 
-        'extractor_args': {'youtube': {'player_client': ['android', 'web']}} 
+        'cookiefile': 'cookies.txt'
     }
 
     try:
@@ -157,30 +164,21 @@ def download_video():
         # Trigger auto-delete in 5 minutes
         delete_file_delayed(filepath, delay=300)
 
-        return send_file(
+        response = make_response(send_file(
             filepath, 
             as_attachment=True, 
-            download_name=unique_filename,
+            download_name=user_download_name,
             mimetype='video/mp4'
-        )
+        ))
+        # কুকি সেট করা হলো যা ফ্রন্টএন্ড থেকে পোল করা হবে
+        response.set_cookie('download_status', 'completed', path='/')
+        return response
 
     except Exception as e:
         # If download fails, ensure cleanup
         if os.path.exists(filepath):
             os.remove(filepath)
         return f"Download Failed: {str(e)}", 500
-
-
-        ydl_opts = {
-        # একদম হুবহু ওই রেজোলিউশন খুঁজবে, না পেলে তার চেয়ে ছোট সবচেয়ে ভালোটা নিবে
-        'format': f'bestvideo[height={res_height}]+bestaudio/bestvideo[height<={res_height}]+bestaudio/best',
-        'merge_output_format': 'mp4',
-        'outtmpl': filepath,
-        'quiet': True,
-        'http_headers': headers,
-        'cookiefile': 'cookies.txt', 
-        'extractor_args': {'youtube': {'player_client': ['android', 'web']}} 
-    }
 
 if __name__ == '__main__':
     app.run(debug=True, threaded=True)
