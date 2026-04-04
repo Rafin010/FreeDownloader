@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Free Downloader — Centralized Analytics Admin Panel" />
+    <title>Admin-Panel Free Donloader </title>
+
+    <link rel="icon" href="https://i.ibb.co.com/5gyM1GtX/free-downloade-top.png" type="image/png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet" />
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+                    colors: {
+                        panel: {
+                            bg: '#0b0f19',
+                            surface: '#111827',
+                            card: '#1a2232',
+                            border: '#1f2937',
+                            hover: '#243044',
+                        }
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        body::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        body::-webkit-scrollbar-track {
+            background: #0b0f19;
+        }
+
+        body::-webkit-scrollbar-thumb {
+            background: #4f46e5;
+            border-radius: 999px;
+        }
+
+        /* Sidebar slide animation */
+        .sidebar-open {
+            transform: translateX(0) !important;
+        }
+
+        /* glass effect for toast */
+        .toast-show {
+            transform: translateY(0) !important;
+            opacity: 1 !important;
+        }
+    </style>
+</head>
+
+<body class="bg-panel-bg text-gray-100 font-sans antialiased min-h-screen">
+
+    <!-- ═══════════════════════════════════════════
+     MOBILE OVERLAY
+═══════════════════════════════════════════ -->
+    <div id="sidebar-overlay" onclick="toggleSidebar()"
+        class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 hidden lg:hidden transition-opacity"></div>
+
+    <!-- ═══════════════════════════════════════════
+     SIDEBAR
+═══════════════════════════════════════════ -->
+    <aside id="sidebar"
+        class="fixed top-0 left-0 h-full w-72 bg-panel-surface border-r border-panel-border z-50 flex flex-col transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out">
+
+        <!-- Logo -->
+        <div class="flex items-center gap-3 px-6 py-5 border-b border-panel-border">
+            <div
+                class="w-10 h-10 rounded-xl bg-panel-card border border-panel-border flex items-center justify-center shadow-md">
+                <img src="https://i.ibb.co.com/5gyM1GtX/free-downloade-top.png" alt="free-downloade-top" border="0"
+                    width="50" height="50">
+            </div>
+            <div>
+                <div class="text-sm font-bold text-white tracking-tight">Free Downloader </div>
+                <div class="text-[10px] font-medium text-gray-500 uppercase tracking-widest">Admin Panel</div>
+            </div>
+            <!-- Close button (mobile) -->
+            <button onclick="toggleSidebar()" class="ml-auto lg:hidden text-gray-400 hover:text-white p-1">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Navigation label -->
+        <div class="px-6 pt-6 pb-2">
+            <span class="text-[10px] font-bold text-gray-500 uppercase tracking-[0.2em]">Websites</span>
+        </div>
+
+        <!-- Site navigation -->
+        <nav id="sidebar-nav" class="flex-1 px-3 pb-4 overflow-y-auto no-scrollbar space-y-1">
+            <!-- "All Sites" item -->
+            <button onclick="selectSite('','All Sites')" data-site=""
+                class="sidebar-item active w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 text-left group">
+                <div
+                    class="w-9 h-9 rounded-lg bg-panel-card border border-panel-border shadow-sm flex items-center justify-center flex-shrink-0">
+                    <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" stroke-width="2"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="truncate">All Sites</div>
+                    <div class="text-[11px] text-gray-500">Combined analytics</div>
+                </div>
+            </button>
+            <!-- Dynamic site items will be injected here by JS -->
+        </nav>
+
+        <!-- Sidebar footer -->
+        <div class="px-5 py-4 border-t border-panel-border space-y-3">
+            <div class="flex items-center gap-3">
+                <div
+                    class="w-8 h-8 rounded-full bg-panel-card border border-panel-border shadow-sm flex items-center justify-center text-xs font-bold text-indigo-400">
+                    A</div>
+                <div class="flex-1 min-w-0">
+                    <div class="text-xs font-semibold text-gray-200 truncate">Admin</div>
+                    <div class="text-[10px] text-gray-500">Super Admin</div>
+                </div>
+                <div
+                    class="flex items-center gap-1.5 px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full">
+                    <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse"></span>
+                    <span class="text-[10px] font-semibold text-emerald-400">LIVE</span>
+                </div>
+            </div>
+            <a href="/logout"
+                class="flex items-center justify-center gap-2 w-full px-3 py-2 rounded-lg bg-white/[0.04] border border-panel-border hover:bg-red-500/10 hover:border-red-500/30 text-gray-400 hover:text-red-400 text-xs font-medium transition-all duration-200">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
+                </svg>
+                Sign Out
+            </a>
+        </div>
+    </aside>
+
+    <!-- ═══════════════════════════════════════════
+     MAIN CONTENT AREA
+═══════════════════════════════════════════ -->
+    <div class="lg:ml-72 min-h-screen flex flex-col">
+
+        <!-- TOP BAR -->
+        <header
+            class="sticky top-0 z-30 flex items-center justify-between gap-4 px-4 md:px-8 h-16 bg-panel-bg/80 backdrop-blur-xl border-b border-panel-border">
+            <!-- Hamburger (mobile) -->
+            <button onclick="toggleSidebar()"
+                class="lg:hidden p-2 -ml-2 text-gray-400 hover:text-white rounded-lg hover:bg-white/5 transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+
+            <!-- Active site breadcrumb -->
+            <div class="flex items-center gap-2 text-sm">
+                <span class="text-gray-500">Dashboard</span>
+                <svg class="w-3.5 h-3.5 text-gray-600" fill="none" stroke="currentColor" stroke-width="2"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                </svg>
+                <span id="breadcrumb-site" class="text-white font-medium">All Sites</span>
+            </div>
+
+            <!-- Right side -->
+            <div class="flex items-center gap-3 md:gap-5">
+                <div class="hidden sm:flex items-center gap-2 text-xs text-gray-500">
+                    <span>Updated: <strong id="last-updated" class="text-gray-300">—</strong></span>
+                    <span class="text-gray-700">|</span>
+                    <span>Refresh: <strong id="countdown" class="text-indigo-400">30</strong>s</span>
+                </div>
+                <button id="refresh-btn"
+                    class="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white text-sm font-semibold rounded-lg transition-all duration-200 shadow-lg shadow-indigo-600/20 hover:shadow-indigo-500/30">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    <span class="hidden sm:inline">Refresh</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- PAGE BODY -->
+        <main class="flex-1 p-4 md:p-8 space-y-8">
+
+            <!-- Active site banner -->
+            <div id="active-site-banner" class="flex items-center gap-3">
+                <div id="active-site-icon"
+                    class="w-12 h-12 rounded-2xl bg-panel-card border border-panel-border shadow-lg flex items-center justify-center">
+                    <svg class="w-6 h-6 text-indigo-400" fill="none" stroke="currentColor" stroke-width="1.5"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <div>
+                    <h1 id="active-site-name" class="text-2xl md:text-3xl font-bold text-white tracking-tight">All Sites
+                    </h1>
+                    <p class="text-sm text-gray-500 mt-0.5">Combined analytics overview</p>
+                </div>
+            </div>
+
+            <!-- ── STAT CARDS ── -->
+            <section>
+                <h2 class="text-xs font-bold text-gray-500 uppercase tracking-[0.15em] mb-4">Overview</h2>
+                <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3 md:gap-4">
+
+                    <div
+                        class="relative overflow-hidden bg-panel-card border border-panel-border rounded-2xl p-4 md:p-5 hover:border-indigo-500/30 hover:shadow-lg hover:shadow-indigo-500/5 transition-all duration-300 group">
+                        <div
+                            class="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-indigo-500 to-violet-500">
+                        </div>
+                        <div
+                            class="w-10 h-10 mb-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" stroke-width="1.8"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                        </div>
+                        <div class="text-2xl md:text-3xl font-extrabold text-white tracking-tight" id="stat-views">0
+                        </div>
+                        <div class="text-xs font-medium text-gray-500 mt-1">Page Views</div>
+                    </div>
+
+                    <div
+                        class="relative overflow-hidden bg-panel-card border border-panel-border rounded-2xl p-4 md:p-5 hover:border-emerald-500/30 hover:shadow-lg hover:shadow-emerald-500/5 transition-all duration-300 group">
+                        <div
+                            class="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-emerald-500 to-teal-400">
+                        </div>
+                        <div
+                            class="w-10 h-10 mb-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" stroke-width="1.8"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                            </svg>
+                        </div>
+                        <div class="text-2xl md:text-3xl font-extrabold text-white tracking-tight" id="stat-downloads">0
+                        </div>
+                        <div class="text-xs font-medium text-gray-500 mt-1">Downloads</div>
+                    </div>
+
+                    <div
+                        class="relative overflow-hidden bg-panel-card border border-panel-border rounded-2xl p-4 md:p-5 hover:border-amber-500/30 hover:shadow-lg hover:shadow-amber-500/5 transition-all duration-300 group">
+                        <div
+                            class="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-amber-500 to-orange-500">
+                        </div>
+                        <div
+                            class="w-10 h-10 mb-3 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" stroke-width="1.8"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M10.34 15.84c-.688-.06-1.386-.09-2.09-.09H7.5a4.5 4.5 0 110-9h.75c.704 0 1.402-.03 2.09-.09m0 9.18c.253.962.584 1.892.985 2.783.247.55.06 1.21-.463 1.511l-.657.38c-.551.318-1.26.117-1.527-.461a20.845 20.845 0 01-1.44-4.282m3.102.069a18.03 18.03 0 01-.59-4.59c0-1.586.205-3.124.59-4.59m0 9.18a23.848 23.848 0 018.835 2.535M10.34 6.66a23.847 23.847 0 008.835-2.535m0 0A23.74 23.74 0 0018.795 3m.38 1.125a23.91 23.91 0 011.014 5.395m-1.014 8.855c-.118.38-.245.754-.38 1.125m.38-1.125a23.91 23.91 0 001.014-5.395m0-3.46c.495.413.811 1.035.811 1.73 0 .695-.316 1.317-.811 1.73m0-3.46a24.347 24.347 0 010 3.46" />
+                            </svg>
+                        </div>
+                        <div class="text-2xl md:text-3xl font-extrabold text-white tracking-tight" id="stat-ads">0</div>
+                        <div class="text-xs font-medium text-gray-500 mt-1">Ad Impressions</div>
+                    </div>
+
+                    <div
+                        class="relative overflow-hidden bg-panel-card border border-panel-border rounded-2xl p-4 md:p-5 hover:border-sky-500/30 hover:shadow-lg hover:shadow-sky-500/5 transition-all duration-300 group">
+                        <div class="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-sky-500 to-blue-500">
+                        </div>
+                        <div
+                            class="w-10 h-10 mb-3 rounded-xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <svg class="w-5 h-5 text-sky-400" fill="none" stroke="currentColor" stroke-width="1.8"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+                            </svg>
+                        </div>
+                        <div class="text-2xl md:text-3xl font-extrabold text-white tracking-tight" id="stat-online">0
+                        </div>
+                        <div class="text-xs font-medium text-gray-500 mt-1">Online Now</div>
+                    </div>
+
+                    <div
+                        class="relative overflow-hidden bg-panel-card border border-panel-border rounded-2xl p-4 md:p-5 hover:border-fuchsia-500/30 hover:shadow-lg hover:shadow-fuchsia-500/5 transition-all duration-300 group">
+                        <div
+                            class="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-fuchsia-500 to-pink-500">
+                        </div>
+                        <div
+                            class="w-10 h-10 mb-3 rounded-xl bg-fuchsia-500/10 border border-fuchsia-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <svg class="w-5 h-5 text-fuchsia-400" fill="none" stroke="currentColor" stroke-width="1.8"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />
+                            </svg>
+                        </div>
+                        <div class="text-2xl md:text-3xl font-extrabold text-white tracking-tight" id="stat-sessions">0
+                        </div>
+                        <div class="text-xs font-medium text-gray-500 mt-1">Sessions</div>
+                    </div>
+
+                    <div
+                        class="relative overflow-hidden bg-panel-card border border-panel-border rounded-2xl p-4 md:p-5 hover:border-yellow-500/30 hover:shadow-lg hover:shadow-yellow-500/5 transition-all duration-300 group">
+                        <div
+                            class="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-yellow-500 to-orange-400">
+                        </div>
+                        <div
+                            class="w-10 h-10 mb-3 rounded-xl bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <svg class="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" stroke-width="1.8"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" />
+                            </svg>
+                        </div>
+                        <div class="text-2xl md:text-3xl font-extrabold text-white tracking-tight" id="stat-sites">0
+                        </div>
+                        <div class="text-xs font-medium text-gray-500 mt-1">Registered Sites</div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- ── CHARTS ── -->
+            <section>
+                <h2 class="text-xs font-bold text-gray-500 uppercase tracking-[0.15em] mb-4">Trends — Last 30 Days</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                    <!-- Line chart (2/3) -->
+                    <div class="lg:col-span-2 bg-panel-card border border-panel-border rounded-2xl p-5 md:p-6">
+                        <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+                            <h3 class="text-sm font-semibold text-white">Event Trends</h3>
+                            <div class="flex gap-4 text-xs text-gray-400">
+                                <span class="flex items-center gap-1.5"><span
+                                        class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span>Views</span>
+                                <span class="flex items-center gap-1.5"><span
+                                        class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>Downloads</span>
+                                <span class="flex items-center gap-1.5"><span
+                                        class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>Ads</span>
+                            </div>
+                        </div>
+                        <div class="relative h-[260px] md:h-[300px]"><canvas id="dailyChart"></canvas></div>
+                    </div>
+                    <!-- Doughnut chart (1/3) -->
+                    <div class="bg-panel-card border border-panel-border rounded-2xl p-5 md:p-6">
+                        <h3 class="text-sm font-semibold text-white mb-5">Event Distribution</h3>
+                        <div class="relative h-[260px] md:h-[300px]"><canvas id="doughnutChart"></canvas></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ── SITES TABLE ── -->
+            <section>
+                <h2 class="text-xs font-bold text-gray-500 uppercase tracking-[0.15em] mb-4">Sites Overview</h2>
+                <div class="bg-panel-card border border-panel-border rounded-2xl overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table id="sites-table" class="w-full text-left min-w-[800px]">
+                            <thead>
+                                <tr class="bg-white/[0.02]">
+                                    <th
+                                        class="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-panel-border">
+                                        Site</th>
+                                    <th
+                                        class="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-panel-border">
+                                        Views</th>
+                                    <th
+                                        class="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-panel-border">
+                                        Downloads</th>
+                                    <th
+                                        class="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-panel-border">
+                                        Ad Impressions</th>
+                                    <th
+                                        class="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-panel-border">
+                                        Sessions</th>
+                                    <th
+                                        class="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-panel-border">
+                                        Live Users</th>
+                                    <th
+                                        class="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-panel-border">
+                                        Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="sites-tbody">
+                                <tr>
+                                    <td colspan="7" class="text-center text-gray-600 py-12">Loading sites…</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ── BOTTOM: HOURLY + SESSIONS ── -->
+            <section class="grid grid-cols-1 xl:grid-cols-2 gap-4">
+                <div>
+                    <h2 class="text-xs font-bold text-gray-500 uppercase tracking-[0.15em] mb-4">Hourly Activity — Last
+                        24h</h2>
+                    <div class="bg-panel-card border border-panel-border rounded-2xl p-5 md:p-6">
+                        <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+                            <h3 class="text-sm font-semibold text-white">Views & Downloads</h3>
+                            <div class="flex gap-4 text-xs text-gray-400">
+                                <span class="flex items-center gap-1.5"><span
+                                        class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span>Views</span>
+                                <span class="flex items-center gap-1.5"><span
+                                        class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>Downloads</span>
+                            </div>
+                        </div>
+                        <div class="relative h-[250px]"><canvas id="hourlyChart"></canvas></div>
+                    </div>
+                </div>
+                <div>
+                    <h2 class="text-xs font-bold text-gray-500 uppercase tracking-[0.15em] mb-4">Recent Sessions</h2>
+                    <div class="bg-panel-card border border-panel-border rounded-2xl overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table id="sessions-table" class="w-full text-left min-w-[600px]">
+                                <thead>
+                                    <tr class="bg-white/[0.02]">
+                                        <th
+                                            class="px-5 py-3.5 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-panel-border">
+                                            Session</th>
+                                        <th
+                                            class="px-5 py-3.5 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-panel-border">
+                                            Site</th>
+                                        <th
+                                            class="px-5 py-3.5 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-panel-border">
+                                            IP</th>
+                                        <th
+                                            class="px-5 py-3.5 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-panel-border">
+                                            Category</th>
+                                        <th
+                                            class="px-5 py-3.5 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-panel-border">
+                                            Last Active</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="sessions-tbody">
+                                    <tr>
+                                        <td colspan="5" class="text-center text-gray-600 py-12">Loading sessions…</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" role="status" aria-live="polite"
+        class="fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-3.5 bg-panel-card border border-panel-border rounded-xl shadow-2xl text-sm font-medium text-white transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+        <span id="toast-text">Notification</span>
+    </div>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+
+    <!-- Sidebar toggle -->
+    <script>
+        function toggleSidebar() {
+            const sb = document.getElementById('sidebar');
+            const ov = document.getElementById('sidebar-overlay');
+            sb.classList.toggle('sidebar-open');
+            ov.classList.toggle('hidden');
+        }
+    </script>
+
+    <!-- Dashboard app.js -->
+    <script src="/static/js/app.js"></script>
+</body>
+
+</html>
