@@ -1,17 +1,22 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flask_cors import CORS
 from functools import wraps
+from dotenv import load_dotenv
 from utils.db import initialize_database
 from routes.analytics_routes import analytics_bp
 from routes.dashboard_routes import dashboard_bp
 import os
+import secrets
+
+# Load .env BEFORE accessing any env vars
+load_dotenv()
 
 # ── Hardcoded admin credentials ──
 ADMIN_EMAIL    = "admin@freedownloader.top"
 ADMIN_PASSWORD = "@freedownloader"
 
 app = Flask(__name__)
-app.secret_key = os.getenv("SECRET_KEY", "analytics_dev_key")
+app.secret_key = os.getenv("SECRET_KEY") or secrets.token_hex(32)
 
 # Allow all origins (tighten in production)
 CORS(app, resources={r"/api/*": {"origins": "*"}})

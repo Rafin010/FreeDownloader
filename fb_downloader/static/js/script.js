@@ -102,19 +102,16 @@
         }
 
 
-    // ড্রপডাউন পরিবর্তন হলে গুগল ট্রান্সলেটরকে ট্রিগার করার ফাংশন
     function changeLanguage(langCode) {
         var selectField = document.querySelector("select.goog-te-combo");
         if(selectField) {
             selectField.value = langCode;
             selectField.dispatchEvent(new Event('change'));
         } else {
-            // যদি গুগল ট্রান্সলেটর লোড হতে একটু সময় নেয়
             setTimeout(function() { changeLanguage(langCode); }, 500);
         }
     }
 
-    // বাটনে ক্লিক করলে ড্রপডাউন বাংলা সিলেক্ট করবে এবং ট্রান্সলেট করবে
     function translateToBangla() {
         var selector = document.getElementById('global-lang-selector');
         selector.value = 'bn';

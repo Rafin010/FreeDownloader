@@ -2,7 +2,6 @@ from flask import Flask, render_template
 
 app = Flask(__name__)
 
-# কার্ড ডেটা এবং ব্র্যান্ডের অফিশিয়াল হোভার কালার লজিক
 cards_data = [
     {
         "title": "Facebook Video Downloader",
@@ -39,13 +38,13 @@ cards_data = [
         "hover_bg": "group-hover:bg-[#111827]",
         "shadow": "hover:shadow-[0_0_40px_rgba(99,102,241,0.5)] border-white/10 group-hover:border-[#6366f1]"
     },
-    {
-        "title": "Adult Video Downloader",
-        "url": "https://pron.freedownloader.top",
-        "img": "https://i.ibb.co.com/m5s75XvW/Porn.jpg",
-        "hover_bg": "group-hover:bg-[#000000]",
-        "shadow": "hover:shadow-[0_0_40px_rgba(249,115,22,0.5)] border-white/10 group-hover:border-[#f97316]"
-    }
+    # {
+    #     "title": "",
+    #     "url": "https://pron.freedownloader.top",
+    #     "img": "",
+    #     "hover_bg": "group-hover:bg-[#000000]",
+    #     "shadow": "hover:shadow-[0_0_40px_rgba(249,115,22,0.5)] border-white/10 group-hover:border-[#f97316]"
+    # }
 ]
 
 @app.route('/')

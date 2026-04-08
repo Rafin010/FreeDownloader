@@ -274,3 +274,76 @@ def recent_sessions():
         r['created_at']  = str(r['created_at'])
         r['last_active'] = str(r['last_active'])
     return jsonify(rows)
+
+
+# ─────────────────────────────────────────────
+# GET /api/dashboard/cookie-stats
+# Cookie-based user tracking analytics
+# ─────────────────────────────────────────────
+@dashboard_bp.route('/cookie-stats', methods=['GET'])
+def cookie_stats():
+    conn = get_connection()
+    if not conn:
+        return jsonify({"error": "Database unavailable"}), 500
+    cursor = conn.cursor(dictionary=True)
+
+    # Total unique tracked users
+    cursor.execute("SELECT COUNT(*) AS total FROM user_cookies")
+    total_users = cursor.fetchone()['total']
+
+    # Users active in last 24h
+    cursor.execute("""
+        SELECT COUNT(*) AS active FROM user_cookies
+        WHERE last_seen >= NOW() - INTERVAL 24 HOUR
+    """)
+    active_24h = cursor.fetchone()['active']
+
+    # Users active in last 7 days
+    cursor.execute("""
+        SELECT COUNT(*) AS active FROM user_cookies
+        WHERE last_seen >= NOW() - INTERVAL 7 DAY
+    """)
+    active_7d = cursor.fetchone()['active']
+
+    # Top users by downloads
+    cursor.execute("""
+        SELECT cookie_id, total_views, total_downloads, preferences,
+               first_seen, last_seen
+        FROM user_cookies
+        ORDER BY total_downloads DESC
+        LIMIT 20
+    """)
+    top_users = cursor.fetchall()
+
+    # Recent users
+    cursor.execute("""
+        SELECT cookie_id, total_views, total_downloads, preferences,
+               first_seen, last_seen
+        FROM user_cookies
+        ORDER BY last_seen DESC
+        LIMIT 50
+    """)
+    recent_users = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    # Convert datetimes and parse preferences
+    import json
+    for user_list in [top_users, recent_users]:
+        for u in user_list:
+            u['first_seen'] = str(u['first_seen'])
+            u['last_seen']  = str(u['last_seen'])
+            if u.get('preferences') and isinstance(u['preferences'], str):
+                try:
+                    u['preferences'] = json.loads(u['preferences'])
+                except (json.JSONDecodeError, TypeError):
+                    u['preferences'] = {}
+
+    return jsonify({
+        "total_tracked_users": total_users,
+        "active_24h":          active_24h,
+        "active_7d":           active_7d,
+        "top_users":           top_users,
+        "recent_users":        recent_users
+    })

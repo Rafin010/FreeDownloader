@@ -6,14 +6,11 @@ import re
 from flask import Flask, render_template, request, jsonify, send_file, make_response
 import yt_dlp
 
-# ফ্লাস্ক অ্যাপ ইনিশিয়ালাইজেশন
 app = Flask(__name__)
 
-# সাময়িক ফাইল রাখার ফোল্ডার
 DOWNLOAD_DIR = 'downloads'
 os.makedirs(DOWNLOAD_DIR, exist_ok=True)
 
-# কতক্ষণ পর ডিলিট হবে (সেকেন্ডে) - যেমন ১০ মিনিট = ৬০০ সেকেন্ড
 FILE_EXPIRY_TIME = 600 
 
 def delete_file_delayed(filepath, delay=300):
@@ -39,7 +36,6 @@ def cleanup_old_files():
         if os.path.exists(DOWNLOAD_DIR):
             for f in os.listdir(DOWNLOAD_DIR):
                 file_path = os.path.join(DOWNLOAD_DIR, f)
-                # ফাইলের বয়স চেক করা হচ্ছে
                 if os.stat(file_path).st_mtime < now - FILE_EXPIRY_TIME:
                     try:
                         if os.path.isfile(file_path):
@@ -48,10 +44,8 @@ def cleanup_old_files():
                     except Exception as e:
                         print(f"Error deleting file {f}: {e}")
         
-        # প্রতি ৫ মিনিট পর পর চেক করবে
         time.sleep(300) 
 
-# ব্যাকগ্রাউন্ড থ্রেড শুরু করা যাতে মেইন অ্যাপ চলতে থাকে
 cleanup_thread = threading.Thread(target=cleanup_old_files, daemon=True)
 cleanup_thread.start()        
 
@@ -67,19 +61,16 @@ def get_info():
     if not video_url:
         return jsonify({"error": "No URL provided!"}), 400
 
-    # YouTube URL Validation Regex (Supports regular videos, shorts, youtu.be links)
     yt_regex = r'(https?://(?:www\.)?(?:youtube\.com|youtu\.be)/.+)'
     if not re.match(yt_regex, video_url):
         return jsonify({"error": "Sorry, this downloader only supports YouTube videos and Shorts."}), 400
 
-    # Headers to bypass potential 403 Forbidden errors
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
         "Referer": "https://www.youtube.com/",
         "Accept-Language": "en-US,en;q=0.9"
     }
 
-    # yt-dlp অপশন আপডেট করা হয়েছে (Cookies & Client Impersonation)
     ydl_opts = {
         'quiet': True,
         'no_warnings': True,
@@ -146,7 +137,6 @@ def download_video():
         "Referer": "https://www.youtube.com/"
     }
 
-    # yt-dlp অপশন আপডেট করা হয়েছে (Cookies & Client Impersonation)
     ydl_opts = {
         # Select exact resolution or fallback to the closest best below it
         'format': f'bestvideo[height={res_height}]+bestaudio/bestvideo[height<={res_height}]+bestaudio/best',

@@ -6,14 +6,14 @@ import re
 from flask import Flask, render_template, request, jsonify, send_file
 import yt_dlp
 
-# ফ্লাস্ক অ্যাপ ইনিশিয়ালাইজেশন (এটি আগে নিচে ছিল, যা একটি এরর তৈরি করতো)
+
 app = Flask(__name__)
 
-# সাময়িক ফাইল রাখার ফোল্ডার
+
 DOWNLOAD_DIR = 'temp_videos'
 os.makedirs(DOWNLOAD_DIR, exist_ok=True)
 
-# কতক্ষণ পর ডিলিট হবে (সেকেন্ডে) - যেমন ১০ মিনিট = ৬০০ সেকেন্ড
+
 FILE_EXPIRY_TIME = 600 
 
 def delete_file_delayed(filepath, delay=300):
@@ -39,7 +39,6 @@ def cleanup_old_files():
         if os.path.exists(DOWNLOAD_DIR):
             for f in os.listdir(DOWNLOAD_DIR):
                 file_path = os.path.join(DOWNLOAD_DIR, f)
-                # ফাইলের বয়স চেক করা হচ্ছে
                 if os.stat(file_path).st_mtime < now - FILE_EXPIRY_TIME:
                     try:
                         if os.path.isfile(file_path):
@@ -48,10 +47,8 @@ def cleanup_old_files():
                     except Exception as e:
                         print(f"Error deleting file {f}: {e}")
         
-        # প্রতি ৫ মিনিট পর পর চেক করবে
         time.sleep(300) 
 
-# ব্যাকগ্রাউন্ড থ্রেড শুরু করা যাতে মেইন অ্যাপ চলতে থাকে
 cleanup_thread = threading.Thread(target=cleanup_old_files, daemon=True)
 cleanup_thread.start()        
 
@@ -83,7 +80,7 @@ def get_info():
         'quiet': True,
         'no_warnings': True,
         'http_headers': headers,
-        # 'cookiefile': 'cookies.txt' # আনকমেন্ট করুন যদি প্রাইভেট ভিডিও বা লগিন এরর আসে
+        # 'cookiefile': 'cookies.txt' 
     }
 
     try:
@@ -98,10 +95,9 @@ def get_info():
             resolutions = set()
             for f in formats:
                 height = f.get('height')
-                if height and height >= 240: # Filter out tiny audio-only metadata formats
+                if height and height >= 240: 
                     resolutions.add(height)
             
-            # Sort resolutions descending (e.g., 1080, 720, 480)
             sorted_res = sorted(list(resolutions), reverse=True)
             
             available_formats = []
@@ -137,21 +133,19 @@ def download_video():
         "Referer": "https://www.instagram.com/"
     }
 
-    # Request the best video up to requested height + best audio, merge into MP4
     ydl_opts = {
         'format': f'bestvideo[height<={res_height}]+bestaudio/best',
         'merge_output_format': 'mp4',
         'outtmpl': filepath,
         'quiet': True,
         'http_headers': headers,
-        # 'cookiefile': 'cookies.txt' # আনকমেন্ট করুন যদি প্রাইভেট ভিডিও বা লগিন এরর আসে
+        # 'cookiefile': 'cookies.txt' 
     }
 
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             ydl.download([video_url])
 
-        # Trigger auto-delete in 5 minutes
         delete_file_delayed(filepath, delay=300)
 
         return send_file(
@@ -162,7 +156,6 @@ def download_video():
         )
 
     except Exception as e:
-        # If download fails, ensure cleanup
         if os.path.exists(filepath):
             os.remove(filepath)
         return f"Download Failed: {str(e)}", 500

@@ -1,13 +1,14 @@
 /**
  * ╔══════════════════════════════════════════════════════════════╗
- * ║           Free Downloader — Analytics Tracker v1.0          ║
+ * ║           Free Downloader — Analytics Tracker v2.0          ║
  * ║  Drop this script on any page to start tracking instantly.  ║
  * ║                                                              ║
  * ║  Usage:                                                      ║
  * ║  <script                                                     ║
  * ║    src="https://YOUR_BACKEND/static/tracker.js"             ║
- * ║    data-site-id="https://your-site.com"                     ║
+ * ║    data-site-id="tiktok_downloader"                         ║
  * ║    data-category="general"                                   ║
+ * ║    data-backend-url="https://analytics.freedownloader.top"  ║
  * ║  ></script>                                                  ║
  * ╚══════════════════════════════════════════════════════════════╝
  */
@@ -16,14 +17,68 @@
     'use strict';
 
     // ── Config ──────────────────────────────────────────────────
-    const BACKEND_URL  = 'http://localhost:5000';   // change to deployed URL
+    const scriptTag  = document.currentScript ||
+        document.querySelector('script[data-site-id]');
+
+    // Backend URL: read from data-attribute, fallback to same origin
+    const BACKEND_URL  = scriptTag?.dataset?.backendUrl || window.location.origin;
     const PING_INTERVAL = 30_000;                   // 30 s heartbeat
 
     // ── Derive site-id from script tag attribute ─────────────────
-    const scriptTag  = document.currentScript ||
-        document.querySelector('script[data-site-id]');
     const WEBSITE_ID = scriptTag?.dataset?.siteId  || window.location.origin;
     const CATEGORY   = scriptTag?.dataset?.category || 'general';
+
+    // ── Cookie Helpers ──────────────────────────────────────────
+    function setCookie(name, value, days) {
+        let expires = '';
+        if (days) {
+            const date = new Date();
+            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+            expires = '; expires=' + date.toUTCString();
+        }
+        // Use SameSite=Lax for cross-subdomain compatibility
+        document.cookie = name + '=' + encodeURIComponent(value) + expires + '; path=/; SameSite=Lax';
+    }
+
+    function getCookie(name) {
+        const nameEQ = name + '=';
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            let c = cookies[i].trim();
+            if (c.indexOf(nameEQ) === 0) {
+                return decodeURIComponent(c.substring(nameEQ.length));
+            }
+        }
+        return null;
+    }
+
+    // ── Persistent User ID (Cookie — 1 year) ────────────────────
+    const UID_COOKIE = 'fdl_uid';
+    let userId = getCookie(UID_COOKIE);
+    if (!userId) {
+        userId = 'uid_' + Math.random().toString(36).slice(2, 10) + '_' + Date.now();
+        setCookie(UID_COOKIE, userId, 365);
+    }
+
+    // ── Category Preferences Cookie ─────────────────────────────
+    const PREFS_COOKIE = 'fdl_prefs';
+    function getPreferences() {
+        const raw = getCookie(PREFS_COOKIE);
+        if (!raw) return {};
+        try { return JSON.parse(raw); } catch(e) { return {}; }
+    }
+
+    function updatePreferences(category, eventType) {
+        const prefs = getPreferences();
+        if (!prefs[category]) {
+            prefs[category] = { views: 0, downloads: 0, last_visit: null };
+        }
+        if (eventType === 'page_view') prefs[category].views++;
+        if (eventType === 'download') prefs[category].downloads++;
+        prefs[category].last_visit = new Date().toISOString();
+        setCookie(PREFS_COOKIE, JSON.stringify(prefs), 365);
+        return prefs;
+    }
 
     // ── Session ID (persisted in localStorage) ───────────────────
     const SESSION_KEY = '_fdl_session';
@@ -45,19 +100,25 @@
     }
 
     function sendEvent(eventType, extra = {}) {
+        // Update category preferences
+        const prefs = updatePreferences(CATEGORY, eventType);
+
         return post('/api/event', {
-            session_id: sessionId,
-            website_id: WEBSITE_ID,
-            event_type: eventType,
-            category:   CATEGORY,
-            meta:       extra
+            session_id:  sessionId,
+            website_id:  WEBSITE_ID,
+            event_type:  eventType,
+            category:    CATEGORY,
+            cookie_id:   userId,
+            preferences: prefs,
+            meta:        extra
         });
     }
 
     function sendPing() {
         return post('/api/ping', {
             session_id: sessionId,
-            website_id: WEBSITE_ID
+            website_id: WEBSITE_ID,
+            cookie_id:  userId
         });
     }
 
@@ -126,6 +187,11 @@
     }
 
     // Expose for manual use: FDLTracker.track('download', {...})
-    window.FDLTracker = { track: sendEvent, ping: sendPing };
+    window.FDLTracker = {
+        track: sendEvent,
+        ping: sendPing,
+        getUserId: function() { return userId; },
+        getPreferences: getPreferences
+    };
 
 })();

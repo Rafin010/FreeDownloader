@@ -1,5 +1,5 @@
 import mysql.connector
-from mysql.connector import Error
+from mysql.connector import Error, pooling
 from dotenv import load_dotenv
 import os
 
@@ -10,9 +10,38 @@ DB_USER = os.getenv("DB_USER", "root")
 DB_PASSWORD = os.getenv("DB_PASSWORD", "")
 DB_NAME = os.getenv("DB_NAME", "downloader_analytics")
 
+# ── Connection Pool ───────────────────────────────────────────
+_pool = None
+
+
+def _get_pool():
+    """Lazy-init a connection pool (5 connections by default)."""
+    global _pool
+    if _pool is None:
+        try:
+            _pool = pooling.MySQLConnectionPool(
+                pool_name="fdl_pool",
+                pool_size=5,
+                pool_reset_session=True,
+                host=DB_HOST,
+                user=DB_USER,
+                password=DB_PASSWORD,
+                database=DB_NAME
+            )
+        except Error as e:
+            print(f"[DB POOL ERROR] {e}")
+            return None
+    return _pool
+
 
 def get_connection(use_db=True):
+    """Get a connection — from pool if available, else direct."""
     try:
+        if use_db:
+            pool = _get_pool()
+            if pool:
+                return pool.get_connection()
+        # Fallback for use_db=False (database creation) or pool failure
         params = dict(host=DB_HOST, user=DB_USER, password=DB_PASSWORD)
         if use_db:
             params["database"] = DB_NAME
@@ -81,10 +110,12 @@ def initialize_database():
             city        VARCHAR(100),
             device_type VARCHAR(100),
             category    VARCHAR(100) DEFAULT 'general',
+            cookie_id   VARCHAR(255),
             created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             last_active TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             INDEX idx_session (session_id),
-            INDEX idx_website (website_id)
+            INDEX idx_website (website_id),
+            INDEX idx_cookie (cookie_id)
         )
     """)
     print("  [OK] Table 'sessions' ready.")
@@ -97,12 +128,14 @@ def initialize_database():
             website_id  VARCHAR(255) NOT NULL,
             event_type  VARCHAR(50)  NOT NULL,
             category    VARCHAR(100),
+            cookie_id   VARCHAR(255),
             meta        TEXT,
             created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (session_id) REFERENCES sessions(session_id) ON DELETE CASCADE,
             INDEX idx_ev_website (website_id),
             INDEX idx_ev_type (event_type),
-            INDEX idx_ev_date (created_at)
+            INDEX idx_ev_date (created_at),
+            INDEX idx_ev_cookie (cookie_id)
         )
     """)
     print("  [OK] Table 'events' ready.")
@@ -121,6 +154,22 @@ def initialize_database():
     """)
     print("  [OK] Table 'active_users' ready.")
 
+    # ── user_cookies (NEW — for cookie-based tracking) ────────────
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS user_cookies (
+            id          INT AUTO_INCREMENT PRIMARY KEY,
+            cookie_id   VARCHAR(255) UNIQUE NOT NULL,
+            preferences JSON,
+            total_views     INT DEFAULT 0,
+            total_downloads INT DEFAULT 0,
+            first_seen  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            last_seen   TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            INDEX idx_uc_cookie (cookie_id),
+            INDEX idx_uc_last_seen (last_seen)
+        )
+    """)
+    print("  [OK] Table 'user_cookies' ready.")
+
     # ── Seed default websites ─────────────────────────────────────
     for site in DEFAULT_SITES:
         try:
@@ -134,6 +183,10 @@ def initialize_database():
     conn.commit()
     cursor.close()
     conn.close()
+
+    # Reset pool so it connects to the now-initialized DB
+    global _pool
+    _pool = None
 
     print("=" * 50)
     print("  Database Initialized Successfully!")

@@ -1,0 +1,37 @@
+এই খানে যে সবগুলো ওয়েব সাইট আছে এই সবগুলো ওয়েব সাইট এর জন্য এক টা বাকেন্ড এই তৈরি করে দিন। 
+
+যা যা থকাবে- লিয়াভ কত জন ভিডিটর আছে এখন । এবং লাস্ট মাসের মোট ভিউস কত। এবং এড মপ্লেসন। 
+
+সবগুলো হবে কেটা গরি বেইস মেনে ইউরে আথবা সাইট ওয়েব সাইট গুলোর নাম থকেবে এবং অই গুলোতে ক্লিক কর্লে তাদের সম্পূর্ন ডিটেলস দেখাবে।
+
+আর কত জন ডাউনলোড বাটনে ক্লিক করে ছে সেটাও যাতে কাউন্ট হয়। তাহলয়ে আমি বোযতে পারব কত ইউজার মর আমার সাইট ইউজ করে.... ভিডিও  ডাউনলোড করেছে।।
+
+
+ আর ডেশ্যবর্ডে সকল ওয়েব সাইট এর ডিটেল দেখাবে একসাত মানে টোটাল হিসাব টা দেখাবে সকল ওয়েব সাইট টোটাল ভিউ লাস্ট মান্ত ভিঊ এড ইমপ্লেশন। লোকেশ, এইজ এভারেজ, মানে সমস্ত কিছু ।
+
+এবং কুকিজ সেইভ কর্বে মানে কালেক্ট করবয়ে যাতে ইউজারের তার কেটাগরি বেইজ অ্যাাড দেখাতে পারে।
+
+এবং mySQL Database এড করে দিন।
+
+এইটি প্রফেশনালদের মত করে দেবেন যাতে ওয়েবসাইট ফাস্ট হয়, এবং ইউজার এক্সপ্রিয়েন্স ভাল হয় এবং কড যাতে ক্রেশ নাহ করেয়।
+
+ফোলি মোবাইল রেন্সপনসিভ করে দিন...... 
+
+
+
+Centralized Analytics Backend Tasks
+[/] Initialize Python Flask backend project structure
+[ ] Create requirements.txt
+[ ] Create app.py
+[ ] Set up utils/db.py for MySQL
+[ ] Implement Analytics APIs (routes/analytics_routes.py)
+[ ] Ping/Heartbeat endpoint
+[ ] Event tracking endpoint (views, downloads, ads)
+[ ] Implement Dashboard APIs (routes/dashboard_routes.py)
+[ ] Fetch aggregated views, downloads, online users
+[ ] Create the Javascript Tracker (static/tracker.js)
+[ ] Build the Premium Admin Dashboard
+[ ] Create templates/dashboard.html
+[ ] Create static/css/style.css
+[ ] Create static/js/app.js (Chart.js integration)
+[ ] Manual Testing & Verification
