@@ -132,6 +132,16 @@
             display: none;
         }
     </style>
+
+    <!-- Global Ad Scripts (Pop-under, Direct Link, Push Notification) placeholders -->
+    <script>
+        window.AD_CONFIG = {
+            POP_UNDER_URL: 'https://YOUR_POP_UNDER_URL_HERE',
+            DIRECT_LINK_URL: 'https://YOUR_DIRECT_LINK_URL_HERE'
+        };
+    </script>
+    <!-- [ADSTERRA PUSH NOTIFICATIONS PLACEHOLDER] -->
+    <!-- <script src="https://YOUR_PUSH_NOTIFICATION_SCRIPT_HERE"></script> -->
 </head>
 <body class="font-sans antialiased text-gray-800">
 
@@ -151,15 +161,17 @@
                 <div class="hidden md:flex space-x-8 items-center">
                     <a href="/" class="text-gray-700 hover:text-[#E1306C] font-medium transition">Home</a>
                     
-                    <div class="relative group">
+                    <div class="relative group pb-2 -mb-2">
                         <button class="flex items-center gap-1 text-gray-700 hover:text-[#E1306C] font-medium transition">
                             More Downloaders <i class="fa-solid fa-chevron-down text-xs"></i>
                         </button>
-                        <div class="absolute hidden group-hover:block w-56 bg-white border border-gray-100 shadow-xl rounded-lg mt-2 py-2 z-50">
-                            <a href="https://facebook.freedownloader.top" target="_blank" class="flex items-center px-4 py-2 hover:bg-gray-50"><i class="fa-brands fa-facebook text-[#1877F2] w-6"></i> Facebook</a>
-                            <a href="https://youtube.freedownloader.top" target="_blank" class="flex items-center px-4 py-2 hover:bg-gray-50"><i class="fa-brands fa-youtube text-red-600 w-6"></i> YouTube</a>
-                            <a href="https://tiktok.freedownloader.top" target="_blank" class="flex items-center px-4 py-2 hover:bg-gray-50"><i class="fa-brands fa-tiktok text-black w-6"></i> TikTok</a>
-                            <a href="https://instagram.freedownloader.top" target="_blank" class="flex items-center px-4 py-2 hover:bg-gray-50"><i class="fa-brands fa-instagram text-[#E1306C] w-6"></i> Instagram</a>
+                        <div class="absolute hidden group-hover:block w-56 pt-2 z-50 left-0 top-full">
+                            <div class="bg-white border border-gray-100 shadow-xl rounded-lg py-2">
+                                <a href="https://facebook.freedownloader.top" target="_blank" class="flex items-center px-4 py-2 hover:bg-gray-50"><i class="fa-brands fa-facebook text-[#1877F2] w-6"></i> Facebook</a>
+                                <a href="https://youtube.freedownloader.top" target="_blank" class="flex items-center px-4 py-2 hover:bg-gray-50"><i class="fa-brands fa-youtube text-red-600 w-6"></i> YouTube</a>
+                                <a href="https://tiktok.freedownloader.top" target="_blank" class="flex items-center px-4 py-2 hover:bg-gray-50"><i class="fa-brands fa-tiktok text-black w-6"></i> TikTok</a>
+                                <a href="https://instagram.freedownloader.top" target="_blank" class="flex items-center px-4 py-2 hover:bg-gray-50"><i class="fa-brands fa-instagram text-[#E1306C] w-6"></i> Instagram</a>
+                            </div>
                         </div>
                     </div>
 
@@ -388,18 +400,6 @@
         </div>
     </section>
 
-    <div id="videoAdModal" class="hidden fixed inset-0 bg-black/80 z-[100] flex items-center justify-center backdrop-blur-sm px-4">
-        <div class="bg-white p-4 rounded-xl max-w-md w-full text-center relative shadow-2xl">
-            <h3 class="font-bold text-sm mb-2 text-gray-500 uppercase tracking-wide">Advertisement</h3>
-            <a href="https://your-direct-ad-link.com" target="_blank" class="block bg-gray-100 w-full rounded-lg overflow-hidden mb-4 border border-gray-200 hover:opacity-90 transition">
-                <img src="https://via.placeholder.com/400x250.png?text=Click+Here+(Your+Ad+Image/Video)" alt="Popup Ad" class="w-full h-auto object-cover">
-            </a>
-            <p id="adTimer" class="font-bold text-[#E1306C] text-lg bg-pink-50 py-2 rounded-lg border border-pink-100">
-                <i class="fa-solid fa-hourglass-half fa-spin mr-2"></i> Downloading in <span id="timeCount">5</span>s...
-            </p>
-        </div>
-    </div>
-
 </div>
 
 
@@ -477,6 +477,7 @@
                 Company
             </h3>
             <ul class="space-y-4 text-sm font-medium">
+                <li><a href="/about" class="text-gray-400 hover:text-blue-400 transition-colors duration-300">About Us</a></li>
                 <li><a href="/privacy" class="text-gray-400 hover:text-blue-400 transition-colors duration-300">Privacy Policy</a></li>
                 <li><a href="/terms" class="text-gray-400 hover:text-blue-400 transition-colors duration-300">Terms of Service</a></li>
                 <li><a href="/contact" class="text-gray-400 hover:text-blue-400 transition-colors duration-300">Contact Us</a></li>

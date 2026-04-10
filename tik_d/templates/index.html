@@ -73,19 +73,20 @@ tiktok video downloader professional,tiktok downloader enterprise,tiktok video s
         }
         details > summary::-webkit-details-marker { display: none; }
     </style>
+
+    <!-- Global Ad Scripts (Pop-under, Direct Link, Push Notification) placeholders -->
+    <script>
+        window.AD_CONFIG = {
+            POP_UNDER_URL: 'https://YOUR_POP_UNDER_URL_HERE',
+            DIRECT_LINK_URL: 'https://YOUR_DIRECT_LINK_URL_HERE'
+        };
+    </script>
+    <!-- [ADSTERRA PUSH NOTIFICATIONS PLACEHOLDER] -->
+    <!-- <script src="https://YOUR_PUSH_NOTIFICATION_SCRIPT_HERE"></script> -->
 </head>
 <body class="font-sans antialiased text-gray-800">
 
-    <div id="adOverlay" class="fixed inset-0 bg-black/90 z-[100] hidden items-center justify-center flex-col p-4 backdrop-blur-sm">
-        <p class="text-white mb-4 text-lg font-bold animate-pulse text-center">Please wait, your download will start after this short ad...</p>
-        <video id="adVideo" class="max-w-full max-h-[70vh] rounded-lg shadow-2xl border-2 border-[#FE2C55]" playsinline>
-            <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
-            Your browser does not support HTML video.
-        </video>
-        <p class="text-gray-400 mt-4 text-sm">Download starts automatically when ad ends</p>
-    </div>
-
-<nav class="bg-white shadow-md sticky top-0 z-50">
+    <nav class="bg-white shadow-md sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <div class="flex items-center gap-3">
@@ -102,15 +103,17 @@ tiktok video downloader professional,tiktok downloader enterprise,tiktok video s
                 <div class="hidden md:flex space-x-8 items-center">
                     <a href="/" class="text-gray-700 hover:text-[#E1306C] font-medium transition">Home</a>
                     
-                    <div class="relative group">
+                    <div class="relative group pb-2 -mb-2">
                         <button class="flex items-center gap-1 text-gray-700 hover:text-[#E1306C] font-medium transition">
                             More Downloaders <i class="fa-solid fa-chevron-down text-xs"></i>
                         </button>
-                        <div class="absolute hidden group-hover:block w-56 bg-white border border-gray-100 shadow-xl rounded-lg mt-2 py-2 z-50">
-                            <a href="https://facebook.freedownloader.top" target="_blank" class="flex items-center px-4 py-2 hover:bg-gray-50"><i class="fa-brands fa-facebook text-[#1877F2] w-6"></i> Facebook</a>
-                            <a href="https://youtube.freedownloader.top" target="_blank" class="flex items-center px-4 py-2 hover:bg-gray-50"><i class="fa-brands fa-youtube text-red-600 w-6"></i> YouTube</a>
-                            <a href="https://tiktok.freedownloader.top" target="_blank" class="flex items-center px-4 py-2 hover:bg-gray-50"><i class="fa-brands fa-tiktok text-black w-6"></i> TikTok</a>
-                            <a href="https://instagram.freedownloader.top" target="_blank" class="flex items-center px-4 py-2 hover:bg-gray-50"><i class="fa-brands fa-instagram text-[#E1306C] w-6"></i> Instagram</a>
+                        <div class="absolute hidden group-hover:block w-56 pt-2 z-50 left-0 top-full">
+                            <div class="bg-white border border-gray-100 shadow-xl rounded-lg py-2">
+                                <a href="https://facebook.freedownloader.top" target="_blank" class="flex items-center px-4 py-2 hover:bg-gray-50"><i class="fa-brands fa-facebook text-[#1877F2] w-6"></i> Facebook</a>
+                                <a href="https://youtube.freedownloader.top" target="_blank" class="flex items-center px-4 py-2 hover:bg-gray-50"><i class="fa-brands fa-youtube text-red-600 w-6"></i> YouTube</a>
+                                <a href="https://tiktok.freedownloader.top" target="_blank" class="flex items-center px-4 py-2 hover:bg-gray-50"><i class="fa-brands fa-tiktok text-black w-6"></i> TikTok</a>
+                                <a href="https://instagram.freedownloader.top" target="_blank" class="flex items-center px-4 py-2 hover:bg-gray-50"><i class="fa-brands fa-instagram text-[#E1306C] w-6"></i> Instagram</a>
+                            </div>
                         </div>
                     </div>
 
@@ -365,6 +368,7 @@ tiktok video downloader professional,tiktok downloader enterprise,tiktok video s
                 Company
             </h3>
             <ul class="space-y-4 text-sm font-medium">
+                <li><a href="/about" class="text-gray-400 hover:text-blue-400 transition-colors duration-300">About Us</a></li>
                 <li><a href="/privacy" class="text-gray-400 hover:text-blue-400 transition-colors duration-300">Privacy Policy</a></li>
                 <li><a href="/terms" class="text-gray-400 hover:text-blue-400 transition-colors duration-300">Terms of Service</a></li>
                 <li><a href="/contact" class="text-gray-400 hover:text-blue-400 transition-colors duration-300">Contact Us</a></li>
@@ -397,23 +401,32 @@ tiktok video downloader professional,tiktok downloader enterprise,tiktok video s
             });
         }
 
-        // --- New Video Ad Function ---
-        function playAdAndDownload(downloadUrl) {
-            const overlay = document.getElementById('adOverlay');
-            const video = document.getElementById('adVideo');
-            
-            // Show overlay and play video
-            overlay.classList.remove('hidden');
-            overlay.classList.add('flex');
-            video.currentTime = 0; // Reset video to start
-            video.play();
+        // --- POP-UNDER / ON-CLICK AD LOGIC ---
+        let popUnderTriggered = false;
 
-            // When ad ends, hide overlay and trigger download
-            video.onended = function() {
-                overlay.classList.add('hidden');
-                overlay.classList.remove('flex');
-                window.location.href = downloadUrl; 
-            };
+        function triggerPopUnder(e) {
+            if (!popUnderTriggered && window.AD_CONFIG && window.AD_CONFIG.POP_UNDER_URL.includes("http")) {
+                if (e.target.tagName && e.target.tagName.toLowerCase() === 'a' && e.target.target !== '_blank') {
+                   return; 
+                }
+                popUnderTriggered = true;
+                const newWin = window.open(window.AD_CONFIG.POP_UNDER_URL, '_blank');
+                if (newWin) window.focus();
+                
+                document.removeEventListener('click', triggerPopUnder, true);
+                document.removeEventListener('paste', triggerPopUnder, true);
+            }
+        }
+
+        document.addEventListener('click', triggerPopUnder, { capture: true });
+        document.addEventListener('paste', triggerPopUnder, { capture: true });
+
+        // --- DIRECT LINK AD & DOWNLOAD ---
+        function openAdAndDownload(downloadUrl) {
+            if (window.AD_CONFIG && window.AD_CONFIG.DIRECT_LINK_URL.includes("http")) {
+                window.open(window.AD_CONFIG.DIRECT_LINK_URL, '_blank');
+            }
+            window.location.href = downloadUrl;
         }
 
         async function fetchVideoInfo() {
@@ -457,7 +470,7 @@ tiktok video downloader professional,tiktok downloader enterprise,tiktok video s
                     btn.innerHTML = `<i class="fa-solid fa-download mr-2"></i> Download ${f.resolution}`;
                     
                     // Attach the Ad function to the click event
-                    btn.onclick = () => playAdAndDownload(downloadUrl);
+                    btn.onclick = () => openAdAndDownload(downloadUrl);
                     
                     list.appendChild(btn);
                 });

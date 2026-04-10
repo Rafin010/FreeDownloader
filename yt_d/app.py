@@ -3,17 +3,164 @@ import uuid
 import threading
 import time
 import re
+import logging
 from flask import Flask, render_template, request, jsonify, send_file, make_response, Response
 import yt_dlp
 import requests as http_requests
 
 app = Flask(__name__)
 
-DOWNLOAD_DIR = 'downloads'
+# ── Logging Setup ──────────────────────────────────────────────
+logging.basicConfig(
+    level=logging.INFO,
+    format='[%(asctime)s] %(levelname)s - %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S'
+)
+logger = logging.getLogger(__name__)
+
+# ── Paths ──────────────────────────────────────────────────────
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DOWNLOAD_DIR = os.path.join(BASE_DIR, 'downloads')
+COOKIES_FILE = os.path.join(BASE_DIR, 'cookies.txt')
 os.makedirs(DOWNLOAD_DIR, exist_ok=True)
 
 FILE_EXPIRY_TIME = 600 
 
+
+# ── Cookie Validation ─────────────────────────────────────────
+def validate_cookies():
+    """
+    Check if cookies.txt exists and contains authenticated YouTube cookies.
+    Logs clear warnings if cookies are missing or appear to be anonymous-only.
+    """
+    if not os.path.exists(COOKIES_FILE):
+        logger.warning(
+            "⚠️  cookies.txt NOT FOUND at: %s\n"
+            "   YouTube will likely block requests with 'Sign in to confirm you're not a bot'.\n"
+            "   → Export cookies from a logged-in YouTube browser session.\n"
+            "   → See deployment instructions for details.",
+            COOKIES_FILE
+        )
+        return False
+
+    try:
+        with open(COOKIES_FILE, 'r', encoding='utf-8', errors='ignore') as f:
+            content = f.read()
+        
+        # These cookies indicate an authenticated Google/YouTube session
+        auth_markers = ['LOGIN_INFO', 'SID', 'SSID', '__Secure-1PSID', '__Secure-3PSID']
+        found = [m for m in auth_markers if m in content]
+        
+        if not found:
+            logger.warning(
+                "⚠️  cookies.txt exists but contains NO authenticated session cookies.\n"
+                "   Found file at: %s\n"
+                "   Missing markers: %s\n"
+                "   → The file likely contains only anonymous visitor cookies (useless for bot bypass).\n"
+                "   → Re-export cookies while LOGGED INTO YouTube with a Google account.",
+                COOKIES_FILE, ', '.join(auth_markers)
+            )
+            return False
+        
+        logger.info(
+            "✅ cookies.txt loaded with authenticated session (found: %s)",
+            ', '.join(found)
+        )
+        return True
+    except Exception as e:
+        logger.error("❌ Failed to read cookies.txt: %s", e)
+        return False
+
+# Run validation on startup
+_cookies_valid = validate_cookies()
+
+
+# ── Error Classification ──────────────────────────────────────
+def classify_yt_error(error_msg):
+    """
+    Classify a yt-dlp error into a user-friendly message and log category.
+    Returns (user_message, log_level).
+    """
+    error_lower = error_msg.lower()
+    
+    # Bot / sign-in block
+    if 'sign in to confirm' in error_lower or 'bot' in error_lower:
+        logger.error(
+            "🚫 BOT BLOCK DETECTED — YouTube requires sign-in.\n"
+            "   Raw error: %s\n"
+            "   → Check if cookies.txt contains valid, non-expired authenticated cookies.\n"
+            "   → Re-export cookies from a freshly logged-in browser session.",
+            error_msg
+        )
+        return (
+            "YouTube is temporarily blocking our server due to high traffic. "
+            "Please try again in a few minutes. If the issue persists, the server admin "
+            "needs to refresh the authentication cookies."
+        )
+    
+    # Private / unavailable
+    if 'private video' in error_lower or 'video unavailable' in error_lower or 'is not available' in error_lower:
+        logger.warning("Video unavailable: %s", error_msg)
+        return "This video is private, deleted, or unavailable. Please check the URL."
+    
+    # Age restriction / login required
+    if 'age' in error_lower or 'login_required' in error_lower or 'age-restricted' in error_lower:
+        logger.warning("Age/login restricted: %s", error_msg)
+        return "This video is age-restricted or requires sign-in to view."
+    
+    # Geographic restriction
+    if 'geo' in error_lower or 'not available in your country' in error_lower:
+        logger.warning("Geo-restricted: %s", error_msg)
+        return "This video is not available in the server's region."
+    
+    # Copyright / takedown
+    if 'copyright' in error_lower or 'removed' in error_lower or 'terminated' in error_lower:
+        logger.warning("Copyright/removed: %s", error_msg)
+        return "This video has been removed due to copyright or a Terms of Service violation."
+
+    # Live stream
+    if 'live' in error_lower and 'not supported' in error_lower:
+        logger.warning("Live stream: %s", error_msg)
+        return "Live streams cannot be downloaded. Please wait until the stream ends."
+    
+    # Fallback
+    logger.error("Unclassified yt-dlp error: %s", error_msg)
+    return "Could not process this video. Please check the URL and try again."
+
+
+# ── yt-dlp Options Builder ────────────────────────────────────
+def get_base_ydl_opts():
+    """
+    Returns the base yt-dlp options shared across info extraction and downloading.
+    Includes cookie support, anti-bot headers, and throttling.
+    """
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+        "Referer": "https://www.youtube.com/",
+        "Accept-Language": "en-US,en;q=0.9",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    }
+
+    opts = {
+        'quiet': True,
+        'no_warnings': True,
+        'http_headers': headers,
+        'socket_timeout': 30,
+        # Throttle requests to reduce bot detection
+        'sleep_interval': 1,
+        'max_sleep_interval': 3,
+        # Use the web client player for better compatibility
+        'extractor_args': {'youtube': {'player_client': ['web']}},
+    }
+
+    # Only add cookiefile if the file actually exists
+    if os.path.exists(COOKIES_FILE):
+        opts['cookiefile'] = COOKIES_FILE
+    
+    return opts
+
+
+# ── File Cleanup ──────────────────────────────────────────────
 def delete_file_delayed(filepath, delay=300):
     """
     Background thread to delete the file after a delay (e.g., 5 minutes).
@@ -24,14 +171,14 @@ def delete_file_delayed(filepath, delay=300):
         try:
             if os.path.exists(filepath):
                 os.remove(filepath)
-                print(f"Auto-deleted: {filepath}")
+                logger.info("Auto-deleted: %s", filepath)
         except Exception as e:
-            print(f"Error deleting file {filepath}: {e}")
+            logger.error("Error deleting file %s: %s", filepath, e)
             
     threading.Thread(target=task, daemon=True).start()
 
 def cleanup_old_files():
-    """এই ফাংশনটি নির্দিষ্ট সময় পর পর ফোল্ডার চেক করে পুরনো ফাইল ডিলিট করবে"""
+    """Periodically check and delete old files from download directory"""
     while True:
         now = time.time()
         if os.path.exists(DOWNLOAD_DIR):
@@ -41,15 +188,17 @@ def cleanup_old_files():
                     try:
                         if os.path.isfile(file_path):
                             os.remove(file_path)
-                            print(f"Deleted old file: {f}")
+                            logger.info("Deleted old file: %s", f)
                     except Exception as e:
-                        print(f"Error deleting file {f}: {e}")
+                        logger.error("Error deleting file %s: %s", f, e)
         
         time.sleep(300) 
 
 cleanup_thread = threading.Thread(target=cleanup_old_files, daemon=True)
 cleanup_thread.start()        
 
+
+# ── Routes ────────────────────────────────────────────────────
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -66,18 +215,7 @@ def get_info():
     if not re.match(yt_regex, video_url):
         return jsonify({"error": "Sorry, this downloader only supports YouTube videos and Shorts."}), 400
 
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-        "Referer": "https://www.youtube.com/",
-        "Accept-Language": "en-US,en;q=0.9"
-    }
-
-    ydl_opts = {
-        'quiet': True,
-        'no_warnings': True,
-        'http_headers': headers,
-        'cookiefile': 'cookies.txt'
-    }
+    ydl_opts = get_base_ydl_opts()
 
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -117,6 +255,8 @@ def get_info():
                 {"resolution": "480p (SD)", "height": 480},
             ]
 
+            logger.info("✅ Info fetched for: %s", video_url)
+
             return jsonify({
                 "title": title,
                 "thumbnail": thumbnail,
@@ -126,7 +266,10 @@ def get_info():
     except Exception as e:
         import traceback
         traceback.print_exc()
-        return jsonify({"error": f"Video might be private, age-restricted, or invalid. (Error: {str(e)})"}), 500
+        
+        error_msg = str(e)
+        user_message = classify_yt_error(error_msg)
+        return jsonify({"error": user_message}), 500
 
 @app.route('/api/thumb_proxy')
 def thumb_proxy():
@@ -171,27 +314,24 @@ def download_video():
     filepath = os.path.join(DOWNLOAD_DIR, unique_filename)
     user_download_name = f"{safe_title}.mp4"
 
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-        "Referer": "https://www.youtube.com/"
-    }
-
-    ydl_opts = {
+    ydl_opts = get_base_ydl_opts()
+    ydl_opts.update({
         # Select exact resolution or fallback to the closest best below it
         'format': f'bestvideo[height={res_height}]+bestaudio/bestvideo[height<={res_height}]+bestaudio/best',
         'merge_output_format': 'mp4',
         'outtmpl': filepath,
-        'quiet': True,
-        'http_headers': headers,
-        'cookiefile': 'cookies.txt'
-    }
+    })
 
     try:
+        logger.info("⬇️  Downloading: %s at %sp", video_url, res_height)
+
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             ydl.download([video_url])
 
         # Trigger auto-delete in 5 minutes
         delete_file_delayed(filepath, delay=300)
+
+        logger.info("✅ Download complete: %s", unique_filename)
 
         response = make_response(send_file(
             filepath, 
@@ -204,10 +344,16 @@ def download_video():
         return response
 
     except Exception as e:
+        import traceback
+        traceback.print_exc()
+
         # If download fails, ensure cleanup
         if os.path.exists(filepath):
             os.remove(filepath)
-        return f"Download Failed: {str(e)}", 500
+        
+        error_msg = str(e)
+        user_message = classify_yt_error(error_msg)
+        return jsonify({"error": user_message}), 500
 
 if __name__ == '__main__':
     app.run(debug=True, threaded=True)

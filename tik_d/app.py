@@ -3,16 +3,90 @@ import uuid
 import threading
 import time
 import re
+import logging
 from flask import Flask, render_template, request, jsonify, send_file, Response
 import yt_dlp
 import requests as http_requests
 
 app = Flask(__name__)
 
-# Ensure download directory exists
-DOWNLOAD_DIR = "downloads"
+# ── Logging Setup ──────────────────────────────────────────────
+logging.basicConfig(
+    level=logging.INFO,
+    format='[%(asctime)s] %(levelname)s - %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S'
+)
+logger = logging.getLogger(__name__)
+
+# ── Paths ──────────────────────────────────────────────────────
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DOWNLOAD_DIR = os.path.join(BASE_DIR, 'downloads')
+COOKIES_FILE = os.path.join(BASE_DIR, 'cookies.txt')
 os.makedirs(DOWNLOAD_DIR, exist_ok=True)
 
+
+# ── Cookie Validation ─────────────────────────────────────────
+def validate_cookies():
+    """Check if cookies.txt exists and log status on startup."""
+    if not os.path.exists(COOKIES_FILE):
+        logger.info(
+            "ℹ️  No cookies.txt found at: %s — TikTok downloads will work without cookies for public videos.",
+            COOKIES_FILE
+        )
+        return False
+    logger.info("✅ cookies.txt found at: %s", COOKIES_FILE)
+    return True
+
+_cookies_valid = validate_cookies()
+
+
+# ── Error Classification ──────────────────────────────────────
+def classify_download_error(error_msg, platform="TikTok"):
+    """Classify a yt-dlp error into a user-friendly message."""
+    error_lower = error_msg.lower()
+    
+    if 'sign in' in error_lower or 'bot' in error_lower or 'captcha' in error_lower:
+        logger.error("🚫 Bot/captcha block on %s: %s", platform, error_msg)
+        return (
+            f"{platform} is temporarily blocking our server. "
+            "Please try again in a few minutes."
+        )
+    
+    if 'private' in error_lower or 'unavailable' in error_lower or 'not available' in error_lower:
+        logger.warning("Video unavailable on %s: %s", platform, error_msg)
+        return f"This {platform} video is private, deleted, or unavailable."
+    
+    if 'unsupported' in error_lower or 'no video' in error_lower:
+        logger.warning("Unsupported content on %s: %s", platform, error_msg)
+        return f"This URL doesn't contain a downloadable {platform} video."
+    
+    logger.error("Unclassified %s error: %s", platform, error_msg)
+    return f"Could not process this {platform} video. Please check the URL and try again."
+
+
+# ── yt-dlp Options Builder ────────────────────────────────────
+def get_base_ydl_opts():
+    """Returns the base yt-dlp options with cookie support and anti-bot headers."""
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+        "Referer": "https://www.tiktok.com/",
+        "Accept-Language": "en-US,en;q=0.9"
+    }
+
+    opts = {
+        'quiet': True,
+        'no_warnings': True,
+        'http_headers': headers,
+        'socket_timeout': 30,
+    }
+
+    if os.path.exists(COOKIES_FILE):
+        opts['cookiefile'] = COOKIES_FILE
+    
+    return opts
+
+
+# ── File Cleanup ──────────────────────────────────────────────
 def delete_file_delayed(filepath, delay=300):
     """
     Background thread to delete the file after a delay (e.g., 5 minutes).
@@ -23,12 +97,14 @@ def delete_file_delayed(filepath, delay=300):
         try:
             if os.path.exists(filepath):
                 os.remove(filepath)
-                print(f"Auto-deleted: {filepath}")
+                logger.info("Auto-deleted: %s", filepath)
         except Exception as e:
-            print(f"Error deleting file {filepath}: {e}")
+            logger.error("Error deleting file %s: %s", filepath, e)
             
     threading.Thread(target=task, daemon=True).start()
 
+
+# ── Routes ────────────────────────────────────────────────────
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -46,17 +122,7 @@ def get_info():
     if not re.match(tiktok_regex, video_url):
         return jsonify({"error": "Sorry, this downloader only supports TikTok videos."}), 400
 
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-        "Referer": "https://www.tiktok.com/",
-        "Accept-Language": "en-US,en;q=0.9"
-    }
-
-    ydl_opts = {
-        'quiet': True,
-        'no_warnings': True,
-        'http_headers': headers,
-    }
+    ydl_opts = get_base_ydl_opts()
 
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -105,6 +171,8 @@ def get_info():
                 # If yt-dlp doesn't find specific height formats for TikTok, add a default 'Best' option
                 available_formats = [{"resolution": "Watermark-free (Best)", "height": "best"}]
 
+            logger.info("✅ Info fetched for: %s", video_url)
+
             return jsonify({
                 "title": title,
                 "thumbnail": thumbnail,
@@ -114,7 +182,10 @@ def get_info():
     except Exception as e:
         import traceback
         traceback.print_exc()
-        return jsonify({"error": f"Video might be private or invalid. (Error: {str(e)})"}), 500
+        
+        error_msg = str(e)
+        user_message = classify_download_error(error_msg, "TikTok")
+        return jsonify({"error": user_message}), 500
 
 @app.route('/api/thumb_proxy')
 def thumb_proxy():
@@ -156,33 +227,40 @@ def download_video():
     filepath = os.path.join(DOWNLOAD_DIR, unique_filename)
     user_download_name = f"{safe_title}.mp4"
 
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-        "Referer": "https://www.tiktok.com/"
-    }
-
     format_str = f"bestvideo[height={res_height}]+bestaudio/bestvideo[height<={res_height}]+bestaudio/best" if res_height != 'best' else "best"
 
-    ydl_opts = {
+    ydl_opts = get_base_ydl_opts()
+    ydl_opts.update({
         'format': format_str,
         'outtmpl': filepath,
-        'quiet': True,
-        'http_headers': headers,
-        'merge_output_format': 'mp4'
-    }
+        'merge_output_format': 'mp4',
+    })
 
     try:
+        logger.info("⬇️  Downloading TikTok: %s at %s", video_url, res_height)
+
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             ydl.download([video_url])
 
         if os.path.exists(filepath):
             delete_file_delayed(filepath, delay=300) # Delete after 5 mins
+
+            logger.info("✅ Download complete: %s", unique_filename)
+
             return send_file(filepath, as_attachment=True, download_name=user_download_name, mimetype='video/mp4')
         else:
-            return "Download failed to process", 500
+            return jsonify({"error": "Download failed to process."}), 500
 
     except Exception as e:
-        return str(e), 500
+        import traceback
+        traceback.print_exc()
+
+        if os.path.exists(filepath):
+            os.remove(filepath)
+        
+        error_msg = str(e)
+        user_message = classify_download_error(error_msg, "TikTok")
+        return jsonify({"error": user_message}), 500
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

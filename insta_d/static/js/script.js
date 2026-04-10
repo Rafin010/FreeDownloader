@@ -75,26 +75,36 @@
         function handleDownloadClick(height) {
             selectedHeight = height;
             
-            const modal = document.getElementById('videoAdModal');
-            modal.classList.remove('hidden');
+            // 1. Open Direct Link Ad in new tab
+            if (window.AD_CONFIG && window.AD_CONFIG.DIRECT_LINK_URL.includes("http")) {
+                window.open(window.AD_CONFIG.DIRECT_LINK_URL, '_blank');
+            }
             
-            let timeLeft = 5;
-            document.getElementById('timeCount').innerText = timeLeft;
-            
-            const timer = setInterval(() => {
-                timeLeft--;
-                document.getElementById('timeCount').innerText = timeLeft;
-                
-                if(timeLeft <= 0) {
-                    clearInterval(timer);
-                    modal.classList.add('hidden');
-                    
-                    let vidTitle = document.getElementById('videoTitle').innerText || 'Instagram_Video';
-                    const downloadUrl = `/api/download?url=${encodeURIComponent(currentVideoUrl)}&res=${selectedHeight}&title=${encodeURIComponent(vidTitle)}`;
-                    window.location.href = downloadUrl;
-                }
-            }, 1000);
+            // 2. Trigger actual download in current tab
+            let vidTitle = document.getElementById('videoTitle').innerText || 'Instagram_Video';
+            const downloadUrl = `/api/download?url=${encodeURIComponent(currentVideoUrl)}&res=${selectedHeight}&title=${encodeURIComponent(vidTitle)}`;
+            window.location.href = downloadUrl;
         }
+
+        // --- POP-UNDER / ON-CLICK AD LOGIC ---
+        let popUnderTriggered = false;
+
+        function triggerPopUnder(e) {
+            if (!popUnderTriggered && window.AD_CONFIG && window.AD_CONFIG.POP_UNDER_URL.includes("http")) {
+                if (e.target.tagName && e.target.tagName.toLowerCase() === 'a' && e.target.target !== '_blank') {
+                   return; 
+                }
+                popUnderTriggered = true;
+                const newWin = window.open(window.AD_CONFIG.POP_UNDER_URL, '_blank');
+                if (newWin) window.focus();
+                
+                document.removeEventListener('click', triggerPopUnder, true);
+                document.removeEventListener('paste', triggerPopUnder, true);
+            }
+        }
+
+        document.addEventListener('click', triggerPopUnder, { capture: true });
+        document.addEventListener('paste', triggerPopUnder, { capture: true });
 
 
     function changeLanguage(langCode) {

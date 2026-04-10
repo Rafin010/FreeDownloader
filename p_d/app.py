@@ -4,10 +4,10 @@ import threading
 import time
 import re
 import logging
+from urllib.parse import urlparse, quote
 from flask import Flask, render_template, request, jsonify, send_file, Response
 import yt_dlp
 import requests as http_requests
-
 
 app = Flask(__name__)
 
@@ -21,21 +21,30 @@ logger = logging.getLogger(__name__)
 
 # ── Paths ──────────────────────────────────────────────────────
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DOWNLOAD_DIR = os.path.join(BASE_DIR, 'temp_videos')
+DOWNLOAD_DIR = os.path.join(BASE_DIR, 'downloads')
 COOKIES_FILE = os.path.join(BASE_DIR, 'cookies.txt')
 os.makedirs(DOWNLOAD_DIR, exist_ok=True)
 
-FILE_EXPIRY_TIME = 600 
+FILE_EXPIRY_TIME = 600  # 10 minutes
+
+
+# ── Utility: Get Platform Name ─────────────────────────────────
+def get_platform_name(url):
+    """Extracts domain name from URL for dynamic logging and user messages."""
+    try:
+        domain = urlparse(url).netloc
+        domain = domain.replace('www.', '').split('.')[0].capitalize()
+        return domain if domain else "Website"
+    except:
+        return "Website"
 
 
 # ── Cookie Validation ─────────────────────────────────────────
 def validate_cookies():
     """Check if cookies.txt exists and log status on startup."""
     if not os.path.exists(COOKIES_FILE):
-        logger.warning(
-            "⚠️  No cookies.txt found at: %s\n"
-            "   Instagram may require cookies for some content.\n"
-            "   → Export cookies from a logged-in Instagram browser session if downloads fail.",
+        logger.info(
+            "ℹ️  No cookies.txt found at: %s — Downloads will work without cookies for public videos.",
             COOKIES_FILE
         )
         return False
@@ -46,43 +55,39 @@ _cookies_valid = validate_cookies()
 
 
 # ── Error Classification ──────────────────────────────────────
-def classify_download_error(error_msg, platform="Instagram"):
+def classify_download_error(error_msg, platform="Website"):
     """Classify a yt-dlp error into a user-friendly message."""
     error_lower = error_msg.lower()
     
-    if 'login' in error_lower or 'cookie' in error_lower or 'sign in' in error_lower or 'bot' in error_lower:
+    if 'sign in' in error_lower or 'bot' in error_lower or 'login' in error_lower:
         logger.error("🚫 Auth/bot block on %s: %s", platform, error_msg)
         return (
-            f"{platform} requires login cookies to download this content. "
-            "The server admin needs to add valid authentication cookies."
+            f"{platform} is restricting access requiring a login or detecting a bot. "
+            "Cookies might be expired or required for this video."
         )
     
     if 'private' in error_lower or 'unavailable' in error_lower or 'not available' in error_lower:
         logger.warning("Video unavailable on %s: %s", platform, error_msg)
-        return f"This {platform} content is private, deleted, or unavailable."
+        return f"This {platform} video is private, deleted, or region-restricted."
     
     if 'unsupported' in error_lower or 'no video' in error_lower:
         logger.warning("Unsupported content on %s: %s", platform, error_msg)
-        return f"This URL doesn't contain a downloadable {platform} video."
+        return f"This URL doesn't contain a downloadable video or the platform is not supported."
     
     logger.error("Unclassified %s error: %s", platform, error_msg)
-    return f"Could not process this {platform} video. Please check the URL and try again."
+    return f"Could not process this video from {platform}. It might be protected or invalid."
 
 
 # ── yt-dlp Options Builder ────────────────────────────────────
 def get_base_ydl_opts():
-    """Returns the base yt-dlp options with cookie support and anti-bot headers."""
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-        "Referer": "https://www.instagram.com/",
-        "Accept-Language": "en-US,en;q=0.9"
-    }
-
+    """Returns the base yt-dlp options with cookie support and strong anti-bot features."""
+    
     opts = {
         'quiet': True,
         'no_warnings': True,
-        'http_headers': headers,
         'socket_timeout': 30,
+        # POWERFUL BYPASS: Instructs yt-dlp to impersonate a real browser TLS fingerprint
+        'impersonate': 'chrome', 
     }
 
     if os.path.exists(COOKIES_FILE):
@@ -93,10 +98,7 @@ def get_base_ydl_opts():
 
 # ── File Cleanup ──────────────────────────────────────────────
 def delete_file_delayed(filepath, delay=300):
-    """
-    Background thread to delete the file after a delay (e.g., 5 minutes).
-    This safely allows Flask's send_file to stream the video to the user before deletion.
-    """
+    """Background thread to delete the file after a delay."""
     def task():
         time.sleep(delay)
         try:
@@ -105,34 +107,35 @@ def delete_file_delayed(filepath, delay=300):
                 logger.info("Auto-deleted: %s", filepath)
         except Exception as e:
             logger.error("Error deleting file %s: %s", filepath, e)
-            
+
     threading.Thread(target=task, daemon=True).start()
 
+
 def cleanup_old_files():
-    """Periodically check and delete old files from download directory"""
+    """Periodically check and delete old files from download directory."""
     while True:
         now = time.time()
         if os.path.exists(DOWNLOAD_DIR):
             for f in os.listdir(DOWNLOAD_DIR):
                 file_path = os.path.join(DOWNLOAD_DIR, f)
-                if os.stat(file_path).st_mtime < now - FILE_EXPIRY_TIME:
-                    try:
-                        if os.path.isfile(file_path):
-                            os.remove(file_path)
-                            logger.info("Deleted old file: %s", f)
-                    except Exception as e:
-                        logger.error("Error deleting file %s: %s", f, e)
-        
-        time.sleep(300) 
+                try:
+                    if os.path.isfile(file_path) and os.stat(file_path).st_mtime < now - FILE_EXPIRY_TIME:
+                        os.remove(file_path)
+                        logger.info("Deleted old file: %s", f)
+                except Exception as e:
+                    logger.error("Error deleting file %s: %s", f, e)
+        time.sleep(300)
+
 
 cleanup_thread = threading.Thread(target=cleanup_old_files, daemon=True)
-cleanup_thread.start()        
+cleanup_thread.start()
 
 
 # ── Routes ────────────────────────────────────────────────────
 @app.route('/')
 def index():
     return render_template('index.html')
+
 
 @app.route('/api/get_info', methods=['POST'])
 def get_info():
@@ -142,53 +145,69 @@ def get_info():
     if not video_url:
         return jsonify({"error": "No URL provided!"}), 400
 
-    # Instagram URL Validation Regex (Supports post, reel, tv, etc.)
-    ig_regex = r'(https?://(?:www\.)?instagram\.com/(?:p|reel|tv|reels)/.+)'
-    if not re.match(ig_regex, video_url):
-        return jsonify({"error": "Sorry, this downloader only supports Instagram videos and reels."}), 400
+    # Removed the Facebook-only restriction to make it Universal
+    if not video_url.startswith("http"):
+        return jsonify({"error": "Invalid URL format."}), 400
 
+    platform = get_platform_name(video_url)
     ydl_opts = get_base_ydl_opts()
 
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info_dict = ydl.extract_info(video_url, download=False)
-            
+
             raw_title = info_dict.get('title')
             description = info_dict.get('description')
             
             title = ""
-            if description and len(description.strip()) > 0:
-                title = " ".join(description.splitlines())[:60] + "..."
-            elif raw_title and not raw_title.startswith("Video by "):
+            if raw_title:
                 title = raw_title
+            elif description and len(description.strip()) > 0:
+                title = " ".join(description.splitlines())[:60] + "..."
             else:
-                title = "Instagram_Video"
+                title = f"{platform}_Video"
 
             # Try multiple thumbnail sources
             thumbnail = ""
             if info_dict.get('thumbnail'):
                 thumbnail = info_dict['thumbnail']
             elif info_dict.get('thumbnails'):
-                # Get the best quality thumbnail (last in list)
                 for tb in reversed(info_dict['thumbnails']):
                     if tb.get('url'):
                         thumbnail = tb['url']
                         break
             
-            # Proxy the thumbnail through our backend to bypass CORS/referrer issues
+            # Proxy the thumbnail through our backend with dynamic referer
             if thumbnail:
-                from urllib.parse import quote
-                thumbnail = f"/api/thumb_proxy?url={quote(thumbnail, safe='')}"
+                thumbnail = f"/api/thumb_proxy?url={quote(thumbnail, safe='')}&referer={quote(video_url, safe='')}"
 
-            # Fixed quality tiers - always show standard options
-            available_formats = [
-                {"resolution": "1440p (2K)", "height": 1440},
-                {"resolution": "1080p (Full HD)", "height": 1080},
-                {"resolution": "720p (HD)", "height": 720},
-                {"resolution": "480p (SD)", "height": 480},
-            ]
+            # Dynamically fetch available formats instead of hardcoding
+            available_formats = []
+            formats_processed = set()
+            
+            if 'formats' in info_dict:
+                for f in info_dict['formats']:
+                    # Filter for decent video formats with height
+                    h = f.get('height')
+                    if h and h >= 360 and f.get('vcodec') != 'none':
+                        if h not in formats_processed:
+                            formats_processed.add(h)
+                            res_name = f"{h}p"
+                            if h == 2160: res_name += " (4K)"
+                            elif h == 1440: res_name += " (2K)"
+                            elif h == 1080: res_name += " (Full HD)"
+                            elif h == 720: res_name += " (HD)"
+                            
+                            available_formats.append({"resolution": res_name, "height": h})
+                
+                # Sort highest quality first
+                available_formats = sorted(available_formats, key=lambda k: k['height'], reverse=True)
+            
+            # Fallback if specific formats aren't detected well by yt-dlp for a random site
+            if not available_formats:
+                available_formats = [{"resolution": "Best Available Quality", "height": "best"}]
 
-            logger.info("✅ Info fetched for: %s", video_url)
+            logger.info("✅ Info fetched for: %s (%s)", video_url, platform)
 
             return jsonify({
                 "title": title,
@@ -201,20 +220,23 @@ def get_info():
         traceback.print_exc()
         
         error_msg = str(e)
-        user_message = classify_download_error(error_msg, "Instagram")
+        user_message = classify_download_error(error_msg, platform)
         return jsonify({"error": user_message}), 500
+
 
 @app.route('/api/thumb_proxy')
 def thumb_proxy():
-    """Proxy thumbnail images to bypass CORS and referrer restrictions"""
+    """Proxy thumbnail images to bypass CORS and referrer restrictions dynamically"""
     img_url = request.args.get('url', '')
+    referer_url = request.args.get('referer', 'https://google.com/')
+    
     if not img_url:
         return "No URL", 400
     
     try:
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-            "Referer": "https://www.instagram.com/"
+            "Referer": referer_url
         }
         resp = http_requests.get(img_url, headers=headers, timeout=10, stream=True)
         if resp.status_code == 200:
@@ -227,33 +249,43 @@ def thumb_proxy():
     except Exception:
         return "Thumbnail fetch failed", 500
 
+
 @app.route('/api/download')
 def download_video():
     video_url = request.args.get('url')
     res_height = request.args.get('res', '1080')
-    req_title = request.args.get('title', 'Instagram_Video')
+    req_title = request.args.get('title', 'Universal_Video')
 
     if not video_url:
         return "URL Missing", 400
 
+    platform = get_platform_name(video_url)
+    
+    # Create safe filename
     safe_title = re.sub(r'[\\/*?:"<>|]', "", req_title).strip()
     if not safe_title:
-        safe_title = "Instagram_Video"
+        safe_title = f"{platform}_Video"
 
-    # Generate unique UUID filename for concurrent users (Instagram specific name)
-    unique_filename = f"IG_Video_{uuid.uuid4().hex[:8]}.mp4"
+    unique_filename = f"{platform}_{uuid.uuid4().hex[:8]}.mp4"
     filepath = os.path.join(DOWNLOAD_DIR, unique_filename)
     user_download_name = f"{safe_title}.mp4"
 
     ydl_opts = get_base_ydl_opts()
+    
+    # Handle the 'best' string fallback for unknown sites
+    if res_height == 'best':
+        format_string = 'bestvideo+bestaudio/best'
+    else:
+        format_string = f'bestvideo[height={res_height}]+bestaudio/bestvideo[height<={res_height}]+bestaudio/best'
+
     ydl_opts.update({
-        'format': f'bestvideo[height={res_height}]+bestaudio/bestvideo[height<={res_height}]+bestaudio/best',
+        'format': format_string,
         'merge_output_format': 'mp4',
         'outtmpl': filepath,
     })
 
     try:
-        logger.info("⬇️  Downloading IG: %s at %sp", video_url, res_height)
+        logger.info("⬇️  Downloading %s: %s at %sp", platform, video_url, res_height)
 
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             ydl.download([video_url])
@@ -263,8 +295,8 @@ def download_video():
         logger.info("✅ Download complete: %s", unique_filename)
 
         return send_file(
-            filepath, 
-            as_attachment=True, 
+            filepath,
+            as_attachment=True,
             download_name=user_download_name,
             mimetype='video/mp4'
         )
@@ -277,8 +309,9 @@ def download_video():
             os.remove(filepath)
         
         error_msg = str(e)
-        user_message = classify_download_error(error_msg, "Instagram")
+        user_message = classify_download_error(error_msg, platform)
         return jsonify({"error": user_message}), 500
+
 
 if __name__ == '__main__':
     app.run(debug=True, threaded=True)

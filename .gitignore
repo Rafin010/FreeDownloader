@@ -1,0 +1,35 @@
+# ── Python ──
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+*.egg
+
+# ── Virtual Environments ──
+venv/
+yt_venv/
+.venv/
+env/
+
+# ── Environment Variables ──
+.env
+.env.local
+
+# ── Sensitive Auth Cookies (NEVER commit these) ──
+cookies.txt
+**/cookies.txt
+
+# ── Downloads (temp files) ──
+downloads/
+temp_videos/
+
+# ── IDE / Editor ──
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ── OS ──
+.DS_Store
+Thumbs.db

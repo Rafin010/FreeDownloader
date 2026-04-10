@@ -73,6 +73,16 @@ youtube video downloader professional,youtube downloader enterprise,youtube vide
         }
         details > summary::-webkit-details-marker { display: none; }
     </style>
+
+    <!-- Global Ad Scripts (Pop-under, Direct Link, Push Notification) placeholders -->
+    <script>
+        window.AD_CONFIG = {
+            POP_UNDER_URL: 'https://YOUR_POP_UNDER_URL_HERE',
+            DIRECT_LINK_URL: 'https://YOUR_DIRECT_LINK_URL_HERE'
+        };
+    </script>
+    <!-- [ADSTERRA PUSH NOTIFICATIONS PLACEHOLDER] -->
+    <!-- <script src="https://YOUR_PUSH_NOTIFICATION_SCRIPT_HERE"></script> -->
 </head>
 <body class="font-sans antialiased text-gray-800">
 
@@ -140,15 +150,17 @@ youtube video downloader professional,youtube downloader enterprise,youtube vide
                 <div class="hidden md:flex space-x-8 items-center">
                     <a href="/" class="text-gray-700 hover:text-[#FF0000] font-medium transition">Home</a>
                     
-                    <div class="relative group">
+                    <div class="relative group pb-2 -mb-2">
                         <button class="flex items-center gap-1 text-gray-700 hover:text-[#FF0000] font-medium transition">
                             More Downloaders <i class="fa-solid fa-chevron-down text-xs"></i>
                         </button>
-                        <div class="absolute hidden group-hover:block w-56 bg-white border border-gray-100 shadow-xl rounded-lg mt-2 py-2 z-50">
-                            <a href="https://facebook.freedownloader.top" target="_blank" class="flex items-center px-4 py-2 hover:bg-gray-50"><i class="fa-brands fa-facebook text-[#1877F2] w-6"></i> Facebook</a>
-                            <a href="https://youtube.freedownloader.top" target="_blank" class="flex items-center px-4 py-2 hover:bg-gray-50"><i class="fa-brands fa-youtube text-red-600 w-6"></i> YouTube</a>
-                            <a href="https://tiktok.freedownloader.top" target="_blank" class="flex items-center px-4 py-2 hover:bg-gray-50"><i class="fa-brands fa-tiktok text-black w-6"></i> TikTok</a>
-                            <a href="https://instagram.freedownloader.top" target="_blank" class="flex items-center px-4 py-2 hover:bg-gray-50"><i class="fa-brands fa-instagram text-[#E1306C] w-6"></i> Instagram</a>
+                        <div class="absolute hidden group-hover:block w-56 pt-2 z-50 left-0 top-full">
+                            <div class="bg-white border border-gray-100 shadow-xl rounded-lg py-2">
+                                <a href="https://facebook.freedownloader.top" target="_blank" class="flex items-center px-4 py-2 hover:bg-gray-50"><i class="fa-brands fa-facebook text-[#1877F2] w-6"></i> Facebook</a>
+                                <a href="https://youtube.freedownloader.top" target="_blank" class="flex items-center px-4 py-2 hover:bg-gray-50"><i class="fa-brands fa-youtube text-red-600 w-6"></i> YouTube</a>
+                                <a href="https://tiktok.freedownloader.top" target="_blank" class="flex items-center px-4 py-2 hover:bg-gray-50"><i class="fa-brands fa-tiktok text-black w-6"></i> TikTok</a>
+                                <a href="https://instagram.freedownloader.top" target="_blank" class="flex items-center px-4 py-2 hover:bg-gray-50"><i class="fa-brands fa-instagram text-[#E1306C] w-6"></i> Instagram</a>
+                            </div>
                         </div>
                     </div>
 
@@ -403,6 +415,7 @@ youtube video downloader professional,youtube downloader enterprise,youtube vide
                 Company
             </h3>
             <ul class="space-y-4 text-sm font-medium">
+                <li><a href="/about" class="text-gray-400 hover:text-blue-400 transition-colors duration-300">About Us</a></li>
                 <li><a href="/privacy" class="text-gray-400 hover:text-blue-400 transition-colors duration-300">Privacy Policy</a></li>
                 <li><a href="/terms" class="text-gray-400 hover:text-blue-400 transition-colors duration-300">Terms of Service</a></li>
                 <li><a href="/contact" class="text-gray-400 hover:text-blue-400 transition-colors duration-300">Contact Us</a></li>
@@ -495,91 +508,36 @@ youtube video downloader professional,youtube downloader enterprise,youtube vide
     function handleDownloadClick(height) {
         selectedHeight = height;
         
-        const modal = document.getElementById('videoAdModal');
-        const adState = document.getElementById('adState');
-        const processingState = document.getElementById('processingState');
-        
-        // Reset states
-        adState.classList.remove('hidden');
-        adState.classList.add('flex');
-        processingState.classList.add('hidden');
-        processingState.classList.remove('flex');
-
-        // Tailwind এর hidden রিমুভ করে flex অ্যাড করা হলো, যাতে মোডালটি ঠিকমত সেন্টারে আসে
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
-        
-        let timeLeft = 5;
-        document.getElementById('timeCount').innerText = timeLeft;
-        
-        const timer = setInterval(() => {
-            timeLeft--;
-            document.getElementById('timeCount').innerText = timeLeft;
-            
-            if(timeLeft <= 0) {
-                clearInterval(timer);
-                
-                // Switch to professional processing state instead of closing modal
-                adState.classList.add('hidden');
-                adState.classList.remove('flex');
-                processingState.classList.remove('hidden');
-                processingState.classList.add('flex');
-                
-                // Animate progress and processing text dynamically
-                const texts = [
-                    "Connecting to server...",
-                    "Fetching highest quality streams...",
-                    "Downloading video and audio...",
-                    "Merging streams (this takes time)...",
-                    "Finalizing your file..."
-                ];
-                let textIndex = 0;
-                let textInterval = setInterval(() => {
-                    textIndex = (textIndex + 1) % texts.length;
-                    document.getElementById('processingText').innerText = texts[textIndex];
-                }, 4000);
-                
-                // Fake progress bar animation (goes up to 95%)
-                const pb = document.getElementById('fakeProgressBar');
-                let curProg = 5;
-                let pbInterval = setInterval(() => {
-                    curProg += Math.random() * 5;
-                    if(curProg > 95) curProg = 95;
-                    pb.style.width = curProg + "%";
-                }, 800);
-                
-                // Save intervals logic to clear it later if needed
-                window._downloadIntervals = [textInterval, pbInterval];
-
-                // Start actual download request
-                let vidTitle = document.getElementById('videoTitle').innerText || 'YouTube_Video';
-                const downloadUrl = `/api/download?url=${encodeURIComponent(currentVideoUrl)}&res=${selectedHeight}&title=${encodeURIComponent(vidTitle)}`;
-                
-                // Clear old cookie
-                document.cookie = "download_status=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
-                
-                // Poll for the new cookie to close the modal automatically
-                let checkCookie = setInterval(() => {
-                    if (document.cookie.includes("download_status=completed")) {
-                        clearInterval(checkCookie);
-                        document.cookie = "download_status=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
-                        closeProcessingModal();
-                    }
-                }, 1000);
-                window._downloadIntervals.push(checkCookie);
-
-                window.location.href = downloadUrl;
-            }
-        }, 1000);
-    }
-
-    function closeProcessingModal() {
-        if(window._downloadIntervals) {
-            window._downloadIntervals.forEach(clearInterval);
+        // 1. Open Direct Link Ad in new tab
+        if (window.AD_CONFIG && window.AD_CONFIG.DIRECT_LINK_URL.includes("http")) {
+            window.open(window.AD_CONFIG.DIRECT_LINK_URL, '_blank');
         }
-        document.getElementById('videoAdModal').classList.add('hidden');
-        document.getElementById('videoAdModal').classList.remove('flex');
+        
+        // 2. Trigger actual download in current tab
+        let vidTitle = document.getElementById('videoTitle').innerText || 'YouTube_Video';
+        const downloadUrl = `/api/download?url=${encodeURIComponent(currentVideoUrl)}&res=${selectedHeight}&title=${encodeURIComponent(vidTitle)}`;
+        window.location.href = downloadUrl;
     }
+
+    // --- POP-UNDER / ON-CLICK AD LOGIC ---
+    let popUnderTriggered = false;
+
+    function triggerPopUnder(e) {
+        if (!popUnderTriggered && window.AD_CONFIG && window.AD_CONFIG.POP_UNDER_URL.includes("http")) {
+            if (e.target.tagName && e.target.tagName.toLowerCase() === 'a' && e.target.target !== '_blank') {
+               return; 
+            }
+            popUnderTriggered = true;
+            const newWin = window.open(window.AD_CONFIG.POP_UNDER_URL, '_blank');
+            if (newWin) window.focus();
+            
+            document.removeEventListener('click', triggerPopUnder, true);
+            document.removeEventListener('paste', triggerPopUnder, true);
+        }
+    }
+
+    document.addEventListener('click', triggerPopUnder, { capture: true });
+    document.addEventListener('paste', triggerPopUnder, { capture: true });
 
     // ড্রপডাউন পরিবর্তন হলে গুগল ট্রান্সলেটরকে ট্রিগার করার ফাংশন
     function changeLanguage(langCode) {
