@@ -39,25 +39,20 @@
                 document.getElementById('loading').classList.add('hidden');
 
                 if(response.ok) {
-                    document.getElementById('videoThumb').src = data.thumbnail;
+                    const thumbEl = document.getElementById('videoThumb');
+                    thumbEl.referrerPolicy = 'no-referrer';
+                    thumbEl.src = data.thumbnail;
                     document.getElementById('videoTitle').innerText = data.title;
                     
                     const resList = document.getElementById('resolutionsList');
                     resList.innerHTML = ''; 
                     
-                    const fixedQualities = [
-                        { label: '4K (Ultra HD)', height: 2160 },
-                        { label: '1080p (HD)', height: 1080 },
-                        { label: '720p (SD)', height: 720 },
-                        { label: '420p (Basic)', height: 420 }
-                    ];
-
-                    fixedQualities.forEach(q => {
+                    data.formats.forEach(q => {
                         const btn = document.createElement('button');
                         btn.className = 'w-full flex justify-between items-center px-4 py-3 border border-gray-200 rounded-lg bg-white hover:bg-blue-50 transition-all duration-300 font-medium text-gray-800 shadow-sm hover:shadow-md transform hover:-translate-y-1 hover-bounce text-sm sm:text-base';
                         
                         btn.innerHTML = `
-                            <span class="flex items-center"><i class="fa-solid fa-video text-[#1877F2] mr-3 text-lg"></i> ${q.label}</span> 
+                            <span class="flex items-center"><i class="fa-solid fa-video text-[#1877F2] mr-3 text-lg"></i> ${q.resolution}</span> 
                             <span class="bg-green-100 text-green-700 border border-green-200 text-xs sm:text-sm px-3 sm:px-4 py-2 rounded-md font-bold transition-all duration-300 hover:bg-green-600 hover:text-white flex items-center gap-2 shadow-sm">
                                 <i class="fa-solid fa-download transition-transform duration-300"></i> Download
                             </span>`;
@@ -95,7 +90,8 @@
                     clearInterval(timer);
                     modal.classList.add('hidden');
                     
-                    const downloadUrl = `/api/download?url=${encodeURIComponent(currentVideoUrl)}&res=${selectedHeight}`;
+                    let vidTitle = document.getElementById('videoTitle').innerText || 'Facebook_Video';
+                    const downloadUrl = `/api/download?url=${encodeURIComponent(currentVideoUrl)}&res=${selectedHeight}&title=${encodeURIComponent(vidTitle)}`;
                     window.location.href = downloadUrl;
                 }
             }, 1000);
