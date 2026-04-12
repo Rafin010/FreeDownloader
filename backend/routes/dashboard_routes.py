@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request
 from utils.db import get_connection
+from datetime import date, timedelta
 
 dashboard_bp = Blueprint('dashboard', __name__)
 
@@ -146,17 +147,28 @@ def chart_daily():
     conn.close()
 
     pivot = {}
+    today = date.today()
+    for i in range(29, -1, -1):
+        d_obj = today - timedelta(days=i)
+        d_str = str(d_obj)
+        pivot[d_str] = {
+            "label": d_obj.strftime("%d %b"), # e.g. "13 Apr"
+            "page_view": 0, 
+            "download": 0, 
+            "ad_impression": 0
+        }
+
     for r in rows:
         day = str(r['day'])
-        pivot.setdefault(day, {"page_view": 0, "download": 0, "ad_impression": 0})
-        pivot[day][r['event_type']] = r['total']
+        if day in pivot:
+            pivot[day][r['event_type']] = r['total']
 
-    labels = sorted(pivot.keys())
+    sorted_keys = sorted(pivot.keys())
     return jsonify({
-        "labels":         labels,
-        "page_views":     [pivot[d].get('page_view', 0) for d in labels],
-        "downloads":      [pivot[d].get('download', 0) for d in labels],
-        "ad_impressions": [pivot[d].get('ad_impression', 0) for d in labels]
+        "labels":         [pivot[d]['label'] for d in sorted_keys],
+        "page_views":     [pivot[d]['page_view'] for d in sorted_keys],
+        "downloads":      [pivot[d]['download'] for d in sorted_keys],
+        "ad_impressions": [pivot[d]['ad_impression'] for d in sorted_keys]
     })
 
 
