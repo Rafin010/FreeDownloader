@@ -59,6 +59,7 @@ DEFAULT_SITES = [
     {"name": "Instagram Downloader",  "url": "insta_downloader"},
     {"name": "TikTok Downloader",     "url": "tiktok_downloader"},
     {"name": "Free Downloader",       "url": "free_downloader"},
+    {"name": "Porn Downloader",       "url": "porn_downloader"},
 ]
 
 
