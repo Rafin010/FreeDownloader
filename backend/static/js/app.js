@@ -192,33 +192,77 @@ async function loadSummary() {
 // ══════════════════════════════════════════
 async function loadDailyChart() {
     const d = await apiFetch('/api/dashboard/chart/daily' + siteParam());
-    const ctx = document.getElementById('dailyChart');
-    if (!ctx) return;
+    const canvas = document.getElementById('dailyChart');
+    if (!canvas) return;
+
+    // Create Gradients for Professional Look
+    const ctx = canvas.getContext('2d');
+    const gradViews = ctx.createLinearGradient(0, 0, 0, 300);
+    gradViews.addColorStop(0, hexAlpha(C.views, 0.4));
+    gradViews.addColorStop(1, hexAlpha(C.views, 0.01));
+
+    const gradDl = ctx.createLinearGradient(0, 0, 0, 300);
+    gradDl.addColorStop(0, hexAlpha(C.dl, 0.4));
+    gradDl.addColorStop(1, hexAlpha(C.dl, 0.01));
+
+    const gradAds = ctx.createLinearGradient(0, 0, 0, 300);
+    gradAds.addColorStop(0, hexAlpha(C.ads, 0.4));
+    gradAds.addColorStop(1, hexAlpha(C.ads, 0.01));
 
     const data = {
         labels: d.labels,
         datasets: [
-            { label: 'Views', data: d.page_views, borderColor: C.views, backgroundColor: hexAlpha(C.views, 0.06), fill: true, tension: 0.4, borderWidth: 2, pointRadius: 2, pointHoverRadius: 5 },
-            { label: 'Downloads', data: d.downloads, borderColor: C.dl, backgroundColor: hexAlpha(C.dl, 0.06), fill: true, tension: 0.4, borderWidth: 2, pointRadius: 2, pointHoverRadius: 5 },
-            { label: 'Ads', data: d.ad_impressions, borderColor: C.ads, backgroundColor: hexAlpha(C.ads, 0.06), fill: true, tension: 0.4, borderWidth: 2, pointRadius: 2, pointHoverRadius: 5 }
+            { 
+                label: 'Views', data: d.page_views, 
+                borderColor: C.views, backgroundColor: gradViews, 
+                fill: true, tension: 0.4, borderWidth: 3, 
+                pointRadius: 0, pointHoverRadius: 6, pointHoverBackgroundColor: C.views, pointHoverBorderColor: '#ffffff', pointHoverBorderWidth: 2
+            },
+            { 
+                label: 'Downloads', data: d.downloads, 
+                borderColor: C.dl, backgroundColor: gradDl, 
+                fill: true, tension: 0.4, borderWidth: 3, 
+                pointRadius: 0, pointHoverRadius: 6, pointHoverBackgroundColor: C.dl, pointHoverBorderColor: '#ffffff', pointHoverBorderWidth: 2
+            },
+            { 
+                label: 'Ads', data: d.ad_impressions, 
+                borderColor: C.ads, backgroundColor: gradAds, 
+                fill: true, tension: 0.4, borderWidth: 3, 
+                pointRadius: 0, pointHoverRadius: 6, pointHoverBackgroundColor: C.ads, pointHoverBorderColor: '#ffffff', pointHoverBorderWidth: 2
+            }
         ]
     };
 
     if (dailyChart) { dailyChart.data = data; dailyChart.update('active'); }
     else {
-        dailyChart = new Chart(ctx, {
+        dailyChart = new Chart(canvas, {
             type: 'line', data,
             options: {
                 responsive: true, maintainAspectRatio: false,
                 plugins: {
-                    tooltip: { mode: 'index', intersect: false, backgroundColor: '#1a2232', borderColor: '#1f2937', borderWidth: 1, padding: 12, titleColor: '#f3f4f6', bodyColor: '#9ca3af' },
+                    tooltip: { 
+                        mode: 'index', intersect: false, 
+                        backgroundColor: '#111827', borderColor: '#374151', borderWidth: 1, 
+                        padding: 12, titleColor: '#f9fafb', bodyColor: '#d1d5db',
+                        titleFont: { size: 13, weight: 'bold' },
+                        bodyFont: { size: 12 },
+                        boxPadding: 4,
+                        usePointStyle: true, pointStyle: 'circle'
+                    },
                     legend: { display: false }
                 },
                 scales: {
-                    x: { grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { maxTicksLimit: 10 } },
-                    y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.03)' } }
+                    x: { 
+                        grid: { display: false, drawBorder: false }, 
+                        ticks: { color: '#6b7280', font: { size: 11 }, maxTicksLimit: 10 } 
+                    },
+                    y: { 
+                        beginAtZero: true, 
+                        grid: { color: 'rgba(255,255,255,0.05)', borderDash: [4, 4], drawBorder: false },
+                        ticks: { color: '#6b7280', font: { size: 11 }, padding: 10 }
+                    }
                 },
-                interaction: { mode: 'nearest', axis: 'x', intersect: false }
+                interaction: { mode: 'index', intersect: false }
             }
         });
     }
