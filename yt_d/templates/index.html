@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -30,17 +31,23 @@ youtube video downloader professional,youtube downloader enterprise,youtube vide
     <title>YouTube Video Downloader - Download HD, 1080p, 4K & Shorts</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
 
     <style>
         /* Fix horizontal scroll causing navbar/footer to shift */
-        html, body {
+        html,
+        body {
             overflow-x: clip !important;
             max-width: 100vw !important;
             width: 100% !important;
         }
-        body { font-family: 'Inter', 'Hind Siliguri', sans-serif !important; }
-        
+
+        body {
+            font-family: 'Inter', 'Hind Siliguri', sans-serif !important;
+        }
+
         .shine-text {
             /* YouTube Gradient: Black, Red */
             background: linear-gradient(90deg, #000000 0%, #FF0000 50%, #282828 100%);
@@ -49,29 +56,39 @@ youtube video downloader professional,youtube downloader enterprise,youtube vide
             -webkit-background-clip: text;
             animation: shine 3s linear infinite;
         }
+
         @keyframes shine {
-            to { background-position: 200% center; }
+            to {
+                background-position: 200% center;
+            }
         }
+
         .btn-modern {
             /* YouTube Red to Black Gradient */
             background: linear-gradient(135deg, #FF0000 0%, #000000 100%);
             box-shadow: 0 4px 15px rgba(255, 0, 0, 0.4);
             transition: all 0.3s ease;
         }
+
         .btn-modern:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(255, 0, 0, 0.6);
         }
+
         .input-glow:focus-within {
             box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
             border-color: #FF0000;
         }
+
         body {
             background-color: #f8fafc;
             background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
             background-size: 20px 20px;
         }
-        details > summary::-webkit-details-marker { display: none; }
+
+        details>summary::-webkit-details-marker {
+            display: none;
+        }
     </style>
 
     <!-- Global Ad Scripts (Pop-under, Direct Link, Push Notification) placeholders -->
@@ -84,16 +101,20 @@ youtube video downloader professional,youtube downloader enterprise,youtube vide
     <!-- [ADSTERRA PUSH NOTIFICATIONS PLACEHOLDER] -->
     <!-- <script src="https://YOUR_PUSH_NOTIFICATION_SCRIPT_HERE"></script> -->
 </head>
+
 <body class="font-sans antialiased text-gray-800">
 
-    <div id="videoAdModal" class="fixed inset-0 bg-black/95 z-[100] hidden flex-col items-center justify-center p-4 backdrop-blur-md transition-all duration-500">
-        
+    <div id="videoAdModal"
+        class="fixed inset-0 bg-black/95 z-[100] hidden flex-col items-center justify-center p-4 backdrop-blur-md transition-all duration-500">
+
         <!-- Ad State -->
         <div id="adState" class="flex flex-col items-center justify-center w-full animate-fade-in">
             <p class="text-white mb-4 text-lg font-bold animate-pulse text-center">
-                Please wait, your download will start in <span id="timeCount" class="text-[#FF0000] text-3xl font-extrabold mx-2">5</span> seconds...
+                Please wait, your download will start in <span id="timeCount"
+                    class="text-[#FF0000] text-3xl font-extrabold mx-2">5</span> seconds...
             </p>
-            <video id="adVideo" class="max-w-full max-h-[70vh] rounded-lg shadow-2xl border-2 border-[#FF0000]" playsinline autoplay muted loop>
+            <video id="adVideo" class="max-w-full max-h-[70vh] rounded-lg shadow-2xl border-2 border-[#FF0000]"
+                playsinline autoplay muted loop>
                 <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
                 Your browser does not support HTML video.
             </video>
@@ -101,39 +122,48 @@ youtube video downloader professional,youtube downloader enterprise,youtube vide
         </div>
 
         <!-- Professional Processing State (Hidden initially) -->
-        <div id="processingState" class="hidden flex-col items-center justify-center w-full max-w-md p-8 bg-gray-900/80 border border-gray-700 rounded-2xl shadow-2xl">
+        <div id="processingState"
+            class="hidden flex-col items-center justify-center w-full max-w-md p-8 bg-gray-900/80 border border-gray-700 rounded-2xl shadow-2xl">
             <div class="relative w-24 h-24 mb-6 flex items-center justify-center">
                 <!-- Outer spinning ring -->
-                <div class="absolute inset-0 rounded-full border-t-4 border-[#FF0000] animate-spin shadow-[0_0_15px_rgba(255,0,0,0.5)]"></div>
+                <div
+                    class="absolute inset-0 rounded-full border-t-4 border-[#FF0000] animate-spin shadow-[0_0_15px_rgba(255,0,0,0.5)]">
+                </div>
                 <!-- Inner spinning ring -->
-                <div class="absolute inset-2 border-b-4 border-l-4 border-white rounded-full animate-[spin_1.5s_linear_infinite_reverse]"></div>
+                <div
+                    class="absolute inset-2 border-b-4 border-l-4 border-white rounded-full animate-[spin_1.5s_linear_infinite_reverse]">
+                </div>
                 <!-- Center icon -->
                 <div class="absolute inset-0 flex items-center justify-center text-white text-3xl">
                     <i class="fa-solid fa-cloud-arrow-down animate-pulse"></i>
                 </div>
             </div>
-            
+
             <h3 class="text-white text-2xl font-bold mb-2 tracking-wide text-center">Processing Video...</h3>
             <p id="processingText" class="text-gray-300 text-center text-sm font-medium h-5">
                 Fetching highest quality streams
             </p>
-            
+
             <div class="w-full h-2 bg-gray-800 rounded-full mt-6 overflow-hidden relative shadow-inner shadow-black">
-                <div id="fakeProgressBar" class="absolute top-0 left-0 h-full bg-gradient-to-r from-[#FF0000] to-red-500 rounded-full transition-all duration-1000 w-[5%]"></div>
+                <div id="fakeProgressBar"
+                    class="absolute top-0 left-0 h-full bg-gradient-to-r from-[#FF0000] to-red-500 rounded-full transition-all duration-1000 w-[5%]">
+                </div>
             </div>
-            
+
             <p class="text-xs text-gray-500 mt-4 text-center px-4 leading-relaxed">
-                Please do not close this page. High-quality videos may take up to a minute to merge audio and video layers.
+                Please do not close this page. High-quality videos may take up to a minute to merge audio and video
+                layers.
             </p>
-            
-            <button onclick="closeProcessingModal()" class="mt-6 px-6 py-2 border border-gray-600 rounded-full text-gray-400 hover:text-white hover:bg-gray-800 hover:border-gray-500 transition-all text-sm font-semibold">
+
+            <button onclick="closeProcessingModal()"
+                class="mt-6 px-6 py-2 border border-gray-600 rounded-full text-gray-400 hover:text-white hover:bg-gray-800 hover:border-gray-500 transition-all text-sm font-semibold">
                 Close Dialog
             </button>
         </div>
 
     </div>
 
-<nav class="bg-white shadow-md sticky top-0 z-50">
+    <nav class="bg-white shadow-md sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <div class="flex items-center gap-3">
@@ -141,7 +171,8 @@ youtube video downloader professional,youtube downloader enterprise,youtube vide
                     <div class="flex flex-col">
                         <span class="text-xl font-bold text-gray-900 leading-tight flex items-baseline">
                             Free Downloader
-                            <span class="text-sm font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#FF0000] to-[#282828] ml-1">.top</span>
+                            <span
+                                class="text-sm font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#FF0000] to-[#282828] ml-1">.top</span>
                         </span>
                         <span class="text-xs font-semibold text-[#FF0000]">YouTube video downloader</span>
                     </div>
@@ -149,17 +180,26 @@ youtube video downloader professional,youtube downloader enterprise,youtube vide
 
                 <div class="hidden md:flex space-x-8 items-center">
                     <a href="/" class="text-gray-700 hover:text-[#FF0000] font-medium transition">Home</a>
-                    
+
                     <div class="relative group pb-2 -mb-2">
-                        <button class="flex items-center gap-1 text-gray-700 hover:text-[#FF0000] font-medium transition">
+                        <button
+                            class="flex items-center gap-1 text-gray-700 hover:text-[#FF0000] font-medium transition">
                             More Downloaders <i class="fa-solid fa-chevron-down text-xs"></i>
                         </button>
                         <div class="absolute hidden group-hover:block w-56 pt-2 z-50 left-0 top-full">
                             <div class="bg-white border border-gray-100 shadow-xl rounded-lg py-2">
-                                <a href="https://facebook.freedownloader.top" target="_blank" class="flex items-center px-4 py-2 hover:bg-gray-50"><i class="fa-brands fa-facebook text-[#1877F2] w-6"></i> Facebook</a>
-                                <a href="https://youtube.freedownloader.top" target="_blank" class="flex items-center px-4 py-2 hover:bg-gray-50"><i class="fa-brands fa-youtube text-red-600 w-6"></i> YouTube</a>
-                                <a href="https://tiktok.freedownloader.top" target="_blank" class="flex items-center px-4 py-2 hover:bg-gray-50"><i class="fa-brands fa-tiktok text-black w-6"></i> TikTok</a>
-                                <a href="https://instagram.freedownloader.top" target="_blank" class="flex items-center px-4 py-2 hover:bg-gray-50"><i class="fa-brands fa-instagram text-[#E1306C] w-6"></i> Instagram</a>
+                                <a href="https://facebook.freedownloader.top" target="_blank"
+                                    class="flex items-center px-4 py-2 hover:bg-gray-50"><i
+                                        class="fa-brands fa-facebook text-[#1877F2] w-6"></i> Facebook</a>
+                                <a href="https://youtube.freedownloader.top" target="_blank"
+                                    class="flex items-center px-4 py-2 hover:bg-gray-50"><i
+                                        class="fa-brands fa-youtube text-red-600 w-6"></i> YouTube</a>
+                                <a href="https://tiktok.freedownloader.top" target="_blank"
+                                    class="flex items-center px-4 py-2 hover:bg-gray-50"><i
+                                        class="fa-brands fa-tiktok text-black w-6"></i> TikTok</a>
+                                <a href="https://instagram.freedownloader.top" target="_blank"
+                                    class="flex items-center px-4 py-2 hover:bg-gray-50"><i
+                                        class="fa-brands fa-instagram text-[#E1306C] w-6"></i> Instagram</a>
                             </div>
                         </div>
                     </div>
@@ -176,29 +216,46 @@ youtube video downloader professional,youtube downloader enterprise,youtube vide
             </div>
         </div>
 
-        <div id="mobileMenu" class="hidden md:hidden bg-white border-t border-gray-100 px-4 pt-2 pb-4 space-y-1 shadow-lg">
-            <a href="/" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-[#FF0000] hover:bg-gray-50">Home</a>
+        <div id="mobileMenu"
+            class="hidden md:hidden bg-white border-t border-gray-100 px-4 pt-2 pb-4 space-y-1 shadow-lg">
+            <a href="/"
+                class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-[#FF0000] hover:bg-gray-50">Home</a>
             <p class="px-3 py-2 text-sm font-semibold text-gray-400 uppercase tracking-wider">Other Downloaders</p>
-            <a href="https://facebook.freedownloader.top" target="_blank" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-[#1877F2] hover:bg-gray-50"><i class="fa-brands fa-facebook text-[#1877F2] w-6"></i> Facebook</a>
-            <a href="https://youtube.freedownloader.top" target="_blank" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-red-600 hover:bg-gray-50"><i class="fa-brands fa-youtube text-red-600 w-6"></i> YouTube</a>
-            <a href="https://tiktok.freedownloader.top" target="_blank" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50"><i class="fa-brands fa-tiktok text-black w-6"></i> TikTok</a>
-            <a href="https://instagram.freedownloader.top" target="_blank" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-[#E1306C] hover:bg-gray-50"><i class="fa-brands fa-instagram text-[#E1306C] w-6"></i> Instagram</a>
-            
-            <a href="#seo-blog" class="block px-3 py-2 mt-2 rounded-md text-base font-medium text-gray-700 hover:text-[#FF0000] hover:bg-gray-50 border-t border-gray-100">Blog</a>
-            <a href="#faq" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-[#FF0000] hover:bg-gray-50">FAQ</a>
+            <a href="https://f.freedownloader.top" target="_blank"
+                class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-[#1877F2] hover:bg-gray-50"><i
+                    class="fa-brands fa-facebook text-[#1877F2] w-6"></i> Facebook</a>
+            <a href="https://y.freedownloader.top" target="_blank"
+                class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-red-600 hover:bg-gray-50"><i
+                    class="fa-brands fa-youtube text-red-600 w-6"></i> YouTube</a>
+            <a href="https://t.freedownloader.top" target="_blank"
+                class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50"><i
+                    class="fa-brands fa-tiktok text-black w-6"></i> TikTok</a>
+            <a href="https://i.freedownloader.top" target="_blank"
+                class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-[#E1306C] hover:bg-gray-50"><i
+                    class="fa-brands fa-instagram text-[#E1306C] w-6"></i> Instagram</a>
+
+            <a href="#seo-blog"
+                class="block px-3 py-2 mt-2 rounded-md text-base font-medium text-gray-700 hover:text-[#FF0000] hover:bg-gray-50 border-t border-gray-100">Blog</a>
+            <a href="#faq"
+                class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-[#FF0000] hover:bg-gray-50">FAQ</a>
         </div>
     </nav>
 
     <div class="max-w-4xl mx-auto px-4 py-12 text-center">
-        <h1 class="text-2xl sm:text-3xl md:text-5xl font-extrabold mb-4 flex flex-wrap justify-center items-center gap-2 sm:gap-3 leading-tight">
+        <h1
+            class="text-2xl sm:text-3xl md:text-5xl font-extrabold mb-4 flex flex-wrap justify-center items-center gap-2 sm:gap-3 leading-tight">
             <i class="fa-brands fa-youtube text-red-600"></i>
             <span class="shine-text">YouTube Video Downloader</span>
         </h1>
-        <p class="text-gray-500 mb-8 px-2 text-sm sm:text-base">Download high-quality YouTube videos and Shorts easily for free!</p>
+        <p class="text-gray-500 mb-8 px-2 text-sm sm:text-base">Download high-quality YouTube videos and Shorts easily
+            for free!</p>
 
-        <div class="flex items-center bg-white rounded-xl p-2 border border-gray-300 input-glow transition-all duration-300 w-full max-w-xl mx-auto shadow-sm">
-            <input type="text" id="videoUrl" placeholder="Paste YouTube video URL here..." class="flex-grow px-2 py-2 outline-none bg-transparent w-full text-sm sm:text-base">
-            <button onclick="fetchVideoInfo()" class="btn-modern text-white rounded-xl px-4 py-2 ml-2 font-bold flex items-center gap-2 text-sm sm:text-base">
+        <div
+            class="flex items-center bg-white rounded-xl p-2 border border-gray-300 input-glow transition-all duration-300 w-full max-w-xl mx-auto shadow-sm">
+            <input type="text" id="videoUrl" placeholder="Paste YouTube video URL here..."
+                class="flex-grow px-2 py-2 outline-none bg-transparent w-full text-sm sm:text-base">
+            <button onclick="fetchVideoInfo()"
+                class="btn-modern text-white rounded-xl px-4 py-2 ml-2 font-bold flex items-center gap-2 text-sm sm:text-base">
                 <i class="fa-solid fa-download"></i> <span class="hidden sm:inline">Download</span>
             </button>
         </div>
@@ -208,23 +265,27 @@ youtube video downloader professional,youtube downloader enterprise,youtube vide
             <p class="mt-2 font-medium">Fetching video information...</p>
         </div>
 
-        <div id="resultSection" class="hidden mt-10 bg-white p-6 rounded-2xl shadow-lg border border-gray-100 text-left max-w-3xl mx-auto flex flex-col md:flex-row gap-6">
+        <div id="resultSection"
+            class="hidden mt-10 bg-white p-6 rounded-2xl shadow-lg border border-gray-100 text-left max-w-3xl mx-auto flex flex-col md:flex-row gap-6">
             <div class="w-full md:w-1/2">
-                <img id="videoThumb" src="" alt="Video Thumbnail" class="w-full rounded-lg shadow-md object-cover h-48" referrerpolicy="no-referrer" onerror="this.src='https://via.placeholder.com/480x270.png?text=Thumbnail+Unavailable';this.onerror=null;">
+                <img id="videoThumb" src="" alt="Video Thumbnail" class="w-full rounded-lg shadow-md object-cover h-48"
+                    referrerpolicy="no-referrer"
+                    onerror="this.src='https://via.placeholder.com/480x270.png?text=Thumbnail+Unavailable';this.onerror=null;">
                 <h3 id="videoTitle" class="mt-3 font-semibold text-gray-800 line-clamp-2"></h3>
             </div>
-            
+
             <div class="w-full md:w-1/2 flex flex-col gap-3 justify-center">
                 <h4 class="font-bold text-gray-700 mb-2 border-b pb-2">Available Qualities:</h4>
                 <div id="resolutionsList" class="flex flex-col gap-3">
-                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <div class="py-10 bg-gray-50 border-t border-gray-200">
         <div class="max-w-4xl mx-auto px-4">
-            <div class="w-full h-24 bg-white/[0.02] border border-gray-200 shadow-sm rounded-2xl flex items-center justify-center text-gray-500 text-sm">
+            <div
+                class="w-full h-24 bg-white/[0.02] border border-gray-200 shadow-sm rounded-2xl flex items-center justify-center text-gray-500 text-sm">
                 [ Footer Ad Placement ]
             </div>
         </div>
@@ -232,20 +293,27 @@ youtube video downloader professional,youtube downloader enterprise,youtube vide
 
     <div class="bg-white py-16 border-t border-gray-200 relative">
         <div class="max-w-5xl mx-auto px-4">
-            <h2 class="text-2xl font-bold text-center mb-10"><i class="fa-solid fa-circle-question text-[#FF0000]"></i> How to Download YouTube Videos?</h2>
+            <h2 class="text-2xl font-bold text-center mb-10"><i class="fa-solid fa-circle-question text-[#FF0000]"></i>
+                How to Download YouTube Videos?</h2>
             <div class="grid md:grid-cols-3 gap-8">
                 <div class="text-center p-6 bg-gray-50 rounded-xl border border-gray-100 hover:shadow-md transition">
-                    <div class="w-16 h-16 mx-auto bg-red-100 text-[#FF0000] rounded-full flex items-center justify-center text-xl font-bold mb-4">1 <i class="fa-solid fa-link ml-1.5"></i></div>
+                    <div
+                        class="w-16 h-16 mx-auto bg-red-100 text-[#FF0000] rounded-full flex items-center justify-center text-xl font-bold mb-4">
+                        1 <i class="fa-solid fa-link ml-1.5"></i></div>
                     <h3 class="font-bold mb-2">Copy Video Link</h3>
                     <p class="text-gray-500 text-sm">Find the YouTube video, click Share, and select 'Copy Link'.</p>
                 </div>
                 <div class="text-center p-6 bg-gray-50 rounded-xl border border-gray-100 hover:shadow-md transition">
-                    <div class="w-16 h-16 mx-auto bg-red-100 text-[#FF0000] rounded-full flex items-center justify-center text-xl font-bold mb-4">2 <i class="fa-solid fa-paste ml-1.5"></i></div>
+                    <div
+                        class="w-16 h-16 mx-auto bg-red-100 text-[#FF0000] rounded-full flex items-center justify-center text-xl font-bold mb-4">
+                        2 <i class="fa-solid fa-paste ml-1.5"></i></div>
                     <h3 class="font-bold mb-2">Paste the Link</h3>
                     <p class="text-gray-500 text-sm">Paste the link in the input box above.</p>
                 </div>
                 <div class="text-center p-6 bg-gray-50 rounded-xl border border-gray-100 hover:shadow-md transition">
-                    <div class="w-16 h-16 mx-auto bg-red-100 text-[#FF0000] rounded-full flex items-center justify-center text-xl font-bold mb-4">3 <i class="fa-solid fa-download ml-1.5"></i></div>
+                    <div
+                        class="w-16 h-16 mx-auto bg-red-100 text-[#FF0000] rounded-full flex items-center justify-center text-xl font-bold mb-4">
+                        3 <i class="fa-solid fa-download ml-1.5"></i></div>
                     <h3 class="font-bold mb-2">Download</h3>
                     <p class="text-gray-500 text-sm">Choose your preferred video quality and save to your device.</p>
                 </div>
@@ -257,39 +325,57 @@ youtube video downloader professional,youtube downloader enterprise,youtube vide
         <div class="max-w-4xl mx-auto px-4 sm:px-6">
             <div class="text-center mb-10">
                 <span class="bg-red-100 text-[#FF0000] font-bold px-3 py-1 rounded-full text-sm">Complete Guide</span>
-                <h1 class="text-3xl md:text-4xl font-bold mt-4 mb-4 text-gray-900 leading-tight">How to Download YouTube Videos & Shorts in HD</h1>
-                <p class="text-gray-500">Master the art of saving YouTube videos directly to your device in original HD quality.</p>
+                <h1 class="text-3xl md:text-4xl font-bold mt-4 mb-4 text-gray-900 leading-tight">How to Download YouTube
+                    Videos & Shorts in HD</h1>
+                <p class="text-gray-500">Master the art of saving YouTube videos directly to your device in original HD
+                    quality.</p>
             </div>
 
             <div class="prose prose-red max-w-none text-gray-700 leading-relaxed space-y-8">
                 <div>
                     <h2 class="text-2xl font-bold text-gray-800 border-b pb-2 mb-4">Why Use a YouTube Downloader?</h2>
-                    <p>YouTube is the world's largest platform for music videos, tutorials, vlogs, podcasts, and Shorts. While the app allows you to save some videos for offline viewing within their platform, you can't access the actual raw video file to share or use elsewhere. Using our <a href="/youtube" class="text-[#FF0000] font-semibold hover:underline">YouTube Video Downloader</a> allows you to save your favorite clips completely free in high quality (MP4), so you can watch them offline, use them in your projects, or share them clearly with your friends anywhere.</p>
+                    <p>YouTube is the world's largest platform for music videos, tutorials, vlogs, podcasts, and Shorts.
+                        While the app allows you to save some videos for offline viewing within their platform, you
+                        can't access the actual raw video file to share or use elsewhere. Using our <a href="/youtube"
+                            class="text-[#FF0000] font-semibold hover:underline">YouTube Video Downloader</a> allows you
+                        to save your favorite clips completely free in high quality (MP4), so you can watch them
+                        offline, use them in your projects, or share them clearly with your friends anywhere.</p>
                 </div>
 
                 <div>
-                    <h2 class="text-2xl font-bold text-gray-800 border-b pb-2 mb-4">How to Save YouTube Videos (Step-by-Step)</h2>
-                    <p class="mb-3">Downloading YouTube videos is incredibly simple. Just follow these steps on your mobile or PC:</p>
+                    <h2 class="text-2xl font-bold text-gray-800 border-b pb-2 mb-4">How to Save YouTube Videos
+                        (Step-by-Step)</h2>
+                    <p class="mb-3">Downloading YouTube videos is incredibly simple. Just follow these steps on your
+                        mobile or PC:</p>
                     <ul class="list-disc pl-6 space-y-2">
-                        <li><strong>Step 1:</strong> Open the YouTube app on your phone or go to youtube.com on your computer.</li>
-                        <li><strong>Step 2:</strong> Find the video or Shorts you want to download. Tap the "Share" icon (the arrow pointing right).</li>
+                        <li><strong>Step 1:</strong> Open the YouTube app on your phone or go to youtube.com on your
+                            computer.</li>
+                        <li><strong>Step 2:</strong> Find the video or Shorts you want to download. Tap the "Share" icon
+                            (the arrow pointing right).</li>
                         <li><strong>Step 3:</strong> Tap on the "Copy Link" option.</li>
-                        <li><strong>Step 4:</strong> Open our Free Downloader website, paste the copied link into the input box above, and click the Download button.</li>
+                        <li><strong>Step 4:</strong> Open our Free Downloader website, paste the copied link into the
+                            input box above, and click the Download button.</li>
                     </ul>
                 </div>
 
                 <div class="bg-gray-50 p-6 rounded-xl border border-gray-100">
                     <h2 class="text-2xl font-bold text-gray-800 mb-4">Troubleshooting: Why is the download failing?</h2>
-                    <p class="mb-3">If you encounter an error while trying to download, it is usually due to one of the following reasons:</p>
+                    <p class="mb-3">If you encounter an error while trying to download, it is usually due to one of the
+                        following reasons:</p>
                     <ul class="list-disc pl-6 space-y-2">
-                        <li><strong>Private Video:</strong> The video is set to private. Our system can only fetch publicly available videos.</li>
-                        <li><strong>Deleted or Copyrighted Content:</strong> The creator or YouTube may have removed the video right before you tried to save it.</li>
-                        <li><strong>Invalid Link:</strong> Make sure you copied the correct video URL (usually looks like <code>https://youtu.be/...</code> or <code>https://www.youtube.com/watch?v=...</code>).</li>
+                        <li><strong>Private Video:</strong> The video is set to private. Our system can only fetch
+                            publicly available videos.</li>
+                        <li><strong>Deleted or Copyrighted Content:</strong> The creator or YouTube may have removed the
+                            video right before you tried to save it.</li>
+                        <li><strong>Invalid Link:</strong> Make sure you copied the correct video URL (usually looks
+                            like <code>https://youtu.be/...</code> or <code>https://www.youtube.com/watch?v=...</code>).
+                        </li>
                     </ul>
                 </div>
 
                 <div>
-                    <h2 class="text-2xl font-bold text-gray-800 border-b pb-2 mb-4">Best YouTube Downloader Tools Compared</h2>
+                    <h2 class="text-2xl font-bold text-gray-800 border-b pb-2 mb-4">Best YouTube Downloader Tools
+                        Compared</h2>
                     <div class="overflow-x-auto mt-4">
                         <table class="min-w-full bg-white border border-gray-200 shadow-sm rounded-lg overflow-hidden">
                             <thead class="bg-gray-100">
@@ -325,258 +411,272 @@ youtube video downloader professional,youtube downloader enterprise,youtube vide
 
     <section id="faq" class="py-16 bg-gray-50 border-t border-gray-200">
         <div class="max-w-4xl mx-auto px-4">
-            <h2 class="text-3xl font-bold text-center mb-10"><i class="fa-solid fa-comments text-[#FF0000]"></i> Frequently Asked Questions</h2>
+            <h2 class="text-3xl font-bold text-center mb-10"><i class="fa-solid fa-comments text-[#FF0000]"></i>
+                Frequently Asked Questions</h2>
             <div class="space-y-4">
                 <details class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm cursor-pointer group">
                     <summary class="font-bold text-lg text-gray-800 flex justify-between items-center outline-none">
                         How to download YouTube videos online?
-                        <i class="fa-solid fa-plus text-[#FF0000] transition-transform duration-300 group-open:rotate-45"></i>
+                        <i
+                            class="fa-solid fa-plus text-[#FF0000] transition-transform duration-300 group-open:rotate-45"></i>
                     </summary>
-                    <p class="mt-4 text-gray-600 border-t pt-4">Simply copy the URL from the YouTube app or website, paste it above, and hit download to get your video file securely.</p>
+                    <p class="mt-4 text-gray-600 border-t pt-4">Simply copy the URL from the YouTube app or website,
+                        paste it above, and hit download to get your video file securely.</p>
                 </details>
                 <details class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm cursor-pointer group">
                     <summary class="font-bold text-lg text-gray-800 flex justify-between items-center outline-none">
                         Can I download YouTube Shorts?
-                        <i class="fa-solid fa-plus text-[#FF0000] transition-transform duration-300 group-open:rotate-45"></i>
+                        <i
+                            class="fa-solid fa-plus text-[#FF0000] transition-transform duration-300 group-open:rotate-45"></i>
                     </summary>
-                    <p class="mt-4 text-gray-600 border-t pt-4">Yes! Our tool works perfectly for both regular YouTube videos and YouTube Shorts. Just paste the link!</p>
+                    <p class="mt-4 text-gray-600 border-t pt-4">Yes! Our tool works perfectly for both regular YouTube
+                        videos and YouTube Shorts. Just paste the link!</p>
                 </details>
                 <details class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm cursor-pointer group">
                     <summary class="font-bold text-lg text-gray-800 flex justify-between items-center outline-none">
                         Do I need to install any app to download?
-                        <i class="fa-solid fa-plus text-[#FF0000] transition-transform duration-300 group-open:rotate-45"></i>
+                        <i
+                            class="fa-solid fa-plus text-[#FF0000] transition-transform duration-300 group-open:rotate-45"></i>
                     </summary>
-                    <p class="mt-4 text-gray-600 border-t pt-4">No, our downloader is a web-based tool. You can use it directly from your mobile browser (Chrome, Safari) or PC without installing anything.</p>
+                    <p class="mt-4 text-gray-600 border-t pt-4">No, our downloader is a web-based tool. You can use it
+                        directly from your mobile browser (Chrome, Safari) or PC without installing anything.</p>
                 </details>
             </div>
         </div>
     </section>
 
-<footer class="bg-[#0B0F19] text-gray-400 py-10 md:py-16 font-sans border-t border-gray-800">
+    <footer class="bg-[#0B0F19] text-gray-400 py-10 md:py-16 font-sans border-t border-gray-800">
 
-    <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-8">
+        <div
+            class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-8">
 
-        <div class="lg:col-span-2 flex flex-col items-start text-left">
-            <a href="/" class="flex items-center gap-3 mb-5 group">
-                <img src="https://i.ibb.co.com/MkJSfHKC/mwa.png" 
-                     alt="MWA Logo" 
-                     class="w-auto h-14 md:h-16 max-w-full group-hover:scale-105 transition-transform duration-300 drop-shadow-lg">
-                <div class="flex flex-col justify-center">
-                    <h1 class="text-green-300 font-extrabold text-xl md:text-2xl tracking-[0.15em] uppercase">
-                        MICRO WEB APP
-                    </h1>
-                    <span class="text-[11px] text-blue-500 font-bold tracking-[0.25em] uppercase mt-0.5"> <span style="color: rgb(35, 128, 94);">MWA</span>  PLATFORM</span>
-                </div>
-            </a>
-            <p class="text-sm text-gray-500 max-w-md leading-relaxed">
-                A powerful micro web app platform designed for speed, simplicity, and performance. 
-                Build, launch, and scale your tools effortlessly with modern technology.
+            <div class="lg:col-span-2 flex flex-col items-start text-left">
+                <a href="/" class="flex items-center gap-3 mb-5 group">
+                    <img src="https://i.ibb.co.com/MkJSfHKC/mwa.png" alt="MWA Logo"
+                        class="w-auto h-14 md:h-16 max-w-full group-hover:scale-105 transition-transform duration-300 drop-shadow-lg">
+                    <div class="flex flex-col justify-center">
+                        <h1 class="text-green-300 font-extrabold text-xl md:text-2xl tracking-[0.15em] uppercase">
+                            MICRO WEB APP
+                        </h1>
+                        <span class="text-[11px] text-blue-500 font-bold tracking-[0.25em] uppercase mt-0.5"> <span
+                                style="color: rgb(35, 128, 94);">MWA</span> PLATFORM</span>
+                    </div>
+                </a>
+                <p class="text-sm text-gray-500 max-w-md leading-relaxed">
+                    A powerful micro web app platform designed for speed, simplicity, and performance.
+                    Build, launch, and scale your tools effortlessly with modern technology.
+                </p>
+            </div>
+
+            <div class="flex flex-col items-start">
+                <h3 class="text-gray-200 font-bold mb-5 md:mb-6 uppercase tracking-wider text-sm">
+                    Tools
+                </h3>
+                <ul class="space-y-4 text-sm font-medium">
+                    <li>
+                        <a href="https://facebook.freedownloader.top" target="_blank"
+                            class="text-gray-400 hover:text-blue-500 transition-colors duration-300 flex items-center gap-3 group">
+                            <i class="fa-brands fa-facebook text-lg group-hover:scale-110 transition-transform"></i>
+                            Facebook Downloader
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://youtube.freedownloader.top" target="_blank"
+                            class="text-gray-400 hover:text-red-500 transition-colors duration-300 flex items-center gap-3 group">
+                            <i class="fa-brands fa-youtube text-lg group-hover:scale-110 transition-transform"></i>
+                            YouTube Downloader
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://tiktok.freedownloader.top" target="_blank"
+                            class="text-gray-400 hover:text-white transition-colors duration-300 flex items-center gap-3 group">
+                            <i class="fa-brands fa-tiktok text-lg group-hover:scale-110 transition-transform"></i>
+                            TikTok Downloader
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://instagram.freedownloader.top" target="_blank"
+                            class="text-gray-400 hover:text-pink-500 transition-colors duration-300 flex items-center gap-3 group">
+                            <i class="fa-brands fa-instagram text-lg group-hover:scale-110 transition-transform"></i>
+                            Instagram Downloader
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="flex flex-col items-start">
+                <h3 class="text-gray-200 font-bold mb-5 md:mb-6 uppercase tracking-wider text-sm">
+                    Company
+                </h3>
+                <ul class="space-y-4 text-sm font-medium">
+                    <li><a href="/about" class="text-gray-400 hover:text-blue-400 transition-colors duration-300">About
+                            Us</a></li>
+                    <li><a href="/privacy"
+                            class="text-gray-400 hover:text-blue-400 transition-colors duration-300">Privacy Policy</a>
+                    </li>
+                    <li><a href="/terms" class="text-gray-400 hover:text-blue-400 transition-colors duration-300">Terms
+                            of Service</a></li>
+                    <li><a href="/contact"
+                            class="text-gray-400 hover:text-blue-400 transition-colors duration-300">Contact Us</a></li>
+                </ul>
+            </div>
+
+        </div>
+
+        <div
+            class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 mt-12 md:mt-16 pt-8 border-t border-gray-800 flex flex-col-reverse md:flex-row justify-between items-center gap-5">
+            <p class="text-sm text-gray-500 text-center md:text-left">
+                © 2026 Micro Web App. All rights reserved.
             </p>
+
+            <div class="flex items-center gap-5 text-gray-500">
+                <a href="#" class="hover:text-white transition-colors duration-300"><i
+                        class="fa-brands fa-twitter text-xl md:text-lg"></i></a>
+                <a href="#" class="hover:text-white transition-colors duration-300"><i
+                        class="fa-brands fa-github text-xl md:text-lg"></i></a>
+                <a href="#" class="hover:text-white transition-colors duration-300"><i
+                        class="fa-brands fa-discord text-xl md:text-lg"></i></a>
+            </div>
         </div>
 
-        <div class="flex flex-col items-start">
-            <h3 class="text-gray-200 font-bold mb-5 md:mb-6 uppercase tracking-wider text-sm">
-                Tools
-            </h3>
-            <ul class="space-y-4 text-sm font-medium">
-                <li>
-                    <a href="https://facebook.freedownloader.top" target="_blank"
-                       class="text-gray-400 hover:text-blue-500 transition-colors duration-300 flex items-center gap-3 group">
-                        <i class="fa-brands fa-facebook text-lg group-hover:scale-110 transition-transform"></i> 
-                        Facebook Downloader
-                    </a>
-                </li>
-                <li>
-                    <a href="https://youtube.freedownloader.top" target="_blank"
-                       class="text-gray-400 hover:text-red-500 transition-colors duration-300 flex items-center gap-3 group">
-                        <i class="fa-brands fa-youtube text-lg group-hover:scale-110 transition-transform"></i> 
-                        YouTube Downloader
-                    </a>
-                </li>
-                <li>
-                    <a href="https://tiktok.freedownloader.top" target="_blank"
-                       class="text-gray-400 hover:text-white transition-colors duration-300 flex items-center gap-3 group">
-                        <i class="fa-brands fa-tiktok text-lg group-hover:scale-110 transition-transform"></i> 
-                        TikTok Downloader
-                    </a>
-                </li>
-                <li>
-                    <a href="https://instagram.freedownloader.top" target="_blank"
-                       class="text-gray-400 hover:text-pink-500 transition-colors duration-300 flex items-center gap-3 group">
-                        <i class="fa-brands fa-instagram text-lg group-hover:scale-110 transition-transform"></i> 
-                        Instagram Downloader
-                    </a>
-                </li>
-            </ul>
-        </div>
+    </footer>
 
-        <div class="flex flex-col items-start">
-            <h3 class="text-gray-200 font-bold mb-5 md:mb-6 uppercase tracking-wider text-sm">
-                Company
-            </h3>
-            <ul class="space-y-4 text-sm font-medium">
-                <li><a href="/about" class="text-gray-400 hover:text-blue-400 transition-colors duration-300">About Us</a></li>
-                <li><a href="/privacy" class="text-gray-400 hover:text-blue-400 transition-colors duration-300">Privacy Policy</a></li>
-                <li><a href="/terms" class="text-gray-400 hover:text-blue-400 transition-colors duration-300">Terms of Service</a></li>
-                <li><a href="/contact" class="text-gray-400 hover:text-blue-400 transition-colors duration-300">Contact Us</a></li>
-            </ul>
-        </div>
+    <script>
+        // Mobile Menu Script
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
 
-    </div>
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
 
-    <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 mt-12 md:mt-16 pt-8 border-t border-gray-800 flex flex-col-reverse md:flex-row justify-between items-center gap-5">
-        <p class="text-sm text-gray-500 text-center md:text-left">
-            © 2026 Micro Web App. All rights reserved.
-        </p>
-        
-        <div class="flex items-center gap-5 text-gray-500">
-            <a href="#" class="hover:text-white transition-colors duration-300"><i class="fa-brands fa-twitter text-xl md:text-lg"></i></a>
-            <a href="#" class="hover:text-white transition-colors duration-300"><i class="fa-brands fa-github text-xl md:text-lg"></i></a>
-            <a href="#" class="hover:text-white transition-colors duration-300"><i class="fa-brands fa-discord text-xl md:text-lg"></i></a>
-        </div>
-    </div>
+        // Downloader Script
+        let currentVideoUrl = "";
 
-</footer>
+        async function fetchVideoInfo() {
+            currentVideoUrl = document.getElementById('videoUrl').value.trim();
+            if (!currentVideoUrl) {
+                alert('Please enter a YouTube video URL!');
+                return;
+            }
 
-<script>
-    // Mobile Menu Script
-    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-    const mobileMenu = document.getElementById('mobileMenu');
-    
-    mobileMenuBtn.addEventListener('click', () => {
-        mobileMenu.classList.toggle('hidden');
-    });
+            document.getElementById('resultSection').classList.add('hidden');
+            document.getElementById('loading').classList.remove('hidden');
 
-    // Downloader Script
-    let currentVideoUrl = "";
+            try {
+                const response = await fetch('/api/get_info', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url: currentVideoUrl })
+                });
 
-    async function fetchVideoInfo() {
-        currentVideoUrl = document.getElementById('videoUrl').value.trim();
-        if(!currentVideoUrl) {
-            alert('Please enter a YouTube video URL!');
-            return;
-        }
+                const data = await response.json();
+                document.getElementById('loading').classList.add('hidden');
 
-        document.getElementById('resultSection').classList.add('hidden');
-        document.getElementById('loading').classList.remove('hidden');
+                if (response.ok) {
+                    document.getElementById('videoThumb').referrerPolicy = 'no-referrer';
+                    document.getElementById('videoThumb').src = data.thumbnail;
+                    document.getElementById('videoTitle').innerText = data.title;
 
-        try {
-            const response = await fetch('/api/get_info', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ url: currentVideoUrl })
-            });
-            
-            const data = await response.json();
-            document.getElementById('loading').classList.add('hidden');
+                    const resList = document.getElementById('resolutionsList');
+                    resList.innerHTML = '';
 
-            if(response.ok) {
-                document.getElementById('videoThumb').referrerPolicy = 'no-referrer';
-                document.getElementById('videoThumb').src = data.thumbnail;
-                document.getElementById('videoTitle').innerText = data.title;
-                
-                const resList = document.getElementById('resolutionsList');
-                resList.innerHTML = ''; 
-                
-                // Use dynamic formats from backend
-                data.formats.forEach(q => {
-                    const btn = document.createElement('button');
-                    btn.className = 'w-full flex justify-between items-center px-4 py-3 border border-gray-200 rounded-lg bg-white hover:bg-red-50 transition-all duration-300 font-medium text-gray-800 shadow-sm hover:shadow-md transform hover:-translate-y-1 hover-bounce text-sm sm:text-base';
-                    
-                    btn.innerHTML = `
+                    // Use dynamic formats from backend
+                    data.formats.forEach(q => {
+                        const btn = document.createElement('button');
+                        btn.className = 'w-full flex justify-between items-center px-4 py-3 border border-gray-200 rounded-lg bg-white hover:bg-red-50 transition-all duration-300 font-medium text-gray-800 shadow-sm hover:shadow-md transform hover:-translate-y-1 hover-bounce text-sm sm:text-base';
+
+                        btn.innerHTML = `
                         <span class="flex items-center"><i class="fa-solid fa-video text-[#FF0000] mr-3 text-lg"></i> ${q.resolution}</span> 
                         <span class="bg-green-100 text-green-700 border border-green-200 text-xs sm:text-sm px-3 sm:px-4 py-2 rounded-md font-bold transition-all duration-300 hover:bg-green-600 hover:text-white flex items-center gap-2 shadow-sm">
                             <i class="fa-solid fa-download transition-transform duration-300"></i> Download
                         </span>`;
-                    
-                    btn.onclick = () => handleDownloadClick(q.height);
-                    resList.appendChild(btn);
-                });
-                
-                document.getElementById('resultSection').classList.remove('hidden');
+
+                        btn.onclick = () => handleDownloadClick(q.height);
+                        resList.appendChild(btn);
+                    });
+
+                    document.getElementById('resultSection').classList.remove('hidden');
+                } else {
+                    alert(data.error || 'An error occurred while fetching video info.');
+                }
+            } catch (err) {
+                document.getElementById('loading').classList.add('hidden');
+                alert('Server connection failed. Is the Python backend running?');
+            }
+        }
+
+        let selectedHeight = '';
+
+        function handleDownloadClick(height) {
+            selectedHeight = height;
+
+            // 1. Open Direct Link Ad in new tab
+            if (window.AD_CONFIG && window.AD_CONFIG.DIRECT_LINK_URL.includes("http")) {
+                window.open(window.AD_CONFIG.DIRECT_LINK_URL, '_blank');
+            }
+
+            // 2. Trigger actual download in current tab
+            let vidTitle = document.getElementById('videoTitle').innerText || 'YouTube_Video';
+            const downloadUrl = `/api/download?url=${encodeURIComponent(currentVideoUrl)}&res=${selectedHeight}&title=${encodeURIComponent(vidTitle)}`;
+
+            // Use an anchor tag to prevent browser blocking
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = downloadUrl;
+            a.download = '';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        // --- POP-UNDER / ON-CLICK AD LOGIC ---
+        let popUnderTriggered = false;
+
+        function triggerPopUnder(e) {
+            if (!popUnderTriggered && window.AD_CONFIG && window.AD_CONFIG.POP_UNDER_URL.includes("http")) {
+                if (e.target.tagName && e.target.tagName.toLowerCase() === 'a' && e.target.target !== '_blank') {
+                    return;
+                }
+                popUnderTriggered = true;
+                const newWin = window.open(window.AD_CONFIG.POP_UNDER_URL, '_blank');
+                if (newWin) window.focus();
+
+                document.removeEventListener('click', triggerPopUnder, true);
+                document.removeEventListener('paste', triggerPopUnder, true);
+            }
+        }
+
+        document.addEventListener('click', triggerPopUnder, { capture: true });
+        document.addEventListener('paste', triggerPopUnder, { capture: true });
+
+        // ড্রপডাউন পরিবর্তন হলে গুগল ট্রান্সলেটরকে ট্রিগার করার ফাংশন
+        function changeLanguage(langCode) {
+            var selectField = document.querySelector("select.goog-te-combo");
+            if (selectField) {
+                selectField.value = langCode;
+                selectField.dispatchEvent(new Event('change'));
             } else {
-                alert(data.error || 'An error occurred while fetching video info.');
+                setTimeout(function () { changeLanguage(langCode); }, 500);
             }
-        } catch (err) {
-            document.getElementById('loading').classList.add('hidden');
-            alert('Server connection failed. Is the Python backend running?');
         }
-    }
 
-    let selectedHeight = '';
-    
-    function handleDownloadClick(height) {
-        selectedHeight = height;
-        
-        // 1. Open Direct Link Ad in new tab
-        if (window.AD_CONFIG && window.AD_CONFIG.DIRECT_LINK_URL.includes("http")) {
-            window.open(window.AD_CONFIG.DIRECT_LINK_URL, '_blank');
+        // বাটনে ক্লিক করলে ড্রপডাউন বাংলা সিলেক্ট করবে এবং ট্রান্সলেট করবে
+        function translateToBangla() {
+            var selector = document.getElementById('global-lang-selector');
+            if (selector) selector.value = 'bn';
+            changeLanguage('bn');
         }
-        
-        // 2. Trigger actual download in current tab
-        let vidTitle = document.getElementById('videoTitle').innerText || 'YouTube_Video';
-        const downloadUrl = `/api/download?url=${encodeURIComponent(currentVideoUrl)}&res=${selectedHeight}&title=${encodeURIComponent(vidTitle)}`;
-        
-        // Use an anchor tag to prevent browser blocking
-        const a = document.createElement('a');
-        a.style.display = 'none';
-        a.href = downloadUrl;
-        a.download = '';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-    }
-
-    // --- POP-UNDER / ON-CLICK AD LOGIC ---
-    let popUnderTriggered = false;
-
-    function triggerPopUnder(e) {
-        if (!popUnderTriggered && window.AD_CONFIG && window.AD_CONFIG.POP_UNDER_URL.includes("http")) {
-            if (e.target.tagName && e.target.tagName.toLowerCase() === 'a' && e.target.target !== '_blank') {
-               return; 
-            }
-            popUnderTriggered = true;
-            const newWin = window.open(window.AD_CONFIG.POP_UNDER_URL, '_blank');
-            if (newWin) window.focus();
-            
-            document.removeEventListener('click', triggerPopUnder, true);
-            document.removeEventListener('paste', triggerPopUnder, true);
-        }
-    }
-
-    document.addEventListener('click', triggerPopUnder, { capture: true });
-    document.addEventListener('paste', triggerPopUnder, { capture: true });
-
-    // ড্রপডাউন পরিবর্তন হলে গুগল ট্রান্সলেটরকে ট্রিগার করার ফাংশন
-    function changeLanguage(langCode) {
-        var selectField = document.querySelector("select.goog-te-combo");
-        if(selectField) {
-            selectField.value = langCode;
-            selectField.dispatchEvent(new Event('change'));
-        } else {
-            setTimeout(function() { changeLanguage(langCode); }, 500);
-        }
-    }
-
-    // বাটনে ক্লিক করলে ড্রপডাউন বাংলা সিলেক্ট করবে এবং ট্রান্সলেট করবে
-    function translateToBangla() {
-        var selector = document.getElementById('global-lang-selector');
-        if(selector) selector.value = 'bn';
-        changeLanguage('bn');
-    }
 
 
 
-</script>
+    </script>
 
-<script src="../static/js/seo.js"></script>
+    <script src="../static/js/seo.js"></script>
 
-<!-- Analytics Tracker -->
-<script
-  src="https://analytics.freedownloader.top/static/tracker.js"
-  data-site-id="yt_downloader"
-  data-category="youtube"
-  data-backend-url="https://analytics.freedownloader.top"
-></script>
+    <!-- Analytics Tracker -->
+    <script src="https://analytics.freedownloader.top/static/tracker.js" data-site-id="yt_downloader"
+        data-category="youtube" data-backend-url="https://analytics.freedownloader.top"></script>
 </body>
+
 </html>

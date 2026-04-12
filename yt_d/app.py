@@ -161,7 +161,7 @@ def get_base_ydl_opts():
 
 
 # ── File Cleanup ──────────────────────────────────────────────
-def delete_file_delayed(filepath, delay=300):
+def delete_file_delayed(filepath, delay=1800):
     """
     Background thread to delete the file after a delay (e.g., 5 minutes).
     This safely allows Flask's send_file to stream the video to the user before deletion.
@@ -329,7 +329,7 @@ def download_video():
             ydl.download([video_url])
 
         # Trigger auto-delete in 5 minutes
-        delete_file_delayed(filepath, delay=300)
+        delete_file_delayed(filepath, delay=1800)
 
         logger.info("✅ Download complete: %s", unique_filename)
 
