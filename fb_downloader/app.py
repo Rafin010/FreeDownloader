@@ -24,55 +24,29 @@ DOWNLOAD_DIR = os.path.join(BASE_DIR, 'downloads')
 COOKIES_FILE = os.path.join(BASE_DIR, 'cookies.txt')
 os.makedirs(DOWNLOAD_DIR, exist_ok=True)
 
-FILE_EXPIRY_TIME = 1800  # 10 minutes
+FILE_EXPIRY_TIME = 1800  # 30 minutes
 
 
-# ── Cookie Validation ─────────────────────────────────────────
-def validate_cookies():
-    """Check if cookies.txt exists and log status on startup."""
-    if not os.path.exists(COOKIES_FILE):
-        logger.info(
-            "ℹ️  No cookies.txt found at: %s — Facebook downloads will work without cookies for public videos.",
-            COOKIES_FILE
-        )
-        return False
-    logger.info("✅ cookies.txt found at: %s", COOKIES_FILE)
-    return True
-
-_cookies_valid = validate_cookies()
+# ── Multi-Strategy User-Agent Rotation ────────────────────────
+# Facebook blocks based on User-Agent. We rotate through multiple
+# realistic browser User-Agents to avoid detection.
+USER_AGENTS = [
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Safari/605.1.15",
+    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1",
+]
 
 
-# ── Error Classification ──────────────────────────────────────
-def classify_download_error(error_msg, platform="Facebook"):
-    """Classify a yt-dlp error into a user-friendly message."""
-    error_lower = error_msg.lower()
-    
-    if 'sign in' in error_lower or 'bot' in error_lower or 'login' in error_lower:
-        logger.error("🚫 Auth/bot block on %s: %s", platform, error_msg)
-        return (
-            f"{platform} is temporarily blocking our server. "
-            "Please try again in a few minutes."
-        )
-    
-    if 'private' in error_lower or 'unavailable' in error_lower or 'not available' in error_lower:
-        logger.warning("Video unavailable on %s: %s", platform, error_msg)
-        return f"This {platform} video is private, deleted, or unavailable."
-    
-    if 'unsupported' in error_lower or 'no video' in error_lower:
-        logger.warning("Unsupported content on %s: %s", platform, error_msg)
-        return f"This URL doesn't contain a downloadable {platform} video."
-    
-    logger.error("Unclassified %s error: %s", platform, error_msg)
-    return f"Could not process this {platform} video. Please check the URL and try again."
+def get_ydl_opts_for_attempt(attempt=0):
+    """Build yt-dlp options rotating User-Agent on each attempt."""
+    ua = USER_AGENTS[attempt % len(USER_AGENTS)]
 
-
-# ── yt-dlp Options Builder ────────────────────────────────────
-def get_base_ydl_opts():
-    """Returns the base yt-dlp options with cookie support and anti-bot headers."""
     headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+        "User-Agent": ua,
         "Referer": "https://www.facebook.com/",
-        "Accept-Language": "en-US,en;q=0.9"
+        "Accept-Language": "en-US,en;q=0.9",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
     }
 
     opts = {
@@ -80,20 +54,86 @@ def get_base_ydl_opts():
         'no_warnings': True,
         'http_headers': headers,
         'socket_timeout': 30,
+        'force_ipv4': True,
     }
 
     if os.path.exists(COOKIES_FILE):
         opts['cookiefile'] = COOKIES_FILE
-    
+
     return opts
+
+
+def extract_with_retry(video_url):
+    """Try extracting video info with rotating User-Agents."""
+    last_error = None
+
+    for i in range(len(USER_AGENTS)):
+        try:
+            logger.info("FB attempt %d (UA: %s...) for: %s", i, USER_AGENTS[i][:30], video_url)
+            opts = get_ydl_opts_for_attempt(i)
+            with yt_dlp.YoutubeDL(opts) as ydl:
+                info = ydl.extract_info(video_url, download=False)
+                logger.info("✅ FB attempt %d succeeded!", i)
+                return info, i
+        except Exception as e:
+            last_error = e
+            error_lower = str(e).lower()
+            if 'sign in' in error_lower or 'bot' in error_lower or 'login' in error_lower:
+                logger.warning("FB attempt %d blocked, trying next UA...", i)
+                continue
+            else:
+                raise e
+
+    raise last_error
+
+
+def download_with_retry(video_url, filepath, res_height):
+    """Download video with rotating User-Agents and automatic retry."""
+    last_error = None
+
+    for i in range(len(USER_AGENTS)):
+        try:
+            opts = get_ydl_opts_for_attempt(i)
+            opts.update({
+                'format': f'bestvideo[height={res_height}]+bestaudio/bestvideo[height<={res_height}]+bestaudio/best',
+                'merge_output_format': 'mp4',
+                'outtmpl': filepath,
+            })
+
+            with yt_dlp.YoutubeDL(opts) as ydl:
+                ydl.download([video_url])
+            return True
+        except Exception as e:
+            last_error = e
+            error_lower = str(e).lower()
+            if 'sign in' in error_lower or 'bot' in error_lower or 'login' in error_lower:
+                if os.path.exists(filepath):
+                    os.remove(filepath)
+                continue
+            else:
+                raise e
+
+    raise last_error
+
+
+# ── Error Classification ──────────────────────────────────────
+def classify_download_error(error_msg, platform="Facebook"):
+    error_lower = error_msg.lower()
+
+    if 'sign in' in error_lower or 'bot' in error_lower or 'login' in error_lower:
+        return f"{platform} is temporarily blocking downloads. Please try again in a few minutes."
+
+    if 'private' in error_lower or 'unavailable' in error_lower or 'not available' in error_lower:
+        return f"This {platform} video is private, deleted, or unavailable."
+
+    if 'unsupported' in error_lower or 'no video' in error_lower:
+        return f"This URL doesn't contain a downloadable {platform} video."
+
+    return f"Could not process this {platform} video. Please check the URL and try again."
 
 
 # ── File Cleanup ──────────────────────────────────────────────
 def delete_file_delayed(filepath, delay=1800):
-    """
-    Background thread to delete the file after a delay (e.g., 5 minutes).
-    This safely allows Flask's send_file to stream the video to the user before deletion.
-    """
     def task():
         time.sleep(delay)
         try:
@@ -107,7 +147,6 @@ def delete_file_delayed(filepath, delay=1800):
 
 
 def cleanup_old_files():
-    """Periodically check and delete old files from download directory"""
     while True:
         now = time.time()
         if os.path.exists(DOWNLOAD_DIR):
@@ -119,7 +158,6 @@ def cleanup_old_files():
                         logger.info("Deleted old file: %s", f)
                 except Exception as e:
                     logger.error("Error deleting file %s: %s", f, e)
-
         time.sleep(300)
 
 
@@ -145,72 +183,63 @@ def get_info():
     if not re.match(fb_regex, video_url):
         return jsonify({"error": "Sorry, this downloader only supports Facebook videos."}), 400
 
-    ydl_opts = get_base_ydl_opts()
-
     try:
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            info_dict = ydl.extract_info(video_url, download=False)
+        info_dict, _ = extract_with_retry(video_url)
 
-            raw_title = info_dict.get('title')
-            description = info_dict.get('description')
-            
-            title = ""
-            if description and len(description.strip()) > 0:
-                title = " ".join(description.splitlines())[:60] + "..."
-            elif raw_title and not raw_title.startswith("Video by "):
-                title = raw_title
-            else:
-                title = "Facebook_Video"
+        raw_title = info_dict.get('title')
+        description = info_dict.get('description')
 
-            # Try multiple thumbnail sources
-            thumbnail = ""
-            if info_dict.get('thumbnail'):
-                thumbnail = info_dict['thumbnail']
-            elif info_dict.get('thumbnails'):
-                for tb in reversed(info_dict['thumbnails']):
-                    if tb.get('url'):
-                        thumbnail = tb['url']
-                        break
-            
-            # Proxy the thumbnail through our backend to bypass CORS/referrer issues
-            if thumbnail:
-                from urllib.parse import quote
-                thumbnail = f"/api/thumb_proxy?url={quote(thumbnail, safe='')}"
+        title = ""
+        if description and len(description.strip()) > 0:
+            title = " ".join(description.splitlines())[:60] + "..."
+        elif raw_title and not raw_title.startswith("Video by "):
+            title = raw_title
+        else:
+            title = "Facebook_Video"
 
-            # Fixed quality tiers - always show standard options
-            available_formats = [
-                {"resolution": "1440p (2K)", "height": 1440},
-                {"resolution": "1080p (Full HD)", "height": 1080},
-                {"resolution": "720p (HD)", "height": 720},
-                {"resolution": "480p (SD)", "height": 480},
-            ]
+        thumbnail = ""
+        if info_dict.get('thumbnail'):
+            thumbnail = info_dict['thumbnail']
+        elif info_dict.get('thumbnails'):
+            for tb in reversed(info_dict['thumbnails']):
+                if tb.get('url'):
+                    thumbnail = tb['url']
+                    break
 
-            logger.info("✅ Info fetched for: %s", video_url)
+        if thumbnail:
+            from urllib.parse import quote
+            thumbnail = f"/api/thumb_proxy?url={quote(thumbnail, safe='')}"
 
-            return jsonify({
-                "title": title,
-                "thumbnail": thumbnail,
-                "formats": available_formats
-            })
+        available_formats = [
+            {"resolution": "1440p (2K)", "height": 1440},
+            {"resolution": "1080p (Full HD)", "height": 1080},
+            {"resolution": "720p (HD)", "height": 720},
+            {"resolution": "480p (SD)", "height": 480},
+        ]
+
+        return jsonify({
+            "title": title,
+            "thumbnail": thumbnail,
+            "formats": available_formats
+        })
 
     except Exception as e:
         import traceback
         traceback.print_exc()
-        
         error_msg = str(e)
         user_message = classify_download_error(error_msg, "Facebook")
         return jsonify({"error": user_message}), 500
 
+
 @app.route('/api/thumb_proxy')
 def thumb_proxy():
-    """Proxy thumbnail images to bypass CORS and referrer restrictions"""
     img_url = request.args.get('url', '')
     if not img_url:
         return "No URL", 400
-    
+
     try:
         headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
             "Referer": "https://www.facebook.com/"
         }
         resp = http_requests.get(img_url, headers=headers, timeout=10, stream=True)
@@ -242,21 +271,12 @@ def download_video():
     filepath = os.path.join(DOWNLOAD_DIR, unique_filename)
     user_download_name = f"{safe_title}.mp4"
 
-    ydl_opts = get_base_ydl_opts()
-    ydl_opts.update({
-        'format': f'bestvideo[height={res_height}]+bestaudio/bestvideo[height<={res_height}]+bestaudio/best',
-        'merge_output_format': 'mp4',
-        'outtmpl': filepath,
-    })
-
     try:
         logger.info("⬇️  Downloading FB: %s at %sp", video_url, res_height)
 
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            ydl.download([video_url])
+        download_with_retry(video_url, filepath, res_height)
 
         delete_file_delayed(filepath, delay=1800)
-
         logger.info("✅ Download complete: %s", unique_filename)
 
         return send_file(
@@ -272,7 +292,7 @@ def download_video():
 
         if os.path.exists(filepath):
             os.remove(filepath)
-        
+
         error_msg = str(e)
         user_message = classify_download_error(error_msg, "Facebook")
         return jsonify({"error": user_message}), 500
