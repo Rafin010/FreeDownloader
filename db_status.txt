@@ -1,0 +1,12 @@
+DB NAME: downloader_analytics
+
+WEBSITES TABLE:
+id	name	url
+1	YouTube Downloader	yt_downloader
+2	Facebook Downloader	fb_downloader
+3	Instagram Downloader	insta_downloader
+4	TikTok Downloader	tiktok_downloader
+5	Free Downloader	free_downloader
+11	Porn Downloader	porn_downloader
+
+ERRORS:

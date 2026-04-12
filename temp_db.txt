@@ -1,34 +1,16 @@
 OUT:
-DEFAULT_SITES = [
-    {"name": "YouTube Downloader",    "url": "yt_downloader"},
-    {"name": "Facebook Downloader",   "url": "fb_downloader"},
-    {"name": "Instagram Downloader",  "url": "insta_downloader"},
-    {"name": "TikTok Downloader",     "url": "tiktok_downloader"},
-    {"name": "Free Downloader",       "url": "free_downloader"},
-]
-
-
-def initialize_database():
-    print("=" * 50)
---
-    for site in DEFAULT_SITES:
-        try:
-            cursor.execute(
-                "INSERT IGNORE INTO websites (name, url) VALUES (%s, %s)",
-                (site["name"], site["url"])
-            )
-        except Exception:
-            pass  # already exists, skip
-
-    conn.commit()
-    cursor.close()
---
-    print(f"  Registered {len(DEFAULT_SITES)} default websites.")
-    print("=" * 50)
-    return True
-
-
-if __name__ == "__main__":
-    initialize_database()
+==================================================
+  Initializing Database...
+==================================================
+  [OK] Database 'downloader_analytics' ready.
+  [OK] Table 'websites' ready.
+  [OK] Table 'sessions' ready.
+  [OK] Table 'events' ready.
+  [OK] Table 'active_users' ready.
+  [OK] Table 'user_cookies' ready.
+==================================================
+  Database Initialized Successfully!
+  Registered 6 default websites.
+==================================================
 
 ERR:
