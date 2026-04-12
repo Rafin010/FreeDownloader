@@ -1,0 +1,38 @@
+● freedownloader.service - FreeDownloader Backend (Admin)
+     Loaded: loaded (/etc/systemd/system/freedownloader.service; enabled; vendor preset: enabled)
+     Active: active (running) since Mon 2026-04-13 00:39:44 +06; 23s ago
+   Main PID: 64400 (gunicorn)
+      Tasks: 3 (limit: 4538)
+     Memory: 45.4M
+     CGroup: /system.slice/freedownloader.service
+             ├─64400 /root/FreeDownloader/venv/bin/python3.9 /root/FreeDownloader/venv/bin/gunicorn app:app -b 0.0.0.0:8000 --timeout 300 --workers 2
+             ├─64402 /root/FreeDownloader/venv/bin/python3.9 /root/FreeDownloader/venv/bin/gunicorn app:app -b 0.0.0.0:8000 --timeout 300 --workers 2
+             └─64403 /root/FreeDownloader/venv/bin/python3.9 /root/FreeDownloader/venv/bin/gunicorn app:app -b 0.0.0.0:8000 --timeout 300 --workers 2
+
+Apr 13 00:39:44 IARAFIN systemd[1]: Started FreeDownloader Backend (Admin).
+Apr 13 00:39:44 IARAFIN gunicorn[64400]: [2026-04-13 00:39:44 +0600] [64400] [INFO] Starting gunicorn 23.0.0
+Apr 13 00:39:44 IARAFIN gunicorn[64400]: [2026-04-13 00:39:44 +0600] [64400] [INFO] Listening at: http://0.0.0.0:8000 (64400)
+Apr 13 00:39:44 IARAFIN gunicorn[64400]: [2026-04-13 00:39:44 +0600] [64400] [INFO] Using worker: sync
+Apr 13 00:39:44 IARAFIN gunicorn[64402]: [2026-04-13 00:39:44 +0600] [64402] [INFO] Booting worker with pid: 64402
+Apr 13 00:39:44 IARAFIN gunicorn[64403]: [2026-04-13 00:39:44 +0600] [64403] [INFO] Booting worker with pid: 64403
+-- Logs begin at Fri 2026-04-10 23:34:02 +06, end at Mon 2026-04-13 00:40:07 +06. --
+Apr 13 00:35:58 IARAFIN gunicorn[63670]:     import mysql.connector
+Apr 13 00:35:58 IARAFIN gunicorn[63670]: ModuleNotFoundError: No module named 'mysql'
+Apr 13 00:35:58 IARAFIN gunicorn[63670]: [2026-04-13 00:35:58 +0600] [63670] [INFO] Worker exiting (pid: 63670)
+Apr 13 00:35:58 IARAFIN gunicorn[63668]: [2026-04-13 00:35:58 +0600] [63668] [ERROR] Worker (pid:63669) exited with code 3
+Apr 13 00:35:58 IARAFIN gunicorn[63668]: [2026-04-13 00:35:58 +0600] [63668] [ERROR] Worker (pid:63670) was sent SIGTERM!
+Apr 13 00:35:58 IARAFIN gunicorn[63668]: [2026-04-13 00:35:58 +0600] [63668] [ERROR] Shutting down: Master
+Apr 13 00:35:58 IARAFIN gunicorn[63668]: [2026-04-13 00:35:58 +0600] [63668] [ERROR] Reason: Worker failed to boot.
+Apr 13 00:35:59 IARAFIN systemd[1]: freedownloader.service: Main process exited, code=exited, status=3/NOTIMPLEMENTED
+Apr 13 00:35:59 IARAFIN systemd[1]: freedownloader.service: Failed with result 'exit-code'.
+Apr 13 00:35:59 IARAFIN systemd[1]: freedownloader.service: Scheduled restart job, restart counter is at 5.
+Apr 13 00:35:59 IARAFIN systemd[1]: Stopped FreeDownloader Backend (Admin).
+Apr 13 00:35:59 IARAFIN systemd[1]: freedownloader.service: Start request repeated too quickly.
+Apr 13 00:35:59 IARAFIN systemd[1]: freedownloader.service: Failed with result 'exit-code'.
+Apr 13 00:35:59 IARAFIN systemd[1]: Failed to start FreeDownloader Backend (Admin).
+Apr 13 00:39:44 IARAFIN systemd[1]: Started FreeDownloader Backend (Admin).
+Apr 13 00:39:44 IARAFIN gunicorn[64400]: [2026-04-13 00:39:44 +0600] [64400] [INFO] Starting gunicorn 23.0.0
+Apr 13 00:39:44 IARAFIN gunicorn[64400]: [2026-04-13 00:39:44 +0600] [64400] [INFO] Listening at: http://0.0.0.0:8000 (64400)
+Apr 13 00:39:44 IARAFIN gunicorn[64400]: [2026-04-13 00:39:44 +0600] [64400] [INFO] Using worker: sync
+Apr 13 00:39:44 IARAFIN gunicorn[64402]: [2026-04-13 00:39:44 +0600] [64402] [INFO] Booting worker with pid: 64402
+Apr 13 00:39:44 IARAFIN gunicorn[64403]: [2026-04-13 00:39:44 +0600] [64403] [INFO] Booting worker with pid: 64403
