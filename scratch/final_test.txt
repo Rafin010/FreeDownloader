@@ -1,0 +1,8 @@
+=== TESTING YOUTUBE API ===
+{"formats":[{"height":1080,"resolution":"1080p (Full HD)"},{"height":720,"resolution":"720p (HD)"},{"height":480,"resolution":"480p (SD)"},{"height":360,"resolution":"360p"}],"thumbnail":"/api/thumb_proxy?url=https%3A%2F%2Fi.ytimg.com%2Fvi_webp%2FdQw4w9WgXcQ%2Fmaxresdefault.webp","title":"Rick Astley - Never Gonna Give You Up (Official Video) (4K Remaster)"}
+
+=== TESTING TIKTOK API ===
+{"formats":[{"height":1080,"resolution":"1080p (Full HD)"},{"height":720,"resolution":"720p (HD)"},{"height":480,"resolution":"480p (SD)"}],"thumbnail":"/api/thumb_proxy?url=https%3A%2F%2Fp16-common-sign.tiktokcdn-us.com%2Ftos-maliva-p-0068%2F8ac0190d8ad54535bf823ed5f3202b6b~tplv-tiktokx-origin.image%3Fdr%3D9636%26x-expires%3D1776153600%26x-signature%3Dtnd8CEOQgAy%252Fu082nEDugy4WKws%253D%26t%3D4d5b0474%26ps%3D13740610%26shp%3D81f88b70%26shcp%3D43f4a2f9%26idc%3Duseast5","title":"Scramble up ur name & I\u2019ll try to guess it\ud83d\ude0d\u2764\ufe0f #foryoupage #p..."}
+
+=== TESTING P_D API (Universal) ===
+{"error":"Could not process this video from Xvideos. It might be protected or invalid."}

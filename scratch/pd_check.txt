@@ -1,0 +1,26 @@
+-- Logs begin at Fri 2026-04-10 23:34:02 +06, end at Sun 2026-04-12 14:55:06 +06. --
+Apr 12 14:51:59 IARAFIN gunicorn[59470]:     return self.__download_webpage(url_or_request, video_id, note, errnote, None, fatal, *args, **kwargs)
+Apr 12 14:51:59 IARAFIN gunicorn[59470]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/yt_dlp/extractor/common.py", line 1150, in download_content
+Apr 12 14:51:59 IARAFIN gunicorn[59470]:     res = getattr(self, download_handle.__name__)(url_or_request, video_id, **kwargs)
+Apr 12 14:51:59 IARAFIN gunicorn[59470]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/yt_dlp/extractor/common.py", line 973, in _download_webpage_handle
+Apr 12 14:51:59 IARAFIN gunicorn[59470]:     urlh = self._request_webpage(url_or_request, video_id, note, errnote, fatal, data=data,
+Apr 12 14:51:59 IARAFIN gunicorn[59470]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/yt_dlp/extractor/common.py", line 922, in _request_webpage
+Apr 12 14:51:59 IARAFIN gunicorn[59470]:     raise ExtractorError(errmsg, cause=err)
+Apr 12 14:51:59 IARAFIN gunicorn[59470]: yt_dlp.utils.ExtractorError: [XVideos] 71650371: Unable to download webpage: HTTP Error 404: Not Found (caused by <HTTPError 404: Not Found>)
+Apr 12 14:51:59 IARAFIN gunicorn[59470]: During handling of the above exception, another exception occurred:
+Apr 12 14:51:59 IARAFIN gunicorn[59470]: Traceback (most recent call last):
+Apr 12 14:51:59 IARAFIN gunicorn[59470]:   File "/root/FreeDownloader/p_d/app.py", line 190, in get_info
+Apr 12 14:51:59 IARAFIN gunicorn[59470]:     info_dict, _ = extract_with_retry(video_url)
+Apr 12 14:51:59 IARAFIN gunicorn[59470]:   File "/root/FreeDownloader/p_d/app.py", line 97, in extract_with_retry
+Apr 12 14:51:59 IARAFIN gunicorn[59470]:     raise last_error
+Apr 12 14:51:59 IARAFIN gunicorn[59470]:   File "/root/FreeDownloader/p_d/app.py", line 87, in extract_with_retry
+Apr 12 14:51:59 IARAFIN gunicorn[59470]:     info = ydl.extract_info(video_url, download=False)
+Apr 12 14:51:59 IARAFIN gunicorn[59470]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/yt_dlp/YoutubeDL.py", line 1634, in extract_info
+Apr 12 14:51:59 IARAFIN gunicorn[59470]:     return self.__extract_info(url, self.get_info_extractor(key), download, extra_info, process)
+Apr 12 14:51:59 IARAFIN gunicorn[59470]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/yt_dlp/YoutubeDL.py", line 1663, in wrapper
+Apr 12 14:51:59 IARAFIN gunicorn[59470]:     self.report_error(str(e), e.format_traceback())
+Apr 12 14:51:59 IARAFIN gunicorn[59470]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/yt_dlp/YoutubeDL.py", line 1103, in report_error
+Apr 12 14:51:59 IARAFIN gunicorn[59470]:     self.trouble(f'{self._format_err("ERROR:", self.Styles.ERROR)} {message}', *args, **kwargs)
+Apr 12 14:51:59 IARAFIN gunicorn[59470]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/yt_dlp/YoutubeDL.py", line 1042, in trouble
+Apr 12 14:51:59 IARAFIN gunicorn[59470]:     raise DownloadError(message, exc_info)
+Apr 12 14:51:59 IARAFIN gunicorn[59470]: yt_dlp.utils.DownloadError: ERROR: [XVideos] 71650371: Unable to download webpage: HTTP Error 404: Not Found (caused by <HTTPError 404: Not Found>)
