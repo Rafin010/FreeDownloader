@@ -148,7 +148,12 @@ def chart_daily():
 
     pivot = {}
     today = date.today()
-    for i in range(29, -1, -1):
+    start_date = date(2026, 4, 7)
+
+    delta = (today - start_date).days
+    num_days = min(29, delta) if delta > 0 else 0
+
+    for i in range(num_days, -1, -1):
         d_obj = today - timedelta(days=i)
         d_str = str(d_obj)
         pivot[d_str] = {
