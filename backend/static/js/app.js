@@ -350,7 +350,7 @@ async function loadSessionsTable() {
         return;
     }
 
-    tbody.innerHTML = sessions.slice(0, 20).map(s => `
+    tbody.innerHTML = sessions.map(s => `
         <tr class="border-b border-panel-border hover:bg-white/[0.02] transition-colors">
             <td class="px-5 py-3 font-mono text-xs text-gray-500">${s.session_id.slice(0,14)}…</td>
             <td class="px-5 py-3 text-xs text-gray-300">${esc(s.website_id)}</td>

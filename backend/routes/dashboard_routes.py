@@ -257,14 +257,14 @@ def recent_sessions():
             SELECT session_id, website_id, ip_address, device_type, category,
                    created_at, last_active
             FROM sessions WHERE website_id = %s
-            ORDER BY last_active DESC LIMIT 50
+            ORDER BY last_active DESC LIMIT 200
         """, (site_filter,))
     else:
         cursor.execute("""
             SELECT session_id, website_id, ip_address, device_type, category,
                    created_at, last_active
             FROM sessions
-            ORDER BY last_active DESC LIMIT 50
+            ORDER BY last_active DESC LIMIT 200
         """)
 
     rows = cursor.fetchall()
