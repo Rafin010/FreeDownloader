@@ -114,6 +114,7 @@ def download_with_retry(video_url, filepath, format_str):
     for i in range(num_strategies):
         try:
             opts, _ = build_tiktok_opts(i)
+            opts['socket_timeout'] = 120  # Longer timeout for downloads
             opts.update({
                 'format': format_str,
                 'outtmpl': filepath,
@@ -125,9 +126,13 @@ def download_with_retry(video_url, filepath, format_str):
                 return True
         except Exception as e:
             last_error = e
-            for partial in [filepath, filepath + '.part']:
+            error_str = str(e).lower()
+            if 'is not a valid url' in error_str:
+                raise e
+            for partial in [filepath, filepath + '.part', filepath + '.ytdl']:
                 if os.path.exists(partial):
                     os.remove(partial)
+            logger.warning("TikTok download strategy %d failed: %s", i, str(e)[:120])
             continue
 
     raise last_error

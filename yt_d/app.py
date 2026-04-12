@@ -87,8 +87,8 @@ def extract_with_retry(video_url):
         except Exception as e:
             last_error = e
             error_str = str(e).lower()
-            # For truly invalid URLs or private videos, don't retry
-            if 'is not a valid url' in error_str or 'private video' in error_str:
+            # For truly invalid URLs, private videos, or login-required — don't retry
+            if 'is not a valid url' in error_str or 'private video' in error_str or 'login_required' in error_str:
                 raise e
             logger.warning("YT strategy %d failed: %s", i, str(e)[:100])
             continue
@@ -104,6 +104,7 @@ def download_with_retry(video_url, filepath, res_height):
     for i in range(num_strategies):
         try:
             opts, _ = build_yt_opts(i)
+            opts['socket_timeout'] = 120  # Longer timeout for downloads
             opts.update({
                 'format': f'bestvideo[height<={res_height}]+bestaudio/best[height<={res_height}]/best',
                 'merge_output_format': 'mp4',
@@ -118,7 +119,7 @@ def download_with_retry(video_url, filepath, res_height):
         except Exception as e:
             last_error = e
             error_str = str(e).lower()
-            if 'is not a valid url' in error_str or 'private video' in error_str:
+            if 'is not a valid url' in error_str or 'private video' in error_str or 'login_required' in error_str:
                 raise e
             # Clean up partial file before retry
             for partial in [filepath, filepath + '.part', filepath + '.ytdl']:

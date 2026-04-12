@@ -56,6 +56,7 @@ def get_ydl_opts_for_attempt(attempt=0):
 
 
 def extract_with_retry(video_url):
+    """Try extracting video info with rotating User-Agents. Retries on ALL errors."""
     last_error = None
     for i in range(len(USER_AGENTS)):
         try:
@@ -68,36 +69,41 @@ def extract_with_retry(video_url):
         except Exception as e:
             last_error = e
             error_lower = str(e).lower()
-            if 'login' in error_lower or 'cookie' in error_lower or 'sign in' in error_lower or 'bot' in error_lower:
-                logger.warning("IG attempt %d blocked, trying next...", i)
-                continue
-            else:
+            # Only skip retry for truly unrecoverable errors
+            if 'is not a valid url' in error_lower or 'private' in error_lower:
                 raise e
+            logger.warning("IG attempt %d failed: %s — trying next...", i, str(e)[:120])
+            continue
     raise last_error
 
 
 def download_with_retry(video_url, filepath, res_height):
+    """Download video with rotating User-Agents and retry on ALL errors."""
     last_error = None
     for i in range(len(USER_AGENTS)):
         try:
             opts = get_ydl_opts_for_attempt(i)
+            opts['socket_timeout'] = 120  # Longer timeout for downloads
             opts.update({
-                'format': f'bestvideo[height={res_height}]+bestaudio/bestvideo[height<={res_height}]+bestaudio/best',
+                'format': f'bestvideo[height<={res_height}]+bestaudio/best[height<={res_height}]/best',
                 'merge_output_format': 'mp4',
                 'outtmpl': filepath,
             })
             with yt_dlp.YoutubeDL(opts) as ydl:
                 ydl.download([video_url])
-            return True
+            if os.path.exists(filepath):
+                return True
         except Exception as e:
             last_error = e
             error_lower = str(e).lower()
-            if 'login' in error_lower or 'cookie' in error_lower or 'sign in' in error_lower:
-                if os.path.exists(filepath):
-                    os.remove(filepath)
-                continue
-            else:
+            if 'is not a valid url' in error_lower or 'private' in error_lower:
                 raise e
+            # Clean up partial files before retry
+            for partial in [filepath, filepath + '.part', filepath + '.ytdl']:
+                if os.path.exists(partial):
+                    os.remove(partial)
+            logger.warning("IG download attempt %d failed: %s — trying next...", i, str(e)[:120])
+            continue
     raise last_error
 
 

@@ -103,6 +103,7 @@ def download_with_retry(video_url, filepath, format_string):
     for i in range(len(USER_AGENTS)):
         try:
             opts = build_opts(i, video_url)
+            opts['socket_timeout'] = 120  # Longer timeout for downloads
             opts.update({
                 'format': format_string,
                 'merge_output_format': 'mp4',
@@ -114,9 +115,13 @@ def download_with_retry(video_url, filepath, format_string):
                 return True
         except Exception as e:
             last_error = e
-            for partial in [filepath, filepath + '.part']:
+            error_str = str(e).lower()
+            if 'is not a valid url' in error_str:
+                raise e
+            for partial in [filepath, filepath + '.part', filepath + '.ytdl']:
                 if os.path.exists(partial):
                     os.remove(partial)
+            logger.warning("P_D download attempt %d failed: %s", i, str(e)[:120])
             continue
     raise last_error
 
