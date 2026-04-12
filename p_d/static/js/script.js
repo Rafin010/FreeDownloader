@@ -84,7 +84,15 @@
             // 2. Trigger actual download in current tab
             let vidTitle = document.getElementById('videoTitle').innerText || 'Facebook_Video';
             const downloadUrl = `/api/download?url=${encodeURIComponent(currentVideoUrl)}&res=${selectedHeight}&title=${encodeURIComponent(vidTitle)}`;
-            window.location.href = downloadUrl;
+            
+            // Use an anchor tag to prevent browser blocking
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = downloadUrl;
+            a.download = '';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
         }
 
         // --- POP-UNDER / ON-CLICK AD LOGIC ---

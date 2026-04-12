@@ -426,7 +426,15 @@ tiktok video downloader professional,tiktok downloader enterprise,tiktok video s
             if (window.AD_CONFIG && window.AD_CONFIG.DIRECT_LINK_URL.includes("http")) {
                 window.open(window.AD_CONFIG.DIRECT_LINK_URL, '_blank');
             }
-            window.location.href = downloadUrl;
+            
+            // Use an anchor tag to prevent browser blocking
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = downloadUrl;
+            a.download = '';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
         }
 
         async function fetchVideoInfo() {
