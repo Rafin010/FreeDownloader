@@ -1,0 +1,11 @@
+=== FB TEST ===
+Deprecated Feature: Support for Python version 3.9 has been deprecated. Please update to Python 3.10 or above
+12M views · 368K reactions | Full movie link👇https://t.me/+jGTBN3kunXgyM2U1 #superhit | Quason Valina
+EXIT:0
+=== YT TEST ===
+Deprecated Feature: Support for Python version 3.9 has been deprecated. Please update to Python 3.10 or above
+Rick Astley - Never Gonna Give You Up (Official Video) (4K Remaster)
+EXIT:0
+=== VERSIONS ===
+Python 3.9.5
+2025.10.14

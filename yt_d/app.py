@@ -27,105 +27,105 @@ os.makedirs(DOWNLOAD_DIR, exist_ok=True)
 FILE_EXPIRY_TIME = 1800  # 30 minutes
 
 
-# ── Multi-Strategy yt-dlp Options ─────────────────────────────
-# These different "player clients" trick YouTube into thinking we are
-# a mobile app or TV app instead of a bot. Each one bypasses different
-# anti-bot checks WITHOUT needing any cookies or login.
-PLAYER_CLIENT_STRATEGIES = [
-    ['ios', 'web'],           # iOS app client (best bypass)
-    ['android', 'web'],       # Android app client
-    ['tv_embedded'],          # Smart TV embedded player
-    ['web'],                  # Standard web (fallback)
-]
-
-
-def get_ydl_opts_for_strategy(strategy_index=0):
-    """Build yt-dlp options using a specific player client strategy."""
+# ── YouTube-specific: Multiple extraction strategies ──────────
+# yt-dlp 2025 uses 'player_client' in extractor_args.
+# Different clients bypass different bot checks.
+# We'll also try with the PO Token approach and different configs.
+def build_yt_opts(strategy_idx=0):
+    """Build yt-dlp options for YouTube, rotating strategies."""
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
         "Accept-Language": "en-US,en;q=0.9",
     }
 
-    player_clients = PLAYER_CLIENT_STRATEGIES[strategy_index % len(PLAYER_CLIENT_STRATEGIES)]
+    # Different strategies to try
+    strategies = [
+        # Strategy 0: mweb client — often bypasses bot detection  
+        {'youtube': {'player_client': ['mweb']}},
+        # Strategy 1: tv_embedded — Smart TV client, no login needed
+        {'youtube': {'player_client': ['tv_embedded']}},
+        # Strategy 2: ios client
+        {'youtube': {'player_client': ['ios']}},
+        # Strategy 3: android client
+        {'youtube': {'player_client': ['android']}},
+        # Strategy 4: default (let yt-dlp decide)
+        {},
+    ]
+
+    idx = strategy_idx % len(strategies)
+    ext_args = strategies[idx]
 
     opts = {
         'quiet': True,
         'no_warnings': True,
         'http_headers': headers,
         'socket_timeout': 30,
-        'extractor_args': {'youtube': {'player_client': player_clients}},
-        'force_ipv4': True,  # Avoid IPv6 blocks
+        'force_ipv4': True,
     }
+    if ext_args:
+        opts['extractor_args'] = ext_args
 
     if os.path.exists(COOKIES_FILE):
         opts['cookiefile'] = COOKIES_FILE
 
-    return opts
+    return opts, len(strategies)
 
 
 def extract_with_retry(video_url):
-    """
-    Try extracting video info using multiple player client strategies.
-    If one fails (bot block), automatically try the next one.
-    This means the user NEVER needs to do anything — it just works.
-    """
+    """Try ALL strategies. Retry on ANY error for YouTube since most are transient."""
+    _, num_strategies = build_yt_opts(0)
     last_error = None
 
-    for i, strategy in enumerate(PLAYER_CLIENT_STRATEGIES):
+    for i in range(num_strategies):
         try:
-            logger.info("Trying strategy %d (%s) for: %s", i, strategy, video_url)
-            opts = get_ydl_opts_for_strategy(i)
+            opts, _ = build_yt_opts(i)
+            logger.info("YT strategy %d for: %s", i, video_url)
             with yt_dlp.YoutubeDL(opts) as ydl:
                 info = ydl.extract_info(video_url, download=False)
-                logger.info("✅ Strategy %d (%s) succeeded!", i, strategy)
-                return info, i  # Return info and which strategy worked
+                logger.info("✅ YT strategy %d succeeded!", i)
+                return info, i
         except Exception as e:
             last_error = e
-            error_lower = str(e).lower()
-            # Only retry on bot/auth blocks, not on genuine errors
-            if 'sign in' in error_lower or 'bot' in error_lower or 'confirm' in error_lower:
-                logger.warning("Strategy %d blocked, trying next...", i)
-                continue
-            else:
-                # For non-bot errors (private video, invalid URL, etc.), don't retry
+            error_str = str(e).lower()
+            # For truly invalid URLs or private videos, don't retry
+            if 'is not a valid url' in error_str or 'private video' in error_str:
                 raise e
+            logger.warning("YT strategy %d failed: %s", i, str(e)[:100])
+            continue
 
-    # All strategies failed
     raise last_error
 
 
 def download_with_retry(video_url, filepath, res_height):
-    """
-    Download video using multiple strategies with automatic retry.
-    """
+    """Download video using multiple strategies."""
+    _, num_strategies = build_yt_opts(0)
     last_error = None
 
-    for i, strategy in enumerate(PLAYER_CLIENT_STRATEGIES):
+    for i in range(num_strategies):
         try:
-            logger.info("Download strategy %d (%s) for: %s", i, strategy, video_url)
-            opts = get_ydl_opts_for_strategy(i)
+            opts, _ = build_yt_opts(i)
             opts.update({
-                'format': f'bestvideo[height={res_height}]+bestaudio/bestvideo[height<={res_height}]+bestaudio/best',
+                'format': f'bestvideo[height<={res_height}]+bestaudio/best[height<={res_height}]/best',
                 'merge_output_format': 'mp4',
                 'outtmpl': filepath,
             })
-
+            logger.info("YT download strategy %d", i)
             with yt_dlp.YoutubeDL(opts) as ydl:
                 ydl.download([video_url])
-
-            logger.info("✅ Download strategy %d succeeded!", i)
-            return True
+            if os.path.exists(filepath):
+                logger.info("✅ YT download strategy %d succeeded!", i)
+                return True
         except Exception as e:
             last_error = e
-            error_lower = str(e).lower()
-            if 'sign in' in error_lower or 'bot' in error_lower or 'confirm' in error_lower:
-                logger.warning("Download strategy %d blocked, trying next...", i)
-                # Clean up partial download before retry
-                if os.path.exists(filepath):
-                    os.remove(filepath)
-                continue
-            else:
+            error_str = str(e).lower()
+            if 'is not a valid url' in error_str or 'private video' in error_str:
                 raise e
+            # Clean up partial file before retry
+            for partial in [filepath, filepath + '.part', filepath + '.ytdl']:
+                if os.path.exists(partial):
+                    os.remove(partial)
+            logger.warning("YT download strategy %d failed: %s", i, str(e)[:100])
+            continue
 
     raise last_error
 
@@ -133,25 +133,18 @@ def download_with_retry(video_url, filepath, res_height):
 # ── Error Classification ──────────────────────────────────────
 def classify_yt_error(error_msg):
     error_lower = error_msg.lower()
-
-    if 'sign in to confirm' in error_lower or 'bot' in error_lower:
-        return "YouTube is currently blocking downloads. Please try again shortly."
-
+    if 'sign in' in error_lower or 'bot' in error_lower or 'confirm' in error_lower:
+        return "YouTube is temporarily blocking downloads from this server. Please try again in a few minutes."
     if 'private video' in error_lower or 'video unavailable' in error_lower or 'is not available' in error_lower:
         return "This video is private, deleted, or unavailable."
-
     if 'age' in error_lower or 'login_required' in error_lower:
         return "This video is age-restricted."
-
     if 'geo' in error_lower or 'not available in your country' in error_lower:
         return "This video is not available in the server's region."
-
     if 'copyright' in error_lower or 'removed' in error_lower:
         return "This video has been removed due to copyright."
-
     if 'live' in error_lower and 'not supported' in error_lower:
         return "Live streams cannot be downloaded."
-
     return "Could not process this video. Please check the URL and try again."
 
 
@@ -165,7 +158,6 @@ def delete_file_delayed(filepath, delay=1800):
                 logger.info("Auto-deleted: %s", filepath)
         except Exception as e:
             logger.error("Error deleting file %s: %s", filepath, e)
-
     threading.Thread(target=task, daemon=True).start()
 
 
@@ -202,7 +194,7 @@ def get_info():
     if not video_url:
         return jsonify({"error": "No URL provided!"}), 400
 
-    yt_regex = r'(https?://(?:www\.)?(?:youtube\.com|youtu\.be)/.+)'
+    yt_regex = r'(https?://(?:www\.)?(?:youtube\.com|youtu\.be|youtube\.com/shorts)/.+)'
     if not re.match(yt_regex, video_url):
         return jsonify({"error": "Sorry, this downloader only supports YouTube videos and Shorts."}), 400
 
@@ -234,10 +226,10 @@ def get_info():
             thumbnail = f"/api/thumb_proxy?url={quote(thumbnail, safe='')}"
 
         available_formats = [
-            {"resolution": "1440p (2K)", "height": 1440},
             {"resolution": "1080p (Full HD)", "height": 1080},
             {"resolution": "720p (HD)", "height": 720},
             {"resolution": "480p (SD)", "height": 480},
+            {"resolution": "360p", "height": 360},
         ]
 
         return jsonify({
@@ -259,7 +251,6 @@ def thumb_proxy():
     img_url = request.args.get('url', '')
     if not img_url:
         return "No URL", 400
-
     try:
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
@@ -280,7 +271,7 @@ def thumb_proxy():
 @app.route('/api/download')
 def download_video():
     video_url = request.args.get('url')
-    res_height = request.args.get('res', '1080')
+    res_height = request.args.get('res', '720')
     req_title = request.args.get('title', 'YouTube_Video')
 
     if not video_url:
@@ -314,10 +305,8 @@ def download_video():
     except Exception as e:
         import traceback
         traceback.print_exc()
-
         if os.path.exists(filepath):
             os.remove(filepath)
-
         error_msg = str(e)
         user_message = classify_yt_error(error_msg)
         return jsonify({"error": user_message}), 500

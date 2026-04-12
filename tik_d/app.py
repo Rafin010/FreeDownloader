@@ -27,21 +27,42 @@ os.makedirs(DOWNLOAD_DIR, exist_ok=True)
 FILE_EXPIRY_TIME = 1800  # 30 minutes
 
 
-# ── Multi-Strategy UA Rotation ────────────────────────────────
-USER_AGENTS = [
-    "Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1",
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-    "Mozilla/5.0 (Linux; Android 14; SM-S918B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36",
-]
+# ── TikTok-specific strategies ────────────────────────────────
+# TikTok blocks certain API endpoints. We rotate between
+# different extractor args and User-Agents.
+def build_tiktok_opts(strategy_idx=0):
+    """Build yt-dlp options for TikTok with different strategies."""
+    
+    user_agents = [
+        # Mobile UA (best for TikTok)
+        "Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1",
+        # Android 
+        "Mozilla/5.0 (Linux; Android 14; SM-S918B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36",
+        # Desktop Chrome
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+    ]
 
+    # Different TikTok API hostnames to try
+    tiktok_strategies = [
+        # Strategy 0: Use api22 hostname (often works when default fails)
+        {'tiktok': {'api_hostname': ['api22-normal-c-useast2a.tiktokv.com']}},
+        # Strategy 1: Use api19 hostname
+        {'tiktok': {'api_hostname': ['api19-normal-c-useast1a.tiktokv.com']}},
+        # Strategy 2: Use api16
+        {'tiktok': {'api_hostname': ['api16-normal-c-useast1a.tiktokv.com']}},
+        # Strategy 3: Default (let yt-dlp decide)
+        {},
+    ]
 
-def get_ydl_opts_for_attempt(attempt=0):
-    ua = USER_AGENTS[attempt % len(USER_AGENTS)]
+    idx = strategy_idx % len(tiktok_strategies)
+    ua_idx = strategy_idx % len(user_agents)
+
     headers = {
-        "User-Agent": ua,
-        "Referer": "https://www.tiktok.com/",
+        "User-Agent": user_agents[ua_idx],
         "Accept-Language": "en-US,en;q=0.9",
+        "Referer": "https://www.tiktok.com/",
     }
+
     opts = {
         'quiet': True,
         'no_warnings': True,
@@ -49,35 +70,50 @@ def get_ydl_opts_for_attempt(attempt=0):
         'socket_timeout': 30,
         'force_ipv4': True,
     }
+    
+    ext_args = tiktok_strategies[idx]
+    if ext_args:
+        opts['extractor_args'] = ext_args
+
     if os.path.exists(COOKIES_FILE):
         opts['cookiefile'] = COOKIES_FILE
-    return opts
+
+    return opts, len(tiktok_strategies)
 
 
 def extract_with_retry(video_url):
+    """Try ALL strategies for TikTok extraction."""
+    _, num_strategies = build_tiktok_opts(0)
     last_error = None
-    for i in range(len(USER_AGENTS)):
+
+    for i in range(num_strategies):
         try:
-            opts = get_ydl_opts_for_attempt(i)
+            opts, _ = build_tiktok_opts(i)
+            logger.info("TikTok strategy %d for: %s", i, video_url)
             with yt_dlp.YoutubeDL(opts) as ydl:
                 info = ydl.extract_info(video_url, download=False)
-                logger.info("✅ TikTok attempt %d succeeded!", i)
+                logger.info("✅ TikTok strategy %d succeeded!", i)
                 return info, i
         except Exception as e:
             last_error = e
-            error_lower = str(e).lower()
-            if 'sign in' in error_lower or 'bot' in error_lower or 'captcha' in error_lower:
-                continue
-            else:
+            error_str = str(e).lower()
+            # Don't retry for truly invalid URLs
+            if 'is not a valid url' in error_str:
                 raise e
+            logger.warning("TikTok strategy %d failed: %s", i, str(e)[:120])
+            continue
+
     raise last_error
 
 
 def download_with_retry(video_url, filepath, format_str):
+    """Download TikTok video with retry across strategies."""
+    _, num_strategies = build_tiktok_opts(0)
     last_error = None
-    for i in range(len(USER_AGENTS)):
+
+    for i in range(num_strategies):
         try:
-            opts = get_ydl_opts_for_attempt(i)
+            opts, _ = build_tiktok_opts(i)
             opts.update({
                 'format': format_str,
                 'outtmpl': filepath,
@@ -85,16 +121,15 @@ def download_with_retry(video_url, filepath, format_str):
             })
             with yt_dlp.YoutubeDL(opts) as ydl:
                 ydl.download([video_url])
-            return True
+            if os.path.exists(filepath):
+                return True
         except Exception as e:
             last_error = e
-            error_lower = str(e).lower()
-            if 'sign in' in error_lower or 'bot' in error_lower or 'captcha' in error_lower:
-                if os.path.exists(filepath):
-                    os.remove(filepath)
-                continue
-            else:
-                raise e
+            for partial in [filepath, filepath + '.part']:
+                if os.path.exists(partial):
+                    os.remove(partial)
+            continue
+
     raise last_error
 
 
@@ -103,8 +138,8 @@ def classify_download_error(error_msg, platform="TikTok"):
     error_lower = error_msg.lower()
     if 'sign in' in error_lower or 'bot' in error_lower or 'captcha' in error_lower:
         return f"{platform} is temporarily blocking downloads. Please try again in a few minutes."
-    if 'private' in error_lower or 'unavailable' in error_lower or 'not available' in error_lower:
-        return f"This {platform} video is private, deleted, or unavailable."
+    if 'private' in error_lower or 'unavailable' in error_lower or 'not available' in error_lower or 'status code 0' in error_lower:
+        return f"This {platform} video may be private, deleted, or region-restricted. Please try a different video."
     if 'unsupported' in error_lower or 'no video' in error_lower:
         return f"This URL doesn't contain a downloadable {platform} video."
     return f"Could not process this {platform} video. Please check the URL and try again."
@@ -136,7 +171,6 @@ def cleanup_old_files():
                 except Exception as e:
                     logger.error("Error deleting file %s: %s", f, e)
         time.sleep(300)
-
 
 cleanup_thread = threading.Thread(target=cleanup_old_files, daemon=True)
 cleanup_thread.start()
@@ -185,18 +219,11 @@ def get_info():
             from urllib.parse import quote
             thumbnail = f"/api/thumb_proxy?url={quote(thumbnail, safe='')}"
 
-        formats = info_dict.get('formats', [])
-        has_height = any(f.get('height') for f in formats if f.get('height'))
-
-        if has_height:
-            available_formats = [
-                {"resolution": "1440p (2K)", "height": 1440},
-                {"resolution": "1080p (Full HD)", "height": 1080},
-                {"resolution": "720p (HD)", "height": 720},
-                {"resolution": "480p (SD)", "height": 480},
-            ]
-        else:
-            available_formats = [{"resolution": "Watermark-free (Best)", "height": "best"}]
+        available_formats = [
+            {"resolution": "1080p (Full HD)", "height": 1080},
+            {"resolution": "720p (HD)", "height": 720},
+            {"resolution": "480p (SD)", "height": 480},
+        ]
 
         return jsonify({
             "title": title,
@@ -237,7 +264,7 @@ def thumb_proxy():
 @app.route('/api/download')
 def download_video():
     video_url = request.args.get('url')
-    res_height = request.args.get('res', 'best')
+    res_height = request.args.get('res', '720')
     req_title = request.args.get('title', 'TikTok_Video')
 
     if not video_url:
@@ -251,7 +278,7 @@ def download_video():
     filepath = os.path.join(DOWNLOAD_DIR, unique_filename)
     user_download_name = f"{safe_title}.mp4"
 
-    format_str = f"bestvideo[height={res_height}]+bestaudio/bestvideo[height<={res_height}]+bestaudio/best" if res_height != 'best' else "best"
+    format_str = f"bestvideo[height<={res_height}]+bestaudio/best[height<={res_height}]/best"
 
     try:
         logger.info("⬇️  Downloading TikTok: %s at %s", video_url, res_height)

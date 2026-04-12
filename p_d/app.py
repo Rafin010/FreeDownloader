@@ -25,7 +25,7 @@ DOWNLOAD_DIR = os.path.join(BASE_DIR, 'downloads')
 COOKIES_FILE = os.path.join(BASE_DIR, 'cookies.txt')
 os.makedirs(DOWNLOAD_DIR, exist_ok=True)
 
-FILE_EXPIRY_TIME = 600  # 10 minutes
+FILE_EXPIRY_TIME = 1800  # 30 minutes
 
 
 # ── Utility: Get Platform Name ─────────────────────────────────
@@ -39,66 +39,104 @@ def get_platform_name(url):
         return "Website"
 
 
-# ── Cookie Validation ─────────────────────────────────────────
-def validate_cookies():
-    """Check if cookies.txt exists and log status on startup."""
-    if not os.path.exists(COOKIES_FILE):
-        logger.info(
-            "ℹ️  No cookies.txt found at: %s — Downloads will work without cookies for public videos.",
-            COOKIES_FILE
-        )
-        return False
-    logger.info("✅ cookies.txt found at: %s", COOKIES_FILE)
-    return True
-
-_cookies_valid = validate_cookies()
+# ── Multi-Strategy Options Builder ────────────────────────────
+# We use rotating User-Agents and headers instead of 'impersonate'
+# since curl_cffi is not installed on the server.
+USER_AGENTS = [
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Safari/605.1.15",
+    "Mozilla/5.0 (Linux; Android 14; SM-S918B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36",
+]
 
 
-# ── Error Classification ──────────────────────────────────────
-def classify_download_error(error_msg, platform="Website"):
-    """Classify a yt-dlp error into a user-friendly message."""
-    error_lower = error_msg.lower()
-    
-    if 'sign in' in error_lower or 'bot' in error_lower or 'login' in error_lower:
-        logger.error("🚫 Auth/bot block on %s: %s", platform, error_msg)
-        return (
-            f"{platform} is restricting access requiring a login or detecting a bot. "
-            "Cookies might be expired or required for this video."
-        )
-    
-    if 'private' in error_lower or 'unavailable' in error_lower or 'not available' in error_lower:
-        logger.warning("Video unavailable on %s: %s", platform, error_msg)
-        return f"This {platform} video is private, deleted, or region-restricted."
-    
-    if 'unsupported' in error_lower or 'no video' in error_lower:
-        logger.warning("Unsupported content on %s: %s", platform, error_msg)
-        return f"This URL doesn't contain a downloadable video or the platform is not supported."
-    
-    logger.error("Unclassified %s error: %s", platform, error_msg)
-    return f"Could not process this video from {platform}. It might be protected or invalid."
+def build_opts(strategy_idx=0, referer_url=""):
+    """Build yt-dlp options rotating User-Agents. No 'impersonate' to avoid curl_cffi dependency."""
+    ua = USER_AGENTS[strategy_idx % len(USER_AGENTS)]
+    headers = {
+        "User-Agent": ua,
+        "Accept-Language": "en-US,en;q=0.9",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    }
+    if referer_url:
+        headers["Referer"] = referer_url
 
-
-# ── yt-dlp Options Builder ────────────────────────────────────
-def get_base_ydl_opts():
-    """Returns the base yt-dlp options with cookie support and strong anti-bot features."""
-    
     opts = {
         'quiet': True,
         'no_warnings': True,
+        'http_headers': headers,
         'socket_timeout': 30,
-        # POWERFUL BYPASS: Instructs yt-dlp to impersonate a real browser TLS fingerprint
-        'impersonate': 'chrome', 
+        'force_ipv4': True,
+        # NO 'impersonate' key — avoids curl_cffi error
     }
 
     if os.path.exists(COOKIES_FILE):
         opts['cookiefile'] = COOKIES_FILE
-    
+
     return opts
 
 
+def extract_with_retry(video_url):
+    """Try extraction with rotating User-Agents."""
+    last_error = None
+    for i in range(len(USER_AGENTS)):
+        try:
+            opts = build_opts(i, video_url)
+            logger.info("P_D attempt %d for: %s", i, video_url)
+            with yt_dlp.YoutubeDL(opts) as ydl:
+                info = ydl.extract_info(video_url, download=False)
+                logger.info("✅ P_D attempt %d succeeded!", i)
+                return info, i
+        except Exception as e:
+            last_error = e
+            error_str = str(e).lower()
+            if 'is not a valid url' in error_str:
+                raise e
+            logger.warning("P_D attempt %d failed: %s", i, str(e)[:100])
+            continue
+    raise last_error
+
+
+def download_with_retry(video_url, filepath, format_string):
+    """Download with rotating strategies."""
+    last_error = None
+    for i in range(len(USER_AGENTS)):
+        try:
+            opts = build_opts(i, video_url)
+            opts.update({
+                'format': format_string,
+                'merge_output_format': 'mp4',
+                'outtmpl': filepath,
+            })
+            with yt_dlp.YoutubeDL(opts) as ydl:
+                ydl.download([video_url])
+            if os.path.exists(filepath):
+                return True
+        except Exception as e:
+            last_error = e
+            for partial in [filepath, filepath + '.part']:
+                if os.path.exists(partial):
+                    os.remove(partial)
+            continue
+    raise last_error
+
+
+# ── Error Classification ──────────────────────────────────────
+def classify_download_error(error_msg, platform="Website"):
+    error_lower = error_msg.lower()
+    if 'sign in' in error_lower or 'bot' in error_lower or 'login' in error_lower:
+        return f"{platform} is restricting access. Please try again later."
+    if 'private' in error_lower or 'unavailable' in error_lower or 'not available' in error_lower:
+        return f"This {platform} video is private, deleted, or region-restricted."
+    if 'unsupported' in error_lower or 'no video' in error_lower:
+        return f"This URL doesn't contain a downloadable video or the platform is not supported."
+    if 'impersonate' in error_lower:
+        return f"Server configuration issue. Please contact admin."
+    return f"Could not process this video from {platform}. It might be protected or invalid."
+
+
 # ── File Cleanup ──────────────────────────────────────────────
-def delete_file_delayed(filepath, delay=300):
-    """Background thread to delete the file after a delay."""
+def delete_file_delayed(filepath, delay=1800):
     def task():
         time.sleep(delay)
         try:
@@ -107,12 +145,10 @@ def delete_file_delayed(filepath, delay=300):
                 logger.info("Auto-deleted: %s", filepath)
         except Exception as e:
             logger.error("Error deleting file %s: %s", filepath, e)
-
     threading.Thread(target=task, daemon=True).start()
 
 
 def cleanup_old_files():
-    """Periodically check and delete old files from download directory."""
     while True:
         now = time.time()
         if os.path.exists(DOWNLOAD_DIR):
@@ -145,80 +181,70 @@ def get_info():
     if not video_url:
         return jsonify({"error": "No URL provided!"}), 400
 
-    # Removed the Facebook-only restriction to make it Universal
     if not video_url.startswith("http"):
         return jsonify({"error": "Invalid URL format."}), 400
 
     platform = get_platform_name(video_url)
-    ydl_opts = get_base_ydl_opts()
 
     try:
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            info_dict = ydl.extract_info(video_url, download=False)
+        info_dict, _ = extract_with_retry(video_url)
 
-            raw_title = info_dict.get('title')
-            description = info_dict.get('description')
-            
-            title = ""
-            if raw_title:
-                title = raw_title
-            elif description and len(description.strip()) > 0:
-                title = " ".join(description.splitlines())[:60] + "..."
-            else:
-                title = f"{platform}_Video"
+        raw_title = info_dict.get('title')
+        description = info_dict.get('description')
 
-            # Try multiple thumbnail sources
-            thumbnail = ""
-            if info_dict.get('thumbnail'):
-                thumbnail = info_dict['thumbnail']
-            elif info_dict.get('thumbnails'):
-                for tb in reversed(info_dict['thumbnails']):
-                    if tb.get('url'):
-                        thumbnail = tb['url']
-                        break
-            
-            # Proxy the thumbnail through our backend with dynamic referer
-            if thumbnail:
-                thumbnail = f"/api/thumb_proxy?url={quote(thumbnail, safe='')}&referer={quote(video_url, safe='')}"
+        title = ""
+        if raw_title:
+            title = raw_title
+        elif description and len(description.strip()) > 0:
+            title = " ".join(description.splitlines())[:60] + "..."
+        else:
+            title = f"{platform}_Video"
 
-            # Dynamically fetch available formats instead of hardcoding
-            available_formats = []
-            formats_processed = set()
-            
-            if 'formats' in info_dict:
-                for f in info_dict['formats']:
-                    # Filter for decent video formats with height
-                    h = f.get('height')
-                    if h and h >= 360 and f.get('vcodec') != 'none':
-                        if h not in formats_processed:
-                            formats_processed.add(h)
-                            res_name = f"{h}p"
-                            if h == 2160: res_name += " (4K)"
-                            elif h == 1440: res_name += " (2K)"
-                            elif h == 1080: res_name += " (Full HD)"
-                            elif h == 720: res_name += " (HD)"
-                            
-                            available_formats.append({"resolution": res_name, "height": h})
-                
-                # Sort highest quality first
-                available_formats = sorted(available_formats, key=lambda k: k['height'], reverse=True)
-            
-            # Fallback if specific formats aren't detected well by yt-dlp for a random site
-            if not available_formats:
-                available_formats = [{"resolution": "Best Available Quality", "height": "best"}]
+        thumbnail = ""
+        if info_dict.get('thumbnail'):
+            thumbnail = info_dict['thumbnail']
+        elif info_dict.get('thumbnails'):
+            for tb in reversed(info_dict['thumbnails']):
+                if tb.get('url'):
+                    thumbnail = tb['url']
+                    break
 
-            logger.info("✅ Info fetched for: %s (%s)", video_url, platform)
+        if thumbnail:
+            thumbnail = f"/api/thumb_proxy?url={quote(thumbnail, safe='')}&referer={quote(video_url, safe='')}"
 
-            return jsonify({
-                "title": title,
-                "thumbnail": thumbnail,
-                "formats": available_formats
-            })
+        # Dynamically fetch available formats
+        available_formats = []
+        formats_processed = set()
+
+        if 'formats' in info_dict:
+            for f in info_dict['formats']:
+                h = f.get('height')
+                if h and h >= 360 and f.get('vcodec') != 'none':
+                    if h not in formats_processed:
+                        formats_processed.add(h)
+                        res_name = f"{h}p"
+                        if h == 2160: res_name += " (4K)"
+                        elif h == 1440: res_name += " (2K)"
+                        elif h == 1080: res_name += " (Full HD)"
+                        elif h == 720: res_name += " (HD)"
+                        available_formats.append({"resolution": res_name, "height": h})
+
+            available_formats = sorted(available_formats, key=lambda k: k['height'], reverse=True)
+
+        if not available_formats:
+            available_formats = [{"resolution": "Best Available Quality", "height": "best"}]
+
+        logger.info("✅ Info fetched for: %s (%s)", video_url, platform)
+
+        return jsonify({
+            "title": title,
+            "thumbnail": thumbnail,
+            "formats": available_formats
+        })
 
     except Exception as e:
         import traceback
         traceback.print_exc()
-        
         error_msg = str(e)
         user_message = classify_download_error(error_msg, platform)
         return jsonify({"error": user_message}), 500
@@ -226,16 +252,13 @@ def get_info():
 
 @app.route('/api/thumb_proxy')
 def thumb_proxy():
-    """Proxy thumbnail images to bypass CORS and referrer restrictions dynamically"""
     img_url = request.args.get('url', '')
     referer_url = request.args.get('referer', 'https://google.com/')
-    
     if not img_url:
         return "No URL", 400
-    
     try:
         headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
             "Referer": referer_url
         }
         resp = http_requests.get(img_url, headers=headers, timeout=10, stream=True)
@@ -254,14 +277,13 @@ def thumb_proxy():
 def download_video():
     video_url = request.args.get('url')
     res_height = request.args.get('res', '1080')
-    req_title = request.args.get('title', 'Universal_Video')
+    req_title = request.args.get('title', 'Video')
 
     if not video_url:
         return "URL Missing", 400
 
     platform = get_platform_name(video_url)
-    
-    # Create safe filename
+
     safe_title = re.sub(r'[\\/*?:"<>|]', "", req_title).strip()
     if not safe_title:
         safe_title = f"{platform}_Video"
@@ -270,28 +292,17 @@ def download_video():
     filepath = os.path.join(DOWNLOAD_DIR, unique_filename)
     user_download_name = f"{safe_title}.mp4"
 
-    ydl_opts = get_base_ydl_opts()
-    
-    # Handle the 'best' string fallback for unknown sites
     if res_height == 'best':
         format_string = 'bestvideo+bestaudio/best'
     else:
-        format_string = f'bestvideo[height={res_height}]+bestaudio/bestvideo[height<={res_height}]+bestaudio/best'
-
-    ydl_opts.update({
-        'format': format_string,
-        'merge_output_format': 'mp4',
-        'outtmpl': filepath,
-    })
+        format_string = f'bestvideo[height<={res_height}]+bestaudio/best[height<={res_height}]/best'
 
     try:
-        logger.info("⬇️  Downloading %s: %s at %sp", platform, video_url, res_height)
+        logger.info("⬇️  Downloading %s: %s at %s", platform, video_url, res_height)
 
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            ydl.download([video_url])
+        download_with_retry(video_url, filepath, format_string)
 
-        delete_file_delayed(filepath, delay=300)
-
+        delete_file_delayed(filepath, delay=1800)
         logger.info("✅ Download complete: %s", unique_filename)
 
         return send_file(
@@ -304,10 +315,8 @@ def download_video():
     except Exception as e:
         import traceback
         traceback.print_exc()
-
         if os.path.exists(filepath):
             os.remove(filepath)
-        
         error_msg = str(e)
         user_message = classify_download_error(error_msg, platform)
         return jsonify({"error": user_message}), 500

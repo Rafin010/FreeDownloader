@@ -1,0 +1,83 @@
+===== YT SERVICE =====
+-- Logs begin at Fri 2026-04-10 23:34:02 +06, end at Sun 2026-04-12 14:46:27 +06. --
+Apr 12 14:40:09 IARAFIN gunicorn[58606]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/yt_dlp/extractor/common.py", line 1274, in raise_no_formats
+Apr 12 14:40:09 IARAFIN gunicorn[58606]:     raise ExtractorError(msg, expected=expected, video_id=video_id)
+Apr 12 14:40:09 IARAFIN gunicorn[58606]: yt_dlp.utils.ExtractorError: [youtube] bynDxc81how: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+Apr 12 14:40:09 IARAFIN gunicorn[58606]: During handling of the above exception, another exception occurred:
+Apr 12 14:40:09 IARAFIN gunicorn[58606]: Traceback (most recent call last):
+Apr 12 14:40:09 IARAFIN gunicorn[58606]:   File "/root/FreeDownloader/yt_d/app.py", line 210, in get_info
+Apr 12 14:40:09 IARAFIN gunicorn[58606]:     info_dict, _ = extract_with_retry(video_url)
+Apr 12 14:40:09 IARAFIN gunicorn[58606]:   File "/root/FreeDownloader/yt_d/app.py", line 94, in extract_with_retry
+Apr 12 14:40:09 IARAFIN gunicorn[58606]:     raise last_error
+Apr 12 14:40:09 IARAFIN gunicorn[58606]:   File "/root/FreeDownloader/yt_d/app.py", line 79, in extract_with_retry
+Apr 12 14:40:09 IARAFIN gunicorn[58606]:     info = ydl.extract_info(video_url, download=False)
+Apr 12 14:40:09 IARAFIN gunicorn[58606]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/yt_dlp/YoutubeDL.py", line 1634, in extract_info
+Apr 12 14:40:09 IARAFIN gunicorn[58606]:     return self.__extract_info(url, self.get_info_extractor(key), download, extra_info, process)
+Apr 12 14:40:09 IARAFIN gunicorn[58606]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/yt_dlp/YoutubeDL.py", line 1663, in wrapper
+Apr 12 14:40:09 IARAFIN gunicorn[58606]:     self.report_error(str(e), e.format_traceback())
+Apr 12 14:40:09 IARAFIN gunicorn[58606]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/yt_dlp/YoutubeDL.py", line 1103, in report_error
+Apr 12 14:40:09 IARAFIN gunicorn[58606]:     self.trouble(f'{self._format_err("ERROR:", self.Styles.ERROR)} {message}', *args, **kwargs)
+Apr 12 14:40:09 IARAFIN gunicorn[58606]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/yt_dlp/YoutubeDL.py", line 1042, in trouble
+Apr 12 14:40:09 IARAFIN gunicorn[58606]:     raise DownloadError(message, exc_info)
+Apr 12 14:40:09 IARAFIN gunicorn[58606]: yt_dlp.utils.DownloadError: ERROR: [youtube] bynDxc81how: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+===== TIKTOK SERVICE =====
+-- Logs begin at Fri 2026-04-10 23:34:02 +06, end at Sun 2026-04-12 14:46:27 +06. --
+Apr 12 14:40:45 IARAFIN gunicorn[58611]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/yt_dlp/extractor/tiktok.py", line 911, in _real_extract
+Apr 12 14:40:45 IARAFIN gunicorn[58611]:     raise ExtractorError(f'Video not available, status code {status}', video_id=video_id)
+Apr 12 14:40:45 IARAFIN gunicorn[58611]: yt_dlp.utils.ExtractorError: [TikTok] 7611911420032093458: Video not available, status code 0; please report this issue on  https://github.com/yt-dlp/yt-dlp/issues?q= , filling out the appropriate issue template. Confirm you are on the latest version using  yt-dlp -U
+Apr 12 14:40:45 IARAFIN gunicorn[58611]: During handling of the above exception, another exception occurred:
+Apr 12 14:40:45 IARAFIN gunicorn[58611]: Traceback (most recent call last):
+Apr 12 14:40:45 IARAFIN gunicorn[58611]:   File "/root/FreeDownloader/tik_d/app.py", line 163, in get_info
+Apr 12 14:40:45 IARAFIN gunicorn[58611]:     info_dict, _ = extract_with_retry(video_url)
+Apr 12 14:40:45 IARAFIN gunicorn[58611]:   File "/root/FreeDownloader/tik_d/app.py", line 72, in extract_with_retry
+Apr 12 14:40:45 IARAFIN gunicorn[58611]:     raise e
+Apr 12 14:40:45 IARAFIN gunicorn[58611]:   File "/root/FreeDownloader/tik_d/app.py", line 63, in extract_with_retry
+Apr 12 14:40:45 IARAFIN gunicorn[58611]:     info = ydl.extract_info(video_url, download=False)
+Apr 12 14:40:45 IARAFIN gunicorn[58611]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/yt_dlp/YoutubeDL.py", line 1634, in extract_info
+Apr 12 14:40:45 IARAFIN gunicorn[58611]:     return self.__extract_info(url, self.get_info_extractor(key), download, extra_info, process)
+Apr 12 14:40:45 IARAFIN gunicorn[58611]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/yt_dlp/YoutubeDL.py", line 1663, in wrapper
+Apr 12 14:40:45 IARAFIN gunicorn[58611]:     self.report_error(str(e), e.format_traceback())
+Apr 12 14:40:45 IARAFIN gunicorn[58611]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/yt_dlp/YoutubeDL.py", line 1103, in report_error
+Apr 12 14:40:45 IARAFIN gunicorn[58611]:     self.trouble(f'{self._format_err("ERROR:", self.Styles.ERROR)} {message}', *args, **kwargs)
+Apr 12 14:40:45 IARAFIN gunicorn[58611]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/yt_dlp/YoutubeDL.py", line 1042, in trouble
+Apr 12 14:40:45 IARAFIN gunicorn[58611]:     raise DownloadError(message, exc_info)
+Apr 12 14:40:45 IARAFIN gunicorn[58611]: yt_dlp.utils.DownloadError: ERROR: [TikTok] 7611911420032093458: Video not available, status code 0; please report this issue on  https://github.com/yt-dlp/yt-dlp/issues?q= , filling out the appropriate issue template. Confirm you are on the latest version using  yt-dlp -U
+
+===== P_D SERVICE =====
+-- Logs begin at Fri 2026-04-10 23:34:02 +06, end at Sun 2026-04-12 14:46:27 +06. --
+Apr 12 14:27:42 IARAFIN gunicorn[58580]: [2026-04-12 14:27:42 +0600] [58580] [INFO] Worker exiting (pid: 58580)
+Apr 12 14:27:42 IARAFIN gunicorn[58567]: [2026-04-12 14:27:42 +0600] [58567] [INFO] Shutting down: Master
+Apr 12 14:27:42 IARAFIN systemd[1]: p_d.service: Succeeded.
+Apr 12 14:27:42 IARAFIN systemd[1]: Stopped P_D Downloader.
+Apr 12 14:27:42 IARAFIN systemd[1]: Started P_D Downloader.
+Apr 12 14:27:43 IARAFIN gunicorn[58602]: [2026-04-12 14:27:43 +0600] [58602] [INFO] Starting gunicorn 23.0.0
+Apr 12 14:27:43 IARAFIN gunicorn[58602]: [2026-04-12 14:27:43 +0600] [58602] [INFO] Listening at: http://0.0.0.0:8009 (58602)
+Apr 12 14:27:43 IARAFIN gunicorn[58602]: [2026-04-12 14:27:43 +0600] [58602] [INFO] Using worker: sync
+Apr 12 14:27:43 IARAFIN gunicorn[58609]: [2026-04-12 14:27:43 +0600] [58609] [INFO] Booting worker with pid: 58609
+Apr 12 14:27:43 IARAFIN gunicorn[58614]: [2026-04-12 14:27:43 +0600] [58614] [INFO] Booting worker with pid: 58614
+Apr 12 14:27:44 IARAFIN gunicorn[58609]: [2026-04-12 14:27:44] INFO - ℹ️  No cookies.txt found at: /root/FreeDownloader/p_d/cookies.txt — Downloads will work without cookies for public videos.
+Apr 12 14:27:44 IARAFIN gunicorn[58614]: [2026-04-12 14:27:44] INFO - ℹ️  No cookies.txt found at: /root/FreeDownloader/p_d/cookies.txt — Downloads will work without cookies for public videos.
+Apr 12 14:41:32 IARAFIN gunicorn[58609]: Deprecated Feature: Support for Python version 3.9 has been deprecated. Please update to Python 3.10 or above
+Apr 12 14:41:32 IARAFIN gunicorn[58609]: Traceback (most recent call last):
+Apr 12 14:41:32 IARAFIN gunicorn[58609]:   File "/root/FreeDownloader/p_d/app.py", line 156, in get_info
+Apr 12 14:41:32 IARAFIN gunicorn[58609]:     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+Apr 12 14:41:32 IARAFIN gunicorn[58609]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/yt_dlp/YoutubeDL.py", line 743, in __init__
+Apr 12 14:41:32 IARAFIN gunicorn[58609]:     raise YoutubeDLError(
+Apr 12 14:41:32 IARAFIN gunicorn[58609]: yt_dlp.utils.YoutubeDLError: Impersonate target "chrome" is not available. Use --list-impersonate-targets to see available targets. You may be missing dependencies required to support this target.
+Apr 12 14:41:32 IARAFIN gunicorn[58609]: [2026-04-12 14:41:32] WARNING - Video unavailable on Tiktok: Impersonate target "chrome" is not available. Use --list-impersonate-targets to see available targets. You may be missing dependencies required to support this target.
+
+===== PORT CHECK =====
+LISTEN    0         2048               0.0.0.0:8001             0.0.0.0:*        users:(("gunicorn",pid=58616,fd=5),("gunicorn",pid=58613,fd=5),("gunicorn",pid=58604,fd=5))
+LISTEN    0         2048               0.0.0.0:8002             0.0.0.0:*        users:(("gunicorn",pid=58612,fd=5),("gunicorn",pid=58610,fd=5),("gunicorn",pid=58601,fd=5))
+LISTEN    0         2048               0.0.0.0:8003             0.0.0.0:*        users:(("gunicorn",pid=58615,fd=5),("gunicorn",pid=58611,fd=5),("gunicorn",pid=58603,fd=5))
+LISTEN    0         2048               0.0.0.0:8004             0.0.0.0:*        users:(("gunicorn",pid=58607,fd=5),("gunicorn",pid=58606,fd=5),("gunicorn",pid=58600,fd=5))
+LISTEN    0         2048               0.0.0.0:8008             0.0.0.0:*        users:(("gunicorn",pid=58592,fd=5),("gunicorn",pid=58590,fd=5),("gunicorn",pid=58585,fd=5))
+LISTEN    0         2048               0.0.0.0:8009             0.0.0.0:*        users:(("gunicorn",pid=58614,fd=5),("gunicorn",pid=58609,fd=5),("gunicorn",pid=58602,fd=5))
+
+===== CURL TESTS =====
+YT(8004): 200
+TikTok(8003): 200
+P_D(8009): 200
+FB(8001): 200
+Insta(8002): 200
