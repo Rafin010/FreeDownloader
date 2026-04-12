@@ -25,7 +25,7 @@ DOWNLOAD_DIR = os.path.join(BASE_DIR, 'temp_videos')
 COOKIES_FILE = os.path.join(BASE_DIR, 'cookies.txt')
 os.makedirs(DOWNLOAD_DIR, exist_ok=True)
 
-FILE_EXPIRY_TIME = 600 
+FILE_EXPIRY_TIME = 1800 
 
 
 # ── Cookie Validation ─────────────────────────────────────────
@@ -92,7 +92,7 @@ def get_base_ydl_opts():
 
 
 # ── File Cleanup ──────────────────────────────────────────────
-def delete_file_delayed(filepath, delay=300):
+def delete_file_delayed(filepath, delay=1800):
     """
     Background thread to delete the file after a delay (e.g., 5 minutes).
     This safely allows Flask's send_file to stream the video to the user before deletion.
@@ -258,7 +258,7 @@ def download_video():
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             ydl.download([video_url])
 
-        delete_file_delayed(filepath, delay=300)
+        delete_file_delayed(filepath, delay=1800)
 
         logger.info("✅ Download complete: %s", unique_filename)
 

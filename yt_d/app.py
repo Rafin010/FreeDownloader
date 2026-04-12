@@ -24,7 +24,7 @@ DOWNLOAD_DIR = os.path.join(BASE_DIR, 'downloads')
 COOKIES_FILE = os.path.join(BASE_DIR, 'cookies.txt')
 os.makedirs(DOWNLOAD_DIR, exist_ok=True)
 
-FILE_EXPIRY_TIME = 600 
+FILE_EXPIRY_TIME = 1800 
 
 
 # ── Cookie Validation ─────────────────────────────────────────
