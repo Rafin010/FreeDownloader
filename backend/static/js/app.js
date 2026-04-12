@@ -195,6 +195,19 @@ async function loadDailyChart() {
     const canvas = document.getElementById('dailyChart');
     if (!canvas) return;
 
+    // Calculate 30-day totals and update UI
+    const tViews = d.page_views.reduce((a, b) => a + b, 0);
+    const tDls = d.downloads.reduce((a, b) => a + b, 0);
+    const tAds = d.ad_impressions.reduce((a, b) => a + b, 0);
+
+    const elViews = document.getElementById('trend-total-views');
+    const elDls = document.getElementById('trend-total-dls');
+    const elAds = document.getElementById('trend-total-ads');
+
+    if (elViews) animateNumber(elViews, tViews);
+    if (elDls) animateNumber(elDls, tDls);
+    if (elAds) animateNumber(elAds, tAds);
+
     // Create Gradients for Professional Look
     const ctx = canvas.getContext('2d');
     const gradViews = ctx.createLinearGradient(0, 0, 0, 300);

@@ -347,15 +347,24 @@
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
                     <!-- Line chart (2/3) -->
                     <div class="lg:col-span-2 bg-panel-card border border-panel-border rounded-2xl p-5 md:p-6">
-                        <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
-                            <h3 class="text-sm font-semibold text-white">Event Trends</h3>
-                            <div class="flex gap-4 text-xs text-gray-400">
-                                <span class="flex items-center gap-1.5"><span
-                                        class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span>Views</span>
-                                <span class="flex items-center gap-1.5"><span
-                                        class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>Downloads</span>
-                                <span class="flex items-center gap-1.5"><span
-                                        class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>Ads</span>
+                        <div class="flex flex-col gap-2 mb-5">
+                            <div class="flex flex-wrap items-center justify-between gap-3">
+                                <h3 class="text-sm font-semibold text-white">Event Trends (30 Days Total)</h3>
+                                <div class="flex gap-4 text-xs text-gray-400">
+                                    <span class="flex items-center gap-1.5"><span
+                                            class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span>Views</span>
+                                    <span class="flex items-center gap-1.5"><span
+                                            class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>Downloads</span>
+                                    <span class="flex items-center gap-1.5"><span
+                                            class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>Ads</span>
+                                </div>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-4 text-xs font-medium bg-white/[0.03] px-3 py-2 rounded-lg w-fit border border-white/5">
+                                <span class="text-indigo-400">Views: <span id="trend-total-views" class="text-white font-bold text-sm tracking-wide">0</span></span>
+                                <span class="text-gray-600">|</span>
+                                <span class="text-emerald-400">Downloads: <span id="trend-total-dls" class="text-white font-bold text-sm tracking-wide">0</span></span>
+                                <span class="text-gray-600">|</span>
+                                <span class="text-amber-400">Ad Impressions: <span id="trend-total-ads" class="text-white font-bold text-sm tracking-wide">0</span></span>
                             </div>
                         </div>
                         <div class="relative h-[260px] md:h-[300px]"><canvas id="dailyChart"></canvas></div>
