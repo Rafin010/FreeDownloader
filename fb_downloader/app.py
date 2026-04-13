@@ -3,6 +3,7 @@ import uuid
 import threading
 import time
 import re
+import random
 import logging
 from flask import Flask, render_template, request, jsonify, send_file, Response
 import yt_dlp
@@ -75,7 +76,8 @@ _has_fb_cookies = validate_fb_cookies()
 
 # ── URL Normalization & Validation ────────────────────────────
 # Expanded regex: matches facebook.com (with or without any subdomain),
-# fb.watch, fb.gg, fb.com, l.facebook.com, lm.facebook.com, etc.
+# fb.watch, fb.gg, fb.com, l.facebook.com, lm.facebook.com,
+# plus explicit reel, stories, and watch paths.
 FB_URL_REGEX = re.compile(
     r'https?://'
     r'(?:[\w-]+\.)*'                          # any subdomain (www, m, web, l, lm, etc.)
@@ -86,36 +88,90 @@ FB_URL_REGEX = re.compile(
 
 
 def normalize_fb_url(url):
-    """Resolve redirects (fb.watch, l.facebook.com, etc.) to the final canonical URL.
-    Returns the resolved URL, or the original URL if resolution fails."""
+    """Resolve redirects and normalize Facebook URLs for reliable extraction.
+    - Resolves fb.watch, l.facebook.com redirects
+    - Adds www. prefix if missing
+    - Converts m.facebook.com to www.facebook.com
+    - Normalizes reel/watch URLs
+    Returns the normalized URL, or the original URL if resolution fails."""
     try:
         # Follow redirects with a real browser User-Agent
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-                          "(KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
+                          "(KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
             "Accept-Language": "en-US,en;q=0.9",
         }
 
-        # Only resolve for known shortlink/redirect domains
+        # Step 1: Resolve shortlink/redirect domains
         needs_resolution = any(domain in url.lower() for domain in
                                 ['fb.watch', 'l.facebook.com', 'lm.facebook.com',
                                  '/share/r/', '/share/v/', '/share/p/'])
 
         if needs_resolution:
             logger.info("🔗 Resolving redirect URL: %s", url)
-            resp = http_requests.head(url, headers=headers, allow_redirects=True, timeout=10)
-            resolved = resp.url
+            try:
+                resp = http_requests.head(url, headers=headers, allow_redirects=True, timeout=10)
+                resolved = resp.url
+                if resolved and resolved != url:
+                    logger.info("🔗 Resolved to: %s", resolved)
+                    url = resolved
+            except Exception as e:
+                logger.warning("Redirect resolution failed: %s — continuing with original URL", str(e)[:80])
 
-            if resolved and resolved != url:
-                logger.info("🔗 Resolved to: %s", resolved)
-                return resolved
+        # Step 2: Normalize m.facebook.com → www.facebook.com
+        url = re.sub(r'https?://m\.facebook\.com', 'https://www.facebook.com', url)
+
+        # Step 3: Add www. prefix if missing (facebook.com → www.facebook.com)
+        url = re.sub(r'https?://facebook\.com', 'https://www.facebook.com', url)
+
+        # Step 4: Ensure https
+        if url.startswith('http://'):
+            url = url.replace('http://', 'https://', 1)
+
+        # Step 5: Clean tracking parameters but keep video identifiers
+        # Remove fbclid, mibextid, etc. but keep video_id, v, id parameters
+        url = re.sub(r'[?&](?:fbclid|mibextid|__cft__\[\d+\]|__tn__|refid|ref)=[^&]*', '', url)
+        # Clean up leftover ? or & at end
+        url = re.sub(r'[?&]$', '', url)
 
         return url
 
     except Exception as e:
-        logger.warning("URL resolution failed for %s: %s — using original URL", url, str(e)[:80])
+        logger.warning("URL normalization failed for %s: %s — using original URL", url, str(e)[:80])
         return url
+
+
+def extract_fb_video_id(url):
+    """Extract a Facebook video ID from various URL formats."""
+    patterns = [
+        r'/videos/(\d+)',
+        r'/video/(\d+)',
+        r'/reel/(\d+)',
+        r'/watch/?\?v=(\d+)',
+        r'story_fbid=(\d+)',
+        r'/posts/(\d+)',
+        r'video_id=(\d+)',
+    ]
+    for pattern in patterns:
+        match = re.search(pattern, url)
+        if match:
+            return match.group(1)
+    return None
+
+
+def build_mobile_url(url):
+    """Convert a Facebook URL to its mobile equivalent for lighter extraction."""
+    mobile_url = re.sub(r'https?://(?:www\.)?facebook\.com', 'https://m.facebook.com', url)
+    return mobile_url
+
+
+def build_embed_url(url):
+    """Build a Facebook video embed URL from a video ID for fallback extraction."""
+    video_id = extract_fb_video_id(url)
+    if video_id:
+        return f"https://www.facebook.com/video/embed/?video_id={video_id}"
+    return None
 
 
 def is_valid_fb_url(url):
@@ -123,27 +179,46 @@ def is_valid_fb_url(url):
     return bool(FB_URL_REGEX.match(url))
 
 
-# ── Multi-Strategy User-Agent Rotation ────────────────────────
-# Facebook blocks based on User-Agent. We rotate through multiple
-# realistic browser User-Agents to avoid detection.
+# ── Multi-Strategy Extraction ─────────────────────────────────
+# Facebook blocks based on User-Agent, TLS fingerprint, and cookie state.
+# We rotate through multiple strategies with different configurations.
+
 USER_AGENTS = [
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.1 Safari/605.1.15",
-    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0",
-    "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/19.2 Safari/605.1.15",
+    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0",
+    "Mozilla/5.0 (iPhone; CPU iPhone OS 19_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/19.0 Mobile/15E148 Safari/604.1",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36 Edg/132.0.0.0",
+]
+
+# Extraction strategies: different extractor configurations for Facebook
+FB_STRATEGIES = [
+    # Strategy 0: Default — standard extraction
+    {'name': 'default', 'extractor_args': {}},
+    # Strategy 1: Force Facebook extractor with mobile UA hint
+    {'name': 'mobile_hint', 'extractor_args': {'facebook': {'format_sort': ['quality']}}},
+    # Strategy 2: Generic extractor fallback
+    {'name': 'generic', 'extractor_args': {}, 'extra': {'force_generic_extractor': True}},
 ]
 
 
-def get_ydl_opts_for_attempt(attempt=0):
-    """Build yt-dlp options rotating User-Agent on each attempt, with impersonation."""
+def get_ydl_opts_for_attempt(attempt=0, strategy_idx=0):
+    """Build yt-dlp options rotating User-Agent and strategy on each attempt."""
     ua = USER_AGENTS[attempt % len(USER_AGENTS)]
+    strategy = FB_STRATEGIES[strategy_idx % len(FB_STRATEGIES)]
 
     headers = {
         "User-Agent": ua,
         "Referer": "https://www.facebook.com/",
         "Accept-Language": "en-US,en;q=0.9",
         "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Sec-Ch-Ua": '"Chromium";v="131", "Not A(Brand";v="24"',
+        "Sec-Ch-Ua-Mobile": "?0",
+        "Sec-Ch-Ua-Platform": '"Windows"',
+        "Sec-Fetch-Dest": "document",
+        "Sec-Fetch-Mode": "navigate",
+        "Sec-Fetch-Site": "none",
     }
 
     opts = {
@@ -156,7 +231,18 @@ def get_ydl_opts_for_attempt(attempt=0):
         'sleep_interval': 1,
         'max_sleep_interval': 4,
         'sleep_interval_requests': 1,
+        # Retry internal downloads
+        'retries': 3,
+        'fragment_retries': 3,
+        # Don't fail on certificate issues in some VPS environments
+        'nocheckcertificate': True,
     }
+
+    # Apply strategy-specific options
+    if strategy.get('extractor_args'):
+        opts['extractor_args'] = strategy['extractor_args']
+    if strategy.get('extra'):
+        opts.update(strategy['extra'])
 
     # Browser TLS impersonation (requires curl-cffi)
     if _HAS_CURL_CFFI:
@@ -173,55 +259,65 @@ def _is_unrecoverable_fb_error(error_str):
     unrecoverable = [
         'is not a valid url',
         'private video',
-        'this content isn\'t available',
+        "this content isn't available",
         'removed',
+        'does not exist',
     ]
     error_lower = error_str.lower()
     return any(pattern in error_lower for pattern in unrecoverable)
 
 
 def extract_with_retry(video_url):
-    """Try extracting video info with rotating User-Agents, exponential backoff,
-    and URL normalization fallback. Retries on ALL transient errors."""
+    """Multi-pass extraction with escalating fallback strategies:
+    Pass 1: Original URL with all UA rotations and strategies
+    Pass 2: Resolved/normalized URL (if different)
+    Pass 3: Mobile site URL variant
+    Pass 4: Embedded player URL (lightest auth requirements)
+    Each pass rotates through User-Agents with jittered exponential backoff."""
     last_error = None
-    num_attempts = len(USER_AGENTS)
+    num_ua = len(USER_AGENTS)
+    num_strategies = len(FB_STRATEGIES)
 
-    # First pass: try with the original URL
-    for i in range(num_attempts):
-        try:
-            logger.info("FB attempt %d/%d (UA: %s...) for: %s",
-                        i + 1, num_attempts, USER_AGENTS[i][:30], video_url)
-            opts = get_ydl_opts_for_attempt(i)
+    # ── Pass 1: Original URL with strategy rotation ───────────
+    for s in range(num_strategies):
+        for i in range(num_ua):
+            try:
+                strategy_name = FB_STRATEGIES[s]['name']
+                logger.info("FB attempt UA=%d Strategy=%s for: %s",
+                            i + 1, strategy_name, video_url[:80])
+                opts = get_ydl_opts_for_attempt(i, s)
 
-            with yt_dlp.YoutubeDL(opts) as ydl:
-                info = ydl.extract_info(video_url, download=False)
-                logger.info("✅ FB attempt %d succeeded!", i + 1)
-                return info, i
+                with yt_dlp.YoutubeDL(opts) as ydl:
+                    info = ydl.extract_info(video_url, download=False)
+                    logger.info("✅ FB extraction succeeded! (UA=%d, Strategy=%s)", i + 1, strategy_name)
+                    return info, i
 
-        except Exception as e:
-            last_error = e
-            error_str = str(e)
+            except Exception as e:
+                last_error = e
+                error_str = str(e)
 
-            if _is_unrecoverable_fb_error(error_str):
-                logger.error("❌ Unrecoverable FB error: %s", error_str[:150])
-                raise e
+                if _is_unrecoverable_fb_error(error_str):
+                    logger.error("❌ Unrecoverable FB error: %s", error_str[:150])
+                    raise e
 
-            # Exponential backoff: 2s, 4s, 6s, 8s
-            backoff = min(2 * (i + 1), 10)
-            logger.warning("FB attempt %d failed: %s — backing off %ds...",
-                           i + 1, error_str[:120], backoff)
+                # Jittered exponential backoff
+                base_backoff = min(2 * (i + 1), 8)
+                jitter = random.uniform(0, 1.5)
+                backoff = base_backoff + jitter
+                logger.warning("FB attempt failed (UA=%d, %s): %s — backing off %.1fs...",
+                               i + 1, strategy_name, error_str[:100], backoff)
 
-            if i < num_attempts - 1:
-                time.sleep(backoff)
-            continue
+                if not (s == num_strategies - 1 and i == num_ua - 1):
+                    time.sleep(backoff)
+                continue
 
-    # Second pass: try with the normalized/resolved URL (if different)
+    # ── Pass 2: Resolved/Normalized URL ───────────────────────
     resolved_url = normalize_fb_url(video_url)
     if resolved_url != video_url:
-        logger.info("🔄 Retrying with resolved URL: %s", resolved_url)
-        for i in range(min(3, num_attempts)):
+        logger.info("🔄 Pass 2: Retrying with resolved URL: %s", resolved_url[:80])
+        for i in range(min(3, num_ua)):
             try:
-                opts = get_ydl_opts_for_attempt(i)
+                opts = get_ydl_opts_for_attempt(i, 0)
                 with yt_dlp.YoutubeDL(opts) as ydl:
                     info = ydl.extract_info(resolved_url, download=False)
                     logger.info("✅ FB resolved-URL attempt %d succeeded!", i + 1)
@@ -231,11 +327,55 @@ def extract_with_retry(video_url):
                 last_error = e
                 if _is_unrecoverable_fb_error(str(e)):
                     raise e
-                backoff = min(2 * (i + 1), 8)
-                logger.warning("FB resolved-URL attempt %d failed: %s — backing off %ds...",
-                               i + 1, str(e)[:120], backoff)
+                backoff = min(2 * (i + 1), 8) + random.uniform(0, 1)
+                logger.warning("FB resolved-URL attempt %d failed: %s — backing off %.1fs...",
+                               i + 1, str(e)[:100], backoff)
                 if i < 2:
                     time.sleep(backoff)
+                continue
+
+    # ── Pass 3: Mobile Site URL ───────────────────────────────
+    mobile_url = build_mobile_url(resolved_url or video_url)
+    logger.info("🔄 Pass 3: Trying mobile site URL: %s", mobile_url[:80])
+    for i in range(min(2, num_ua)):
+        try:
+            opts = get_ydl_opts_for_attempt(i, 0)
+            # Override UA to mobile for mobile site
+            opts['http_headers']['User-Agent'] = USER_AGENTS[4]  # iPhone UA
+            with yt_dlp.YoutubeDL(opts) as ydl:
+                info = ydl.extract_info(mobile_url, download=False)
+                logger.info("✅ FB mobile-site attempt %d succeeded!", i + 1)
+                return info, i
+
+        except Exception as e:
+            last_error = e
+            if _is_unrecoverable_fb_error(str(e)):
+                raise e
+            backoff = 3 + random.uniform(0, 2)
+            logger.warning("FB mobile-site attempt %d failed: %s", i + 1, str(e)[:100])
+            if i < 1:
+                time.sleep(backoff)
+            continue
+
+    # ── Pass 4: Embedded Player URL ───────────────────────────
+    embed_url = build_embed_url(resolved_url or video_url)
+    if embed_url:
+        logger.info("🔄 Pass 4: Trying embed URL: %s", embed_url)
+        for i in range(min(2, num_ua)):
+            try:
+                opts = get_ydl_opts_for_attempt(i, 0)
+                with yt_dlp.YoutubeDL(opts) as ydl:
+                    info = ydl.extract_info(embed_url, download=False)
+                    logger.info("✅ FB embed-URL attempt %d succeeded!", i + 1)
+                    return info, i
+
+            except Exception as e:
+                last_error = e
+                if _is_unrecoverable_fb_error(str(e)):
+                    raise e
+                logger.warning("FB embed-URL attempt %d failed: %s", i + 1, str(e)[:100])
+                if i < 1:
+                    time.sleep(2 + random.uniform(0, 1))
                 continue
 
     logger.error("❌ ALL Facebook extraction strategies exhausted for: %s", video_url)
@@ -245,13 +385,14 @@ def extract_with_retry(video_url):
 
 
 def download_with_retry(video_url, filepath, res_height):
-    """Download video with rotating User-Agents, exponential backoff, and retry on ALL errors."""
+    """Download video with rotating User-Agents, jittered exponential backoff,
+    and retry on ALL transient errors."""
     last_error = None
     num_attempts = len(USER_AGENTS)
 
     for i in range(num_attempts):
         try:
-            opts = get_ydl_opts_for_attempt(i)
+            opts = get_ydl_opts_for_attempt(i, 0)
             opts['socket_timeout'] = 120  # Longer timeout for downloads
             opts.update({
                 'format': f'bestvideo[height<={res_height}]+bestaudio/best[height<={res_height}]/best',
@@ -284,8 +425,10 @@ def download_with_retry(video_url, filepath, res_height):
                     except OSError:
                         pass
 
-            backoff = min(2 * (i + 1), 10)
-            logger.warning("FB download attempt %d failed: %s — backing off %ds...",
+            base_backoff = min(2 * (i + 1), 10)
+            jitter = random.uniform(0, 2)
+            backoff = base_backoff + jitter
+            logger.warning("FB download attempt %d failed: %s — backing off %.1fs...",
                            i + 1, error_str[:120], backoff)
 
             if i < num_attempts - 1:
@@ -302,18 +445,20 @@ def classify_download_error(error_msg, platform="Facebook"):
 
     # Bot detection / login required
     if any(p in error_lower for p in ['sign in', 'bot', 'login', 'log in',
-                                       'authentication', 'session']):
+                                       'authentication', 'session', 'please log in',
+                                       'you must log in', 'login_required']):
         return f"{platform} is temporarily blocking downloads. Please try again in a few minutes."
 
     # Private / unavailable
     if any(p in error_lower for p in ['private', 'unavailable', 'not available',
-                                       'no longer available', 'content isn\'t available',
-                                       'this content', 'been removed', 'deleted']):
+                                       'no longer available', "content isn't available",
+                                       'this content', 'been removed', 'deleted',
+                                       'does not exist', 'page not found']):
         return f"This {platform} video is private, deleted, or unavailable."
 
     # Parse / extraction failures
     if any(p in error_lower for p in ['cannot parse', 'no video formats', 'unable to extract',
-                                       'unsupported url', 'no suitable']):
+                                       'unsupported url', 'no suitable', 'unable to download']):
         return f"Could not extract video data from this {platform} URL. The video may be in a restricted format."
 
     # Network / redirect issues
@@ -327,6 +472,14 @@ def classify_download_error(error_msg, platform="Facebook"):
     # Unsupported content type
     if any(p in error_lower for p in ['unsupported', 'no video', 'not a video']):
         return f"This URL doesn't contain a downloadable {platform} video."
+
+    # CSRF / empty response (common with missing cookies)
+    if any(p in error_lower for p in ['csrf', 'empty response', 'no data', 'json']):
+        return f"Could not access this {platform} video. The link may require authentication."
+
+    # Rate limiting
+    if any(p in error_lower for p in ['429', 'too many', 'rate limit', 'throttle']):
+        return f"{platform} is rate-limiting requests. Please try again in a few minutes."
 
     return f"Could not process this {platform} video. Please check the URL and try again."
 
