@@ -21,7 +21,7 @@
         async function fetchVideoInfo() {
             currentVideoUrl = document.getElementById('videoUrl').value.trim();
             if(!currentVideoUrl) {
-                alert('Please enter a Facebook video URL!');
+                showCustomAlert('Please paste a Facebook video URL first!');
                 return;
             }
 
@@ -63,11 +63,11 @@
                     
                     document.getElementById('resultSection').classList.remove('hidden');
                 } else {
-                    alert(data.error || 'An error occurred while fetching video info.');
+                    showCustomAlert(data.error || 'An error occurred while fetching video info.');
                 }
             } catch (err) {
                 document.getElementById('loading').classList.add('hidden');
-                alert('Server connection failed. Is the Python backend running?');
+                showCustomAlert('Server connection failed. Is the Python backend running?');
             }
         }
 

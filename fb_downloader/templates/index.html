@@ -154,6 +154,45 @@
     <div class="tracker-ad" data-ad-id="push_ads" style="width:1px;height:1px;position:absolute;top:0;left:0;opacity:0.01;pointer-events:none;"></div>
     <div class="tracker-ad" data-ad-id="vignette_ads" style="width:1px;height:1px;position:absolute;top:0;left:0;opacity:0.01;pointer-events:none;"></div>
 
+    <!-- Custom Beautiful Alert Modal -->
+    <div id="customAlert" class="fixed inset-0 z-[200] hidden flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm transition-opacity duration-300 opacity-0">
+        <div class="bg-white rounded-2xl shadow-2xl overflow-hidden w-full max-w-sm transform scale-95 transition-transform duration-300">
+            <div class="bg-gradient-to-r from-blue-500 to-[#1877F2] p-6 flex justify-center text-white">
+                <i class="fa-solid fa-circle-exclamation text-5xl animate-bounce"></i>
+            </div>
+            <div class="p-8 text-center bg-white">
+                <h3 class="text-2xl font-extrabold text-gray-800 mb-3 tracking-tight">Oops!</h3>
+                <p id="alertMessage" class="text-gray-600 mb-8 text-sm md:text-base font-medium leading-relaxed">Please enter a valid Facebook video URL.</p>
+                <button onclick="closeCustomAlert()" class="w-full bg-[#1877F2] hover:bg-blue-700 text-white font-bold py-3.5 px-4 rounded-xl transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-1">
+                    Got it!
+                </button>
+            </div>
+        </div>
+    </div>
+    <script>
+    function showCustomAlert(message) {
+        document.getElementById('alertMessage').innerText = message;
+        const modal = document.getElementById('customAlert');
+        modal.classList.remove('hidden');
+        // trigger reflow
+        void modal.offsetWidth;
+        modal.classList.remove('opacity-0');
+        modal.classList.add('opacity-100');
+        modal.querySelector('div').classList.remove('scale-95');
+        modal.querySelector('div').classList.add('scale-100');
+    }
+    
+    function closeCustomAlert() {
+        const modal = document.getElementById('customAlert');
+        modal.classList.remove('opacity-100');
+        modal.classList.add('opacity-0');
+        modal.querySelector('div').classList.remove('scale-100');
+        modal.querySelector('div').classList.add('scale-95');
+        setTimeout(() => {
+            modal.classList.add('hidden');
+        }, 300);
+    }
+    </script>
 
     <nav class="bg-white shadow-md sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -487,10 +526,10 @@
                 Company
             </h3>
             <ul class="space-y-4 text-sm font-medium">
-                <li><a href="/about" class="text-gray-400 hover:text-blue-400 transition-colors duration-300">About Us</a></li>
-                <li><a href="/privacy" class="text-gray-400 hover:text-blue-400 transition-colors duration-300">Privacy Policy</a></li>
-                <li><a href="/terms" class="text-gray-400 hover:text-blue-400 transition-colors duration-300">Terms of Service</a></li>
-                <li><a href="/contact" class="text-gray-400 hover:text-blue-400 transition-colors duration-300">Contact Us</a></li>
+                <li><a href="about.html" class="text-gray-400 hover:text-blue-400 transition-colors duration-300">About Us</a></li>
+                <li><a href="privacy.html" class="text-gray-400 hover:text-blue-400 transition-colors duration-300">Privacy Policy</a></li>
+                <li><a href="terms.html" class="text-gray-400 hover:text-blue-400 transition-colors duration-300">Terms of Service</a></li>
+                <li><a href="contact.html" class="text-gray-400 hover:text-blue-400 transition-colors duration-300">Contact Us</a></li>
             </ul>
         </div>
 
