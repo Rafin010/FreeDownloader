@@ -538,7 +538,9 @@ async function loadStoreItems() {
                 </td>
                 <td class="px-4 py-3"><span class="px-2 py-1 bg-indigo-500/10 text-indigo-400 text-[10px] font-bold rounded">${esc(i.category)}</span></td>
                 <td class="px-4 py-3">
-                    <span class="px-2 py-1 rounded text-[10px] font-bold ${i.is_active ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'}">${i.is_active ? '✅ Active' : '⛔ Disabled'}</span>
+                    <span class="inline-flex items-center gap-1 px-2 py-1 rounded text-[10px] font-bold ${i.is_active ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'}">
+                        ${i.is_active ? '<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Active' : '<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path></svg> Disabled'}
+                    </span>
                 </td>
                 <td class="px-4 py-3 text-xs text-gray-400">${i.download_count || 0}</td>
                 <td class="px-4 py-3">
@@ -568,7 +570,7 @@ async function storeToggleItem(id, activate) {
             body: JSON.stringify({ is_active: activate })
         });
         if (!res.ok) throw new Error('Failed');
-        toast(activate ? '✅ Item enabled!' : '⛔ Item disabled!');
+        toast(activate ? ' Item enabled!' : ' Item disabled!');
         loadStoreItems();
     } catch(e) {
         toast('Error: ' + e.message);
@@ -580,7 +582,7 @@ async function storeDeleteItem(id, title) {
     try {
         const res = await fetch(API + '/api/store/items/' + id, { method: 'DELETE' });
         if (!res.ok) throw new Error('Failed');
-        toast('🗑️ Item deleted!');
+        toast(' Item deleted!');
         loadStoreItems();
     } catch(e) {
         toast('Error: ' + e.message);
@@ -607,12 +609,12 @@ function storeEditItem(item) {
     // Switch form to edit mode
     const form = document.getElementById('store-upload-form');
     const btn = form.querySelector('button[type="submit"]');
-    btn.textContent = '✏️ Update Item';
+    btn.textContent = ' Update Item';
     btn.dataset.editId = item.id;
     
     // Scroll to form
     form.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    toast('📝 Editing: ' + item.title);
+    toast(' Editing: ' + item.title);
 }
 
 async function storeUpdateItem(id, data) {
@@ -623,7 +625,7 @@ async function storeUpdateItem(id, data) {
             body: JSON.stringify(data)
         });
         if (!res.ok) throw new Error('Failed to update');
-        toast('✅ Item updated successfully!');
+        toast(' Item updated successfully!');
         loadStoreItems();
         return true;
     } catch(e) {
@@ -720,7 +722,7 @@ document.getElementById('store-upload-form')?.addEventListener('submit', async (
                 body: JSON.stringify(payload)
             });
             if (!res.ok) throw new Error('Failed to create item');
-            toast('✅ Store item created successfully!');
+            toast(' Store item created successfully!');
         }
         
         e.target.reset();
@@ -729,7 +731,7 @@ document.getElementById('store-upload-form')?.addEventListener('submit', async (
     } catch (err) {
         if (!isEdit) { toast('Error: ' + err.message); }
     } finally {
-        btn.textContent = '🚀 Save & Publish';
+        btn.textContent = ' Save & Publish';
         btn.disabled = false;
     }
 });
@@ -779,21 +781,21 @@ document.addEventListener('DOMContentLoaded', () => {
             const val = storeCat.value;
             if (val === 'web') {
                 if (storeFileSection) storeFileSection.style.display = 'none';
-                if (storeLinkLabel) storeLinkLabel.innerHTML = '🔗 Website URL <span class="text-red-400">*</span>';
-                if (storeLinkHelp) storeLinkHelp.textContent = 'আপনার ওয়েবসাইটের সম্পূর্ণ URL দিন (যেমন https://facebook.com)';
-                if (storeInfoText) storeInfoText.textContent = '🌐 Web: ওয়েবসাইটের URL এবং আইকন ইমেজ লিংক দিন। ফাইল আপলোডের দরকার নেই।';
+                if (storeLinkLabel) storeLinkLabel.innerHTML = ' Website URL <span class="text-red-400">*</span>';
+                if (storeLinkHelp) storeLinkHelp.textContent = 'Provide the full URL of your website (e.g., https://example.com)';
+                if (storeInfoText) storeInfoText.textContent = ' Web: web: Provide website URL and icon image link. File upload is not required.';
                 if (storeLink) { storeLink.required = true; storeLink.placeholder = 'https://your-website.com'; }
             } else if (val === 'app') {
                 if (storeFileSection) storeFileSection.style.display = 'block';
-                if (storeLinkLabel) storeLinkLabel.innerHTML = '🔗 Download Link <span class="text-gray-600">(optional)</span>';
-                if (storeLinkHelp) storeLinkHelp.textContent = 'APK বা App ডাউনলোড লিংক দিন অথবা নিচে সরাসরি ফাইল আপলোড করুন।';
-                if (storeInfoText) storeInfoText.textContent = '📱 App: আইকন ইমেজ URL দিন এবং APK ফাইল আপলোড করুন অথবা ডাউনলোড লিংক দিন।';
+                if (storeLinkLabel) storeLinkLabel.innerHTML = ' Download Link <span class="text-gray-600">(optional)</span>';
+                if (storeLinkHelp) storeLinkHelp.textContent = 'Provide an APK/App download link or directly upload the file below.';
+                if (storeInfoText) storeInfoText.textContent = ' Provide icon image URL and upload APK file or provide download link for App.';
                 if (storeLink) { storeLink.required = false; storeLink.placeholder = 'https://drive.google.com/file/...'; }
             } else {
                 if (storeFileSection) storeFileSection.style.display = 'block';
-                if (storeLinkLabel) storeLinkLabel.innerHTML = '🔗 Download Link <span class="text-gray-600">(optional)</span>';
-                if (storeLinkHelp) storeLinkHelp.textContent = 'সফটওয়্যার ডাউনলোড লিংক দিন অথবা নিচে সরাসরি ফাইল আপলোড করুন।';
-                if (storeInfoText) storeInfoText.textContent = '🖥️ Software: আইকন ইমেজ URL দিন এবং .exe/.zip ফাইল আপলোড করুন অথবা ডাউনলোড লিংক দিন।';
+                if (storeLinkLabel) storeLinkLabel.innerHTML = ' Download Link <span class="text-gray-600">(optional)</span>';
+                if (storeLinkHelp) storeLinkHelp.textContent = 'Provide software download link or upload file below.';
+                if (storeInfoText) storeInfoText.textContent = ' Provide icon image URL and upload .exe/.zip file or provide download link for Software.';
                 if (storeLink) { storeLink.required = false; storeLink.placeholder = 'https://drive.google.com/file/...'; }
             }
         };

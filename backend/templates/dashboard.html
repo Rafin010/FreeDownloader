@@ -531,21 +531,12 @@
                         <!-- Upload Form -->
                         <div class="bg-panel-card border border-panel-border rounded-2xl p-6">
                             <h3 class="text-sm font-semibold text-white mb-2">Add / Upload New Item</h3>
-                            <div id="store-info-banner" class="mb-4 p-3 bg-indigo-500/10 border border-indigo-500/20 rounded-lg text-xs text-indigo-300 leading-relaxed">
-                                <span class="font-bold text-indigo-200">â„¹ï¸ Tips:</span>
-                                <span id="store-info-text">Select a category to see specific instructions.</span>
-                            </div>
-                            <form id="store-upload-form" class="space-y-4">
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div><label class="block text-xs text-gray-400 mb-1">Title <span class="text-red-400">*</span></label>
-                                    <input type="text" id="store-title" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-sm text-white" placeholder="e.g. My Cool App" required></div>
-                                    <div><label class="block text-xs text-gray-400 mb-1">Slug (URL Path) <span class="text-red-400">*</span></label>
-                                    <input type="text" id="store-slug" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-sm text-white" placeholder="e.g. my-cool-app" required></div>
-                                </div>
-                                <div class="grid grid-cols-2 gap-4">
+                            <div id="store-info-banner" class="mb-4 p-3 bg-indigo-500/10 border border-indigo-500/20 rounde                                <div class="grid grid-cols-2 gap-4">
                                     <div><label class="block text-xs text-gray-400 mb-1">Category <span class="text-red-400">*</span></label>
                                     <select id="store-cat" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-sm text-white">
-                                        <option value="software">ðŸ–¥ï¸ Software</option><option value="app">ðŸ“± App</option><option value="web">ðŸŒ Web (Website Link)</option>
+                                        <option value="software">Software</option>
+                                        <option value="app">App</option>
+                                        <option value="web">Web (Website Link)</option>
                                     </select></div>
                                     <div><label class="block text-xs text-gray-400 mb-1">Developer</label>
                                     <input type="text" id="store-dev" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-sm text-white" placeholder="Ifat Ahmed Rafin"></div>
@@ -559,25 +550,25 @@
                                     <input type="text" id="store-price" value="Free" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-sm text-white"></div>
                                 </div>
                                 <div>
-                                    <label class="block text-xs text-gray-400 mb-1">ðŸ–¼ï¸ Icon / Image URL <span class="text-gray-600">(paste full link)</span></label>
+                                    <label class="block text-xs text-gray-400 mb-1">Icon / Image URL <span class="text-gray-600">(paste full link)</span></label>
                                     <input type="text" id="store-icon" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-sm text-white" placeholder="https://i.ibb.co.com/xxxxx/my-image.png">
-                                    <p class="text-[10px] text-gray-600 mt-1">Full Image URL paste korun (ibb, imgur, etc.)</p>
+                                    <p class="text-[10px] text-gray-600 mt-1">Paste full image URL (e.g., from ibb, imgur, etc.)</p>
                                 </div>
                                 <div><label class="block text-xs text-gray-400 mb-1">Short Description <span class="text-red-400">*</span></label>
                                 <textarea id="store-desc" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-sm text-white" rows="2" required></textarea></div>
                                 <div><label class="block text-xs text-gray-400 mb-1">Long Description</label>
                                 <textarea id="store-long-desc" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-sm text-white" rows="3"></textarea></div>
                                 <div id="store-link-section">
-                                    <label class="block text-xs text-gray-400 mb-1" id="store-link-label">ðŸ”— Website / Download Link</label>
+                                    <label class="block text-xs text-gray-400 mb-1" id="store-link-label">Website / Download Link</label>
                                     <input type="text" id="store-link" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-sm text-white" placeholder="https://example.com">
                                     <p class="text-[10px] text-gray-600 mt-1" id="store-link-help">Web: full URL (https://...). App/Software: download link or upload file below.</p>
                                 </div>
                                 <div id="store-file-section">
-                                    <label class="block text-xs text-gray-400 mb-1">ðŸ“ File Upload (App/Software)</label>
+                                    <label class="block text-xs text-gray-400 mb-1">File Upload (App/Software)</label>
                                     <input type="file" id="store-file" class="w-full text-xs text-gray-400">
                                     <div id="upload-progress" class="hidden mt-2 h-1 w-full bg-slate-800"><div class="h-1 bg-emerald-500 w-0 transition-all"></div></div>
                                 </div>
-                                <button type="submit" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-sm font-semibold transition-all shadow-lg shadow-indigo-600/20">ðŸš€ Save &amp; Publish</button>
+                                <button type="submit" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-sm font-semibold transition-all shadow-lg shadow-indigo-600/20"><svg class="w-4 h-4 inline-block mr-1 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>Save & Publish</button>
                             </form>
                         </div>
                         <!-- Items Table -->
