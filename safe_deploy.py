@@ -35,6 +35,7 @@ def main():
 
     # Add all other untracked/modified files (the actual frontend/code updates)
     run_cmd("git add .")
+    run_cmd("git reset HEAD temp_fb_cookies.txt temp_yt_cookies.txt")
     
     # Commit and Push
     run_cmd('git commit -m "Update frontend and deploy latest code (secrets removed)"')
@@ -77,9 +78,23 @@ def main():
             sftp.put(yt_cookie_temp, "/root/FreeDownloader/yt_d/cookies.txt")
         sftp.close()
 
-        # 3.3 Restart services
+        # 3.3 Set up Free Store Nginx & Services
+        print("Setting up Free Store configs...")
+        fs_setup = [
+            "cp /root/FreeDownloader/nginx/freestore-domains.conf /etc/nginx/sites-available/freestore-domains.conf",
+            "ln -sf /etc/nginx/sites-available/freestore-domains.conf /etc/nginx/sites-enabled/",
+            "nginx -t && systemctl reload nginx",
+            "cd /root/FreeDownloader/backend && source venv/bin/activate && pip install -r requirements.txt",
+            "cat << 'EOF' > /etc/systemd/system/freestore.service\n[Unit]\nDescription=Free Store Application (Flask)\nAfter=network.target\n\n[Service]\nUser=root\nWorkingDirectory=/root/FreeDownloader/freeStore\nEnvironment=\"PATH=/root/FreeDownloader/backend/venv/bin\"\nExecStart=/root/FreeDownloader/backend/venv/bin/gunicorn -w 2 -b 127.0.0.1:8010 app:app\nRestart=always\n\n[Install]\nWantedBy=multi-user.target\nEOF",
+            "systemctl daemon-reload",
+            "systemctl enable --now freestore"
+        ]
+        for scmd in fs_setup:
+            client.exec_command(scmd).stdout.read()
+
+        # 3.4 Restart services
         print("Restarting services on VPS...")
-        restart_cmd = "systemctl restart fb.service yt.service free_d.service p_d.service tik_d.service insta.service freedownloader.service"
+        restart_cmd = "systemctl restart fb.service yt.service free_d.service p_d.service tik_d.service insta.service freedownloader.service downloader-backend.service freestore.service"
         client.exec_command(restart_cmd).stdout.read()
         
         print("VPS DEPLOYMENT COMPLETE!")

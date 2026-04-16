@@ -440,7 +440,8 @@ async function loadAll() {
         await buildSidebar();
         await Promise.all([
             loadSummary(), loadDailyChart(), loadDoughnutChart(),
-            loadHourlyChart(), loadSitesTable(), loadSessionsTable()
+            loadHourlyChart(), loadSitesTable(), loadSessionsTable(),
+            loadActiveInstalls(), loadStoreItems(), loadPopups()
         ]);
     } catch (e) {
         console.error('[Dashboard]', e);
@@ -452,6 +453,153 @@ document.getElementById('refresh-btn')?.addEventListener('click', () => {
     countdown = REFRESH_MS / 1000;
     loadAll();
     toast('Refreshing…');
+});
+
+// ══════════════════════════════════════════
+// FREE STORE & POPUP MANAGEMENT
+// ══════════════════════════════════════════
+async function loadActiveInstalls() {
+    try {
+        const data = await apiFetch('/api/install/stats');
+        const tb = document.getElementById('installs-tbody');
+        document.getElementById('stat-active-installs').textContent = data.total_active || 0;
+        
+        if (!data.breakdown || !data.breakdown.length) {
+            tb.innerHTML = '<tr><td colspan="3" class="text-center text-gray-600 py-8">No active installs.</td></tr>';
+            return;
+        }
+        
+        tb.innerHTML = data.breakdown.map(i => `
+            <tr class="border-b border-panel-border hover:bg-white/[0.02]">
+                <td class="px-6 py-4 text-xs font-semibold text-white">${esc(i.software_name)}</td>
+                <td class="px-6 py-4 text-xs text-gray-400">${i.total_installs}</td>
+                <td class="px-6 py-4 text-xs font-bold text-emerald-400">${i.active_installs}</td>
+            </tr>
+        `).join('');
+    } catch(e) {}
+}
+
+async function loadStoreItems() {
+    try {
+        const items = await apiFetch('/api/store/items');
+        const tb = document.getElementById('store-items-tbody');
+        if (!items || !items.length) {
+            tb.innerHTML = '<tr><td colspan="3" class="text-center text-gray-600 py-8">No items found.</td></tr>';
+            return;
+        }
+        tb.innerHTML = items.map(i => `
+            <tr class="border-b border-panel-border hover:bg-white/[0.02]">
+                <td class="px-4 py-3">
+                    <div class="text-xs font-semibold text-white">${esc(i.title)}</div>
+                    <div class="text-[10px] text-gray-500">${esc(i.slug)}</div>
+                </td>
+                <td class="px-4 py-3"><span class="px-2 py-1 bg-indigo-500/10 text-indigo-400 text-[10px] font-bold rounded">${esc(i.category)}</span></td>
+                <td class="px-4 py-3 text-xs text-gray-400">${i.download_count}</td>
+            </tr>
+        `).join('');
+    } catch(e) {}
+}
+
+async function loadPopups() {
+    try {
+        const paps = await apiFetch('/api/popup/campaigns');
+        const tb = document.getElementById('popups-tbody');
+        if (!paps || !paps.length) {
+            tb.innerHTML = '<tr><td colspan="4" class="text-center text-gray-600 py-8">No campaigns found.</td></tr>';
+            return;
+        }
+        tb.innerHTML = paps.map(p => `
+            <tr class="border-b border-panel-border hover:bg-white/[0.02]">
+                <td class="px-4 py-3">
+                    <div class="text-xs font-semibold text-white">${esc(p.title)}</div>
+                    <div class="text-[10px] text-gray-500">${esc(p.popup_type)} Target: ${esc(p.category_filter||'All')}</div>
+                </td>
+                <td class="px-4 py-3">
+                    <span class="px-2 py-1 rounded text-[10px] font-bold ${p.is_active ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'}">${p.is_active ? 'Active' : 'Inactive'}</span>
+                </td>
+                <td class="px-4 py-3 text-xs text-gray-400">${p.shown_count}</td>
+                <td class="px-4 py-3 text-xs font-bold text-indigo-400">${p.click_count}</td>
+            </tr>
+        `).join('');
+    } catch(e) {}
+}
+
+// Upload Store Item
+document.getElementById('store-upload-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = e.target.querySelector('button');
+    btn.textContent = 'Uploading...';
+    btn.disabled = true;
+    
+    try {
+        const fileInput = document.getElementById('store-file');
+        let filePath = '';
+        let fileSize = '';
+        
+        if (fileInput.files.length > 0) {
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+            formData.append('category', document.getElementById('store-cat').value);
+            
+            const upRes = await fetch(API + '/api/store/upload', { method: 'POST', body: formData });
+            const upData = await upRes.json();
+            if (upData.error) throw new Error(upData.error);
+            filePath = upData.path;
+            fileSize = upData.size;
+        }
+        
+        const res = await fetch(API + '/api/store/items', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                title: document.getElementById('store-title').value,
+                slug: document.getElementById('store-slug').value,
+                category: document.getElementById('store-cat').value,
+                description: document.getElementById('store-desc').value,
+                file_path: filePath,
+                file_size: fileSize
+            })
+        });
+        
+        if (!res.ok) throw new Error('Failed to create item');
+        toast('Store item created successfully!');
+        e.target.reset();
+        loadStoreItems();
+    } catch (err) {
+        toast('Error: ' + err.message);
+    } finally {
+        btn.textContent = 'Save & Publish';
+        btn.disabled = false;
+    }
+});
+
+// Create Popup Campaign
+document.getElementById('popup-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = e.target.querySelector('button');
+    btn.textContent = 'Launching...';
+    
+    try {
+        const res = await fetch(API + '/api/popup/campaigns', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                title: document.getElementById('pop-title').value,
+                message: document.getElementById('pop-msg').value,
+                button_text: document.getElementById('pop-btn').value,
+                category_filter: document.getElementById('pop-cat').value || null
+            })
+        });
+        
+        if (!res.ok) throw new Error('Failed to create campaign');
+        toast('Campaign launched successfully!');
+        e.target.reset();
+        loadPopups();
+    } catch (err) {
+        toast('Error: ' + err.message);
+    } finally {
+        btn.textContent = 'Launch Campaign';
+    }
 });
 
 document.addEventListener('DOMContentLoaded', loadAll);

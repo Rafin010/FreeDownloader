@@ -1,47 +1,68 @@
-from flask import Flask, render_template
+import sys
+import os
+from flask import Flask, render_template, abort
+
+# Add backend directory to sys.path to access utils/db.py
+backend_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'backend')
+if backend_dir not in sys.path:
+    sys.path.append(backend_dir)
+
+from utils.db import get_connection
 
 app = Flask(__name__)
 
-# প্রজেক্ট ডেটা
-projects = [
-    {
-        "id": 1,
-        "title": "SportyXi Lite",
-        "category": "app",
-        "developer": "Ifat Ahmed Rafin",
-        "description": "লাইভ স্পোর্টস স্ট্রিমিং এবং রিয়েল-টাইম স্কোর আপডেটের জন্য একটি প্রফেশনাল প্ল্যাটফর্ম।",
-        "version": "1.2.0",
-        "rating": "4.8",
-        "price": "Free",
-        "download_link": "#download_app"
-    },
-    {
-        "id": 2,
-        "title": "Free Downloader",
-        "category": "software",
-        "developer": "Ifat Ahmed Rafin",
-        "description": "যেকোনো প্ল্যাটফর্ম থেকে এক ক্লিকে হাই-কোয়ালিটি ভিডিও ডাউনলোড করার ফাস্ট এবং সিকিউর সফটওয়্যার।",
-        "version": "2.0.1",
-        "rating": "4.5",
-        "price": "Free",
-        "download_link": "#download_software"
-    },
-    {
-        "id": 3,
-        "title": "Neon Dashboard",
-        "category": "web", # এটি 'web' ক্যাটাগরি, তাই ক্লিক করলে সরাসরি লিংকে যাবে
-        "developer": "Ifat Ahmed Rafin",
-        "description": "অ্যাডমিন প্যানেলের জন্য মডার্ন গ্লাসমরফিজম এবং ডার্ক থিম ড্যাশবোর্ড টেমপ্লেট।",
-        "version": "1.0.0",
-        "rating": "5.0",
-        "price": "Free",
-        "download_link": "https://www.google.com" # ডেমো ওয়েবসাইট লিংক
-    }
-]
-
 @app.route('/')
 def home():
+    conn = get_connection()
+    if not conn:
+        return "Database Error", 500
+        
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM store_items WHERE is_active = TRUE ORDER BY created_at DESC")
+    projects = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    
     return render_template('index.html', projects=projects)
 
+@app.route('/item/<slug>')
+def item_detail(slug):
+    conn = get_connection()
+    if not conn:
+        return "Database Error", 500
+        
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM store_items WHERE slug = %s AND is_active = TRUE", (slug,))
+    item = cursor.fetchone()
+    
+    if item:
+        # Also fetch 3 related items to show at bottom
+        cursor.execute("SELECT * FROM store_items WHERE category = %s AND id != %s AND is_active = TRUE LIMIT 3", (item['category'], item['id']))
+        related = cursor.fetchall()
+    
+    cursor.close()
+    conn.close()
+    
+    if not item:
+        abort(404)
+        
+    import json
+    if item.get('screenshots'):
+        try:
+            item['screenshots'] = json.loads(item['screenshots'])
+        except:
+            item['screenshots'] = []
+    if item.get('system_requirements'):
+        try:
+            item['system_requirements'] = json.loads(item['system_requirements'])
+        except:
+            item['system_requirements'] = {}
+            
+    return render_template('detail.html', item=item, related=related)
+
+@app.route('/donate')
+def donate():
+    return render_template('donate.html')
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=8010)

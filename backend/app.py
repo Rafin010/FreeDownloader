@@ -5,8 +5,10 @@ from dotenv import load_dotenv
 from utils.db import initialize_database
 from routes.analytics_routes import analytics_bp
 from routes.dashboard_routes import dashboard_bp
+from apscheduler.schedulers.background import BackgroundScheduler
 import os
 import secrets
+import time
 
 # Load .env BEFORE accessing any env vars
 load_dotenv()
@@ -24,6 +26,57 @@ CORS(app, resources={r"/api/*": {"origins": "*"}})
 # Register blueprints
 app.register_blueprint(analytics_bp,  url_prefix="/api")
 app.register_blueprint(dashboard_bp,  url_prefix="/api/dashboard")
+
+try:
+    from routes.store_routes import store_bp
+    app.register_blueprint(store_bp, url_prefix="/api/store")
+except ImportError:
+    pass
+
+try:
+    from routes.popup_routes import popup_bp
+    app.register_blueprint(popup_bp, url_prefix="/api/popup")
+except ImportError:
+    pass
+
+try:
+    from routes.install_routes import install_bp
+    app.register_blueprint(install_bp, url_prefix="/api/install")
+except ImportError:
+    pass
+
+# File upload config
+UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'freeStore', 'uploads')
+os.makedirs(os.path.join(UPLOAD_FOLDER, 'web'), exist_ok=True)
+os.makedirs(os.path.join(UPLOAD_FOLDER, 'app'), exist_ok=True)
+os.makedirs(os.path.join(UPLOAD_FOLDER, 'software'), exist_ok=True)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['MAX_CONTENT_LENGTH'] = 500 * 1024 * 1024  # 500 MB max
+
+# Background task for stale install cleanup
+def cleanup_stale_installs():
+    from utils.db import get_connection
+    conn = get_connection()
+    if conn:
+        cursor = conn.cursor()
+        try:
+            cursor.execute("""
+                UPDATE software_installs
+                SET is_active = FALSE, uninstalled_at = CURRENT_TIMESTAMP
+                WHERE is_active = TRUE AND last_heartbeat < NOW() - INTERVAL 15 MINUTE
+            """)
+            conn.commit()
+            print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] Cleanup stale installs: OK")
+        except Exception as e:
+            conn.rollback()
+            print(f"[CLEANUP ERROR] {e}")
+        finally:
+            cursor.close()
+            conn.close()
+
+scheduler = BackgroundScheduler(daemon=True)
+scheduler.add_job(func=cleanup_stale_installs, trigger="interval", minutes=5)
+scheduler.start()
 
 
 # ── Auth helper ──
