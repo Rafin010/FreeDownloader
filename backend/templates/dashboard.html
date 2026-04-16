@@ -531,7 +531,12 @@
                         <!-- Upload Form -->
                         <div class="bg-panel-card border border-panel-border rounded-2xl p-6">
                             <h3 class="text-sm font-semibold text-white mb-2">Add / Upload New Item</h3>
-                            <div id="store-info-banner" class="mb-4 p-3 bg-indigo-500/10 border border-indigo-500/20 rounde                                <div class="grid grid-cols-2 gap-4">
+                            <div id="store-info-banner" class="mb-4 p-3 bg-indigo-500/10 border border-indigo-500/20 rounded-lg text-xs text-indigo-300 leading-relaxed">
+                                <span class="font-bold text-indigo-200">Tips:</span>
+                                <span id="store-info-text">Select a category to see specific instructions.</span>
+                            </div>
+                            <form id="store-upload-form" class="space-y-4">
+                                <div class="grid grid-cols-2 gap-4">
                                     <div><label class="block text-xs text-gray-400 mb-1">Category <span class="text-red-400">*</span></label>
                                     <select id="store-cat" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-sm text-white">
                                         <option value="software">Software</option>
