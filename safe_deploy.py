@@ -84,22 +84,22 @@ def main():
             "cp /root/FreeDownloader/nginx/freestore-domains.conf /etc/nginx/sites-available/freestore-domains.conf",
             "ln -sf /etc/nginx/sites-available/freestore-domains.conf /etc/nginx/sites-enabled/",
             "nginx -t && systemctl reload nginx",
-            "cd /root/FreeDownloader/backend && source venv/bin/activate && pip install -r requirements.txt",
-            "cat << 'EOF' > /etc/systemd/system/freestore.service\n[Unit]\nDescription=Free Store Application (Flask)\nAfter=network.target\n\n[Service]\nUser=root\nWorkingDirectory=/root/FreeDownloader/freeStore\nEnvironment=\"PATH=/root/FreeDownloader/backend/venv/bin\"\nExecStart=/root/FreeDownloader/backend/venv/bin/gunicorn -w 2 -b 127.0.0.1:8010 app:app\nRestart=always\n\n[Install]\nWantedBy=multi-user.target\nEOF",
+            "source /root/FreeDownloader/venv/bin/activate && pip install -r /root/FreeDownloader/backend/requirements.txt",
+            "cat << 'EOF' > /etc/systemd/system/freestore.service\n[Unit]\nDescription=Free Store Application (Flask)\nAfter=network.target\n\n[Service]\nUser=root\nWorkingDirectory=/root/FreeDownloader/freeStore\nEnvironment=\"PATH=/root/FreeDownloader/venv/bin\"\nExecStart=/root/FreeDownloader/venv/bin/gunicorn -w 2 -b 127.0.0.1:8010 app:app\nRestart=always\n\n[Install]\nWantedBy=multi-user.target\nEOF",
             "systemctl daemon-reload",
             "systemctl enable --now freestore"
         ]
         for scmd in fs_setup:
             stdin, stdout, stderr = client.exec_command(scmd)
-            print(stdout.read().decode())
-            err = stderr.read().decode()
+            print(stdout.read().decode('utf-8', errors='replace'))
+            err = stderr.read().decode('utf-8', errors='replace')
             if err: print(f"Stderr: {err}")
 
         # 3.4 Restart services
         print("Restarting services on VPS...")
-        restart_cmd = "systemctl restart fb.service yt.service free_d.service p_d.service tik_d.service insta.service freedownloader.service downloader-backend.service freestore.service"
+        restart_cmd = "systemctl restart fb.service yt.service free_d.service p_d.service tik_d.service insta.service freedownloader.service freestore.service"
         stdin, stdout, stderr = client.exec_command(restart_cmd)
-        print(stdout.read().decode())
+        print(stdout.read().decode('utf-8', errors='replace'))
         
         print("VPS DEPLOYMENT COMPLETE!")
         
