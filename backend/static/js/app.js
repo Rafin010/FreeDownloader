@@ -106,6 +106,11 @@ function relTime(ds) {
 function selectSite(siteUrl, siteName) {
     activeSite = siteUrl;
 
+    // View toggling
+    document.getElementById('view-freestore')?.classList.add('hidden');
+    document.getElementById('view-dashboard')?.classList.remove('hidden');
+    document.getElementById('view-dashboard')?.classList.add('block');
+
     // Update breadcrumb
     document.getElementById('breadcrumb-site').textContent = siteUrl ? siteName : 'All Sites';
 
@@ -135,6 +140,39 @@ function selectSite(siteUrl, siteName) {
     toast(siteUrl ? `Viewing: ${siteName}` : 'Viewing: All Sites');
 }
 
+function showFreeStore() {
+    activeSite = 'freestore';
+    
+    // View toggling
+    document.getElementById('view-dashboard')?.classList.add('hidden');
+    document.getElementById('view-dashboard')?.classList.remove('block');
+    document.getElementById('view-freestore')?.classList.remove('hidden');
+    document.getElementById('view-freestore')?.classList.add('block');
+
+    document.getElementById('breadcrumb-site').textContent = 'Free Store';
+    document.getElementById('active-site-name').textContent = 'Free Store';
+
+    // Update sidebar active states
+    document.querySelectorAll('.sidebar-item').forEach(item => {
+        const isActive = item.id === 'btn-free-store';
+        item.classList.toggle('bg-emerald-500/10', isActive);
+        item.classList.toggle('text-white', isActive);
+        item.classList.toggle('border-emerald-500/20', isActive);
+        item.classList.toggle('text-gray-400', !isActive);
+        item.classList.toggle('hover:bg-white/5', !isActive);
+        item.classList.toggle('hover:text-gray-200', !isActive);
+        
+        // Handle selectSite active classes removal
+        if(isActive) {
+            item.classList.remove('bg-indigo-500/10', 'border-indigo-500/20');
+        }
+    });
+
+    if (window.innerWidth < 1024) {
+        document.getElementById('sidebar').classList.remove('sidebar-open');
+        document.getElementById('sidebar-overlay').classList.add('hidden');
+    }
+}
 
 async function buildSidebar() {
     const sites = await apiFetch('/api/dashboard/sites');
@@ -555,7 +593,14 @@ document.getElementById('store-upload-form')?.addEventListener('submit', async (
                 title: document.getElementById('store-title').value,
                 slug: document.getElementById('store-slug').value,
                 category: document.getElementById('store-cat').value,
+                developer: document.getElementById('store-dev')?.value || undefined,
+                version: document.getElementById('store-version')?.value || '1.0.0',
+                rating: parseFloat(document.getElementById('store-rating')?.value || '0'),
+                price: document.getElementById('store-price')?.value || 'Free',
+                icon_url: document.getElementById('store-icon')?.value || undefined,
                 description: document.getElementById('store-desc').value,
+                long_description: document.getElementById('store-long-desc')?.value || undefined,
+                download_link: document.getElementById('store-link')?.value || undefined,
                 file_path: filePath,
                 file_size: fileSize
             })
