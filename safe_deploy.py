@@ -90,12 +90,16 @@ def main():
             "systemctl enable --now freestore"
         ]
         for scmd in fs_setup:
-            client.exec_command(scmd).stdout.read()
+            stdin, stdout, stderr = client.exec_command(scmd)
+            print(stdout.read().decode())
+            err = stderr.read().decode()
+            if err: print(f"Stderr: {err}")
 
         # 3.4 Restart services
         print("Restarting services on VPS...")
         restart_cmd = "systemctl restart fb.service yt.service free_d.service p_d.service tik_d.service insta.service freedownloader.service downloader-backend.service freestore.service"
-        client.exec_command(restart_cmd).stdout.read()
+        stdin, stdout, stderr = client.exec_command(restart_cmd)
+        print(stdout.read().decode())
         
         print("VPS DEPLOYMENT COMPLETE!")
         
