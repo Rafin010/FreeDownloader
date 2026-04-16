@@ -522,20 +522,114 @@ async function loadStoreItems() {
         const items = await apiFetch('/api/store/items');
         const tb = document.getElementById('store-items-tbody');
         if (!items || !items.length) {
-            tb.innerHTML = '<tr><td colspan="3" class="text-center text-gray-600 py-8">No items found.</td></tr>';
+            tb.innerHTML = '<tr><td colspan="5" class="text-center text-gray-600 py-8">No items found.</td></tr>';
             return;
         }
         tb.innerHTML = items.map(i => `
-            <tr class="border-b border-panel-border hover:bg-white/[0.02]">
+            <tr class="border-b border-panel-border hover:bg-white/[0.02] ${!i.is_active ? 'opacity-50' : ''}" id="store-row-${i.id}">
                 <td class="px-4 py-3">
-                    <div class="text-xs font-semibold text-white">${esc(i.title)}</div>
-                    <div class="text-[10px] text-gray-500">${esc(i.slug)}</div>
+                    <div class="flex items-center gap-2">
+                        ${i.icon_url ? `<img src="${esc(i.icon_url)}" class="w-8 h-8 rounded-lg object-cover border border-slate-700" onerror="this.style.display='none'">` : ''}
+                        <div>
+                            <div class="text-xs font-semibold text-white">${esc(i.title)}</div>
+                            <div class="text-[10px] text-gray-500">${esc(i.slug)}</div>
+                        </div>
+                    </div>
                 </td>
                 <td class="px-4 py-3"><span class="px-2 py-1 bg-indigo-500/10 text-indigo-400 text-[10px] font-bold rounded">${esc(i.category)}</span></td>
-                <td class="px-4 py-3 text-xs text-gray-400">${i.download_count}</td>
+                <td class="px-4 py-3">
+                    <span class="px-2 py-1 rounded text-[10px] font-bold ${i.is_active ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'}">${i.is_active ? '✅ Active' : '⛔ Disabled'}</span>
+                </td>
+                <td class="px-4 py-3 text-xs text-gray-400">${i.download_count || 0}</td>
+                <td class="px-4 py-3">
+                    <div class="flex items-center gap-1">
+                        <button onclick='storeEditItem(${JSON.stringify(i).replace(/'/g, "&#39;")})' title="Edit" class="p-1.5 rounded-lg hover:bg-indigo-500/20 text-gray-400 hover:text-indigo-400 transition-colors">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                        </button>
+                        <button onclick="storeToggleItem(${i.id}, ${i.is_active ? 'false' : 'true'})" title="${i.is_active ? 'Disable' : 'Enable'}" class="p-1.5 rounded-lg hover:bg-amber-500/20 text-gray-400 hover:text-amber-400 transition-colors">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="${i.is_active ? 'M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636' : 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'}"/></svg>
+                        </button>
+                        <button onclick="storeDeleteItem(${i.id}, '${esc(i.title)}')" title="Delete" class="p-1.5 rounded-lg hover:bg-red-500/20 text-gray-400 hover:text-red-400 transition-colors">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                        </button>
+                    </div>
+                </td>
             </tr>
         `).join('');
     } catch(e) {}
+}
+
+// ── Store Item Actions ──────────────────────
+async function storeToggleItem(id, activate) {
+    try {
+        const res = await fetch(API + '/api/store/items/' + id, {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ is_active: activate })
+        });
+        if (!res.ok) throw new Error('Failed');
+        toast(activate ? '✅ Item enabled!' : '⛔ Item disabled!');
+        loadStoreItems();
+    } catch(e) {
+        toast('Error: ' + e.message);
+    }
+}
+
+async function storeDeleteItem(id, title) {
+    if (!confirm(`Are you sure you want to DELETE "${title}"?\nThis action cannot be undone.`)) return;
+    try {
+        const res = await fetch(API + '/api/store/items/' + id, { method: 'DELETE' });
+        if (!res.ok) throw new Error('Failed');
+        toast('🗑️ Item deleted!');
+        loadStoreItems();
+    } catch(e) {
+        toast('Error: ' + e.message);
+    }
+}
+
+function storeEditItem(item) {
+    // Populate form fields with item data
+    document.getElementById('store-title').value = item.title || '';
+    document.getElementById('store-slug').value = item.slug || '';
+    document.getElementById('store-cat').value = item.category || 'software';
+    document.getElementById('store-dev').value = item.developer || '';
+    document.getElementById('store-version').value = item.version || '1.0.0';
+    document.getElementById('store-rating').value = item.rating || 4.5;
+    document.getElementById('store-price').value = item.price || 'Free';
+    document.getElementById('store-icon').value = item.icon_url || '';
+    document.getElementById('store-desc').value = item.description || '';
+    document.getElementById('store-long-desc').value = item.long_description || '';
+    document.getElementById('store-link').value = item.download_link || '';
+    
+    // Trigger category change to update UI
+    document.getElementById('store-cat').dispatchEvent(new Event('change'));
+    
+    // Switch form to edit mode
+    const form = document.getElementById('store-upload-form');
+    const btn = form.querySelector('button[type="submit"]');
+    btn.textContent = '✏️ Update Item';
+    btn.dataset.editId = item.id;
+    
+    // Scroll to form
+    form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    toast('📝 Editing: ' + item.title);
+}
+
+async function storeUpdateItem(id, data) {
+    try {
+        const res = await fetch(API + '/api/store/items/' + id, {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(data)
+        });
+        if (!res.ok) throw new Error('Failed to update');
+        toast('✅ Item updated successfully!');
+        loadStoreItems();
+        return true;
+    } catch(e) {
+        toast('Error: ' + e.message);
+        return false;
+    }
 }
 
 async function loadPopups() {
@@ -562,11 +656,12 @@ async function loadPopups() {
     } catch(e) {}
 }
 
-// Upload Store Item
+// Upload/Update Store Item
 document.getElementById('store-upload-form')?.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const btn = e.target.querySelector('button');
-    btn.textContent = 'Uploading...';
+    const btn = e.target.querySelector('button[type="submit"]');
+    const isEdit = !!btn.dataset.editId;
+    btn.textContent = isEdit ? 'Updating...' : 'Uploading...';
     btn.disabled = true;
     
     try {
@@ -586,34 +681,55 @@ document.getElementById('store-upload-form')?.addEventListener('submit', async (
             fileSize = upData.size;
         }
         
-        const res = await fetch(API + '/api/store/items', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({
-                title: document.getElementById('store-title').value,
-                slug: document.getElementById('store-slug').value,
-                category: document.getElementById('store-cat').value,
-                developer: document.getElementById('store-dev')?.value || undefined,
-                version: document.getElementById('store-version')?.value || '1.0.0',
-                rating: parseFloat(document.getElementById('store-rating')?.value || '0'),
-                price: document.getElementById('store-price')?.value || 'Free',
-                icon_url: document.getElementById('store-icon')?.value || undefined,
-                description: document.getElementById('store-desc').value,
-                long_description: document.getElementById('store-long-desc')?.value || undefined,
-                download_link: document.getElementById('store-link')?.value || undefined,
-                file_path: filePath,
-                file_size: fileSize
-            })
-        });
+        let iconUrl = document.getElementById('store-icon')?.value?.trim();
+        if (iconUrl && !/^https?:\/\//i.test(iconUrl) && !iconUrl.startsWith('/')) {
+            iconUrl = 'https://' + iconUrl;
+        }
         
-        if (!res.ok) throw new Error('Failed to create item');
-        toast('Store item created successfully!');
+        let downloadLink = document.getElementById('store-link')?.value?.trim();
+        if (downloadLink && !/^https?:\/\//i.test(downloadLink) && !downloadLink.startsWith('/')) {
+            downloadLink = 'https://' + downloadLink;
+        }
+
+        const payload = {
+            title: document.getElementById('store-title').value,
+            slug: document.getElementById('store-slug').value,
+            category: document.getElementById('store-cat').value,
+            developer: document.getElementById('store-dev')?.value || undefined,
+            version: document.getElementById('store-version')?.value || '1.0.0',
+            rating: parseFloat(document.getElementById('store-rating')?.value || '0'),
+            price: document.getElementById('store-price')?.value || 'Free',
+            icon_url: iconUrl || undefined,
+            description: document.getElementById('store-desc').value,
+            long_description: document.getElementById('store-long-desc')?.value || undefined,
+            download_link: downloadLink || undefined,
+        };
+        if (filePath) {
+            payload.file_path = filePath;
+            payload.file_size = fileSize;
+        }
+
+        if (isEdit) {
+            const success = await storeUpdateItem(btn.dataset.editId, payload);
+            if (!success) throw new Error('Update failed');
+            delete btn.dataset.editId;
+        } else {
+            const res = await fetch(API + '/api/store/items', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(payload)
+            });
+            if (!res.ok) throw new Error('Failed to create item');
+            toast('✅ Store item created successfully!');
+        }
+        
         e.target.reset();
+        document.getElementById('store-cat').dispatchEvent(new Event('change'));
         loadStoreItems();
     } catch (err) {
-        toast('Error: ' + err.message);
+        if (!isEdit) { toast('Error: ' + err.message); }
     } finally {
-        btn.textContent = 'Save & Publish';
+        btn.textContent = '🚀 Save & Publish';
         btn.disabled = false;
     }
 });
@@ -647,4 +763,41 @@ document.getElementById('popup-form')?.addEventListener('submit', async (e) => {
     }
 });
 
-document.addEventListener('DOMContentLoaded', loadAll);
+document.addEventListener('DOMContentLoaded', () => {
+    loadAll();
+    
+    // Dynamic UI for Category Upload
+    const storeCat = document.getElementById('store-cat');
+    const storeFileSection = document.getElementById('store-file-section');
+    const storeLinkLabel = document.getElementById('store-link-label');
+    const storeLinkHelp = document.getElementById('store-link-help');
+    const storeInfoText = document.getElementById('store-info-text');
+    const storeLink = document.getElementById('store-link');
+    
+    if (storeCat) {
+        const updateFormUI = () => {
+            const val = storeCat.value;
+            if (val === 'web') {
+                if (storeFileSection) storeFileSection.style.display = 'none';
+                if (storeLinkLabel) storeLinkLabel.innerHTML = '🔗 Website URL <span class="text-red-400">*</span>';
+                if (storeLinkHelp) storeLinkHelp.textContent = 'আপনার ওয়েবসাইটের সম্পূর্ণ URL দিন (যেমন https://facebook.com)';
+                if (storeInfoText) storeInfoText.textContent = '🌐 Web: ওয়েবসাইটের URL এবং আইকন ইমেজ লিংক দিন। ফাইল আপলোডের দরকার নেই।';
+                if (storeLink) { storeLink.required = true; storeLink.placeholder = 'https://your-website.com'; }
+            } else if (val === 'app') {
+                if (storeFileSection) storeFileSection.style.display = 'block';
+                if (storeLinkLabel) storeLinkLabel.innerHTML = '🔗 Download Link <span class="text-gray-600">(optional)</span>';
+                if (storeLinkHelp) storeLinkHelp.textContent = 'APK বা App ডাউনলোড লিংক দিন অথবা নিচে সরাসরি ফাইল আপলোড করুন।';
+                if (storeInfoText) storeInfoText.textContent = '📱 App: আইকন ইমেজ URL দিন এবং APK ফাইল আপলোড করুন অথবা ডাউনলোড লিংক দিন।';
+                if (storeLink) { storeLink.required = false; storeLink.placeholder = 'https://drive.google.com/file/...'; }
+            } else {
+                if (storeFileSection) storeFileSection.style.display = 'block';
+                if (storeLinkLabel) storeLinkLabel.innerHTML = '🔗 Download Link <span class="text-gray-600">(optional)</span>';
+                if (storeLinkHelp) storeLinkHelp.textContent = 'সফটওয়্যার ডাউনলোড লিংক দিন অথবা নিচে সরাসরি ফাইল আপলোড করুন।';
+                if (storeInfoText) storeInfoText.textContent = '🖥️ Software: আইকন ইমেজ URL দিন এবং .exe/.zip ফাইল আপলোড করুন অথবা ডাউনলোড লিংক দিন।';
+                if (storeLink) { storeLink.required = false; storeLink.placeholder = 'https://drive.google.com/file/...'; }
+            }
+        };
+        storeCat.addEventListener('change', updateFormUI);
+        updateFormUI(); // Run once on load
+    }
+});

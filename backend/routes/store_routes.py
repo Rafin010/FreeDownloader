@@ -246,3 +246,29 @@ def download_item(item_id):
         return jsonify({"redirect": item['download_link']})
         
     return jsonify({"error": "No download associated"}), 404
+
+# ─────────────────────────────────────────────
+# DELETE /api/store/items/<id> (Admin)
+# ─────────────────────────────────────────────
+@store_bp.route('/items/<int:item_id>', methods=['DELETE'])
+def delete_item(item_id):
+    conn = get_connection()
+    if not conn:
+        return jsonify({"error": "Database unavailable"}), 500
+    
+    cursor = conn.cursor()
+    try:
+        cursor.execute("DELETE FROM store_items WHERE id = %s", (item_id,))
+        conn.commit()
+        deleted = cursor.rowcount > 0
+    except Exception as e:
+        conn.rollback()
+        return jsonify({"error": str(e)}), 400
+    finally:
+        cursor.close()
+        conn.close()
+        
+    if deleted:
+        return jsonify({"status": "deleted"})
+    return jsonify({"error": "Item not found"}), 404
+

@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>freestore - App Hub</title>
+    <title>Free Store - App Hub</title>
+    <link rel="icon" href="https://i.ibb.co.com/V0kwHvQM/free-Store-logo.png" type="image/png">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
@@ -56,9 +57,10 @@
     <nav class="w-full bg-slate-950/80 backdrop-blur-md border-b border-slate-800 relative z-10 sticky top-0">
         <div class="px-6 flex items-center justify-between h-16">
             <div class="flex items-center gap-8">
-                <div class="text-2xl font-black tracking-widest uppercase gradient-text animate-pulse">
-                    freestore
-                </div>
+                <a href="/" class="flex items-center gap-3 group">
+                    <img src="https://i.ibb.co.com/V0kwHvQM/free-Store-logo.png" alt="Free Store Logo" class="w-10 h-10 rounded-xl shadow-lg group-hover:scale-110 transition-transform duration-300">
+                    <span class="text-2xl font-black tracking-widest uppercase gradient-text">Free Store</span>
+                </a>
                 <div class="hidden md:flex gap-5 text-sm font-medium">
                     <a href="#" class="text-slate-100 border-b-2 border-emerald-500 pb-[20px] pt-[20px]">Home</a>
                     <a href="#" class="text-slate-400 hover:text-slate-100 transition-colors pt-[20px]">Apps</a>
@@ -78,10 +80,10 @@
             <h1 class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400">Top free apps</h1>
             
             <div class="flex gap-2 text-sm font-medium bg-slate-900/80 p-1 rounded-xl border border-slate-700/50 inline-flex backdrop-blur-sm">
-                <button onclick="filterSelection('all')" class="filter-btn active px-5 py-2 rounded-lg gradient-bg text-white shadow-md transition-colors">All</button>
-                <button onclick="filterSelection('web')" class="filter-btn px-5 py-2 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition-colors">Web</button>
-                <button onclick="filterSelection('app')" class="filter-btn px-5 py-2 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition-colors">App</button>
-                <button onclick="filterSelection('software')" class="filter-btn px-5 py-2 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition-colors">Software</button>
+                <button onclick="filterSelection('all', this)" class="filter-btn px-5 py-2 rounded-lg gradient-bg text-white shadow-md transition-colors">All</button>
+                <button onclick="filterSelection('web', this)" class="filter-btn px-5 py-2 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition-colors">Web</button>
+                <button onclick="filterSelection('app', this)" class="filter-btn px-5 py-2 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition-colors">App</button>
+                <button onclick="filterSelection('software', this)" class="filter-btn px-5 py-2 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition-colors">Software</button>
             </div>
         </div>
 
@@ -89,14 +91,25 @@
             {% for project in projects %}
             
             <div class="project-card {{ project.category }} group bg-slate-900/80 backdrop-blur-sm p-5 rounded-xl cursor-pointer border border-slate-800 card-hover"
-                 {% if project.category == 'web' %}
-                    onclick="window.open('{{ project.download_link }}', '_blank')"
-                 {% else %}
-                    onclick="openModal('{{ project.title }}', '{{ project.developer }}', '{{ project.description }}', '{{ project.version }}', '{{ project.rating }}', '{{ project.price }}', '{{ project.download_link }}', '{{ project.slug }}')"
-                 {% endif %}>
+                 data-category="{{ project.category }}"
+                 data-title="{{ project.title }}"
+                 data-developer="{{ project.developer or 'Ifat Ahmed Rafin' }}"
+                 data-description="{{ project.description or '' }}"
+                 data-version="{{ project.version or '1.0.0' }}"
+                 data-rating="{{ project.rating or '0' }}"
+                 data-price="{{ project.price or 'Free' }}"
+                 data-link="{{ project.download_link or '#' }}"
+                 data-slug="{{ project.slug }}"
+                 data-icon="{{ project.icon_url or '' }}"
+                 onclick="handleCardClick(this)">
                 
-                <div class="w-24 h-24 mx-auto mb-5 rounded-2xl bg-slate-800 border border-slate-700 flex items-center justify-center shadow-inner group-hover:bg-gradient-to-br from-slate-800 to-slate-700 transition-all">
-                    <span class="text-4xl font-bold gradient-text">{{ project.title[0] }}</span>
+                <div class="w-24 h-24 mx-auto mb-5 rounded-2xl bg-slate-800 border border-slate-700 flex items-center justify-center shadow-inner group-hover:bg-gradient-to-br from-slate-800 to-slate-700 transition-all overflow-hidden">
+                    {% if project.icon_url %}
+                        <img src="{{ project.icon_url }}" alt="{{ project.title }}" class="w-full h-full object-cover rounded-2xl shadow-inner" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                        <span class="text-4xl font-bold gradient-text" style="display:none;">{{ (project.title or 'App')[0] | upper }}</span>
+                    {% else %}
+                        <span class="text-4xl font-bold gradient-text">{{ (project.title or 'App')[0] | upper }}</span>
+                    {% endif %}
                 </div>
                 
                 <h3 class="text-sm font-bold truncate text-slate-100">{{ project.title }}</h3>
@@ -129,9 +142,10 @@
 
             <div class="p-8 relative z-10 mt-4">
                 <div class="flex flex-col md:flex-row gap-8 items-start mb-8">
-                    <div class="w-32 h-32 rounded-3xl bg-slate-800 border border-slate-700 flex items-center justify-center flex-shrink-0 shadow-lg relative overflow-hidden">
-                        <div class="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-blue-500/10"></div>
-                        <span id="modalIcon" class="text-5xl font-black gradient-text">A</span>
+                    <div class="w-32 h-32 rounded-3xl bg-slate-800 border border-slate-700 flex items-center justify-center flex-shrink-0 shadow-lg relative overflow-hidden" id="modalIconContainer">
+                        <div class="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-blue-500/10 pointer-events-none"></div>
+                        <span id="modalIconText" class="text-5xl font-black gradient-text">A</span>
+                        <img id="modalIconImg" src="" alt="Icon" class="hidden w-full h-full object-cover">
                     </div>
                     
                     <div class="flex-1">
@@ -189,40 +203,92 @@
     </div>
 
     <script>
-        // Category Filter Logic
-        function filterSelection(c) {
-            var x, i;
-            x = document.getElementsByClassName("project-card");
-            if (c == "all") c = "";
-            for (i = 0; i < x.length; i++) {
-                x[i].style.display = "none";
-                if (x[i].className.indexOf(c) > -1) {
-                    x[i].style.display = "block";
+        // ── Card Click Handler ───────────────────────
+        function handleCardClick(el) {
+            const cat  = el.dataset.category;
+            const link = el.dataset.link;
+            
+            if (cat === 'web') {
+                // Web items open directly in a new tab
+                if (link && link !== '#') {
+                    window.open(link, '_blank');
+                }
+                return;
+            }
+            // For App / Software, open the detail modal
+            openModal(
+                el.dataset.title,
+                el.dataset.developer,
+                el.dataset.description,
+                el.dataset.version,
+                el.dataset.rating,
+                el.dataset.price,
+                link,
+                el.dataset.slug,
+                el.dataset.icon
+            );
+        }
+
+        // ── Category Filter Logic ────────────────────
+        function filterSelection(c, btn) {
+            const cards = document.getElementsByClassName('project-card');
+            const showAll = (c === 'all');
+
+            for (let i = 0; i < cards.length; i++) {
+                if (showAll || cards[i].classList.contains(c)) {
+                    cards[i].style.display = 'block';
+                } else {
+                    cards[i].style.display = 'none';
                 }
             }
 
-            // Update Active Tab Style
-            var btns = document.getElementsByClassName("filter-btn");
-            for (i = 0; i < btns.length; i++) {
-                btns[i].className = btns[i].className.replace(" gradient-bg text-white shadow-md", " text-slate-400 hover:text-slate-100 hover:bg-slate-800");
+            // Update active tab style
+            const btns = document.getElementsByClassName('filter-btn');
+            for (let i = 0; i < btns.length; i++) {
+                btns[i].className = btns[i].className
+                    .replace(/ gradient-bg text-white shadow-md/g, '')
+                    .replace(/ text-slate-400 hover:text-slate-100 hover:bg-slate-800/g, '');
+                btns[i].className += ' text-slate-400 hover:text-slate-100 hover:bg-slate-800';
             }
-            event.currentTarget.className = event.currentTarget.className.replace(" text-slate-400 hover:text-slate-100 hover:bg-slate-800", " gradient-bg text-white shadow-md");
+            if (btn) {
+                btn.className = btn.className
+                    .replace(/ text-slate-400 hover:text-slate-100 hover:bg-slate-800/g, '');
+                btn.className += ' gradient-bg text-white shadow-md';
+            }
         }
 
-        // Modal Logic
+        // ── Modal Logic ──────────────────────────────
         const modal = document.getElementById('projectModal');
         const modalContent = document.getElementById('modalContent');
 
-        function openModal(title, developer, desc, version, rating, price, link, slug) {
+        function openModal(title, developer, desc, version, rating, price, link, slug, iconUrl) {
             document.getElementById('modalTitle').innerText = title;
-            document.getElementById('modalIcon').innerText = title.charAt(0);
+            
+            const iconText = document.getElementById('modalIconText');
+            const iconImg  = document.getElementById('modalIconImg');
+            
+            if (iconUrl && iconUrl.trim() !== '') {
+                iconImg.src = iconUrl;
+                iconImg.classList.remove('hidden');
+                iconText.classList.add('hidden');
+                // Fallback if image fails to load
+                iconImg.onerror = function() {
+                    this.classList.add('hidden');
+                    iconText.classList.remove('hidden');
+                    iconText.innerText = title.charAt(0).toUpperCase();
+                };
+            } else {
+                iconText.innerText = title.charAt(0).toUpperCase();
+                iconImg.classList.add('hidden');
+                iconText.classList.remove('hidden');
+            }
             document.getElementById('modalDeveloper').innerText = developer;
             document.getElementById('modalDesc').innerText = desc;
             document.getElementById('modalVersion').innerText = version;
             document.getElementById('modalRating').innerText = rating;
             document.getElementById('modalPrice').innerText = price;
             document.getElementById('modalDownload').href = link;
-            document.getElementById('modalDetails').href = "/item/" + slug;
+            document.getElementById('modalDetails').href = '/item/' + slug;
             
             modal.classList.remove('hidden');
             
@@ -240,7 +306,10 @@
             }, 300); 
         }
 
-        filterSelection("all");
+        // Show all cards on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            filterSelection('all', document.querySelector('.filter-btn'));
+        });
     </script>
 </body>
 </html>
