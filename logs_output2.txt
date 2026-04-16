@@ -1,0 +1,157 @@
+>>> journalctl -u freestore.service -n 100 --no-pager
+OUT:
+-- Logs begin at Fri 2026-04-10 23:34:02 +06, end at Fri 2026-04-17 02:35:15 +06. --
+Apr 17 02:31:28 IARAFIN gunicorn[111193]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/jinja2/environment.py", line 1016, in get_template
+Apr 17 02:31:28 IARAFIN gunicorn[111193]:     return self._load_template(name, globals)
+Apr 17 02:31:28 IARAFIN gunicorn[111193]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/jinja2/environment.py", line 975, in _load_template
+Apr 17 02:31:28 IARAFIN gunicorn[111193]:     template = self.loader.load(self, name, self.make_globals(globals))
+Apr 17 02:31:28 IARAFIN gunicorn[111193]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/jinja2/loaders.py", line 138, in load
+Apr 17 02:31:28 IARAFIN gunicorn[111193]:     code = environment.compile(source, name, filename)
+Apr 17 02:31:28 IARAFIN gunicorn[111193]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/jinja2/environment.py", line 771, in compile
+Apr 17 02:31:28 IARAFIN gunicorn[111193]:     self.handle_exception(source=source_hint)
+Apr 17 02:31:28 IARAFIN gunicorn[111193]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/jinja2/environment.py", line 942, in handle_exception
+Apr 17 02:31:28 IARAFIN gunicorn[111193]:     raise rewrite_traceback_stack(source=source)
+Apr 17 02:31:28 IARAFIN gunicorn[111193]:   File "/root/FreeDownloader/freeStore/templates/index.html", line 140, in template
+Apr 17 02:31:28 IARAFIN gunicorn[111193]:     onclick="openModal('{{ project.title }}', '{{ project.developer }}', '{{ project.description }}', '{{ project.version }}', '{{ project.rating }}', '{{ project.price }}', '{{ project.download_link }}', '{{ project.slug }}', '{{ project.icon_url or \"
+Apr 17 02:31:28 IARAFIN gunicorn[111193]: jinja2.exceptions.TemplateSyntaxError: unexpected char '\\' at 6248
+Apr 17 02:31:34 IARAFIN gunicorn[111193]: [2026-04-17 02:31:34,578] ERROR in app: Exception on / [GET]
+Apr 17 02:31:34 IARAFIN gunicorn[111193]: Traceback (most recent call last):
+Apr 17 02:31:34 IARAFIN gunicorn[111193]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/flask/app.py", line 1511, in wsgi_app
+Apr 17 02:31:34 IARAFIN gunicorn[111193]:     response = self.full_dispatch_request()
+Apr 17 02:31:34 IARAFIN gunicorn[111193]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/flask/app.py", line 919, in full_dispatch_request
+Apr 17 02:31:34 IARAFIN gunicorn[111193]:     rv = self.handle_user_exception(e)
+Apr 17 02:31:34 IARAFIN gunicorn[111193]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/flask/app.py", line 917, in full_dispatch_request
+Apr 17 02:31:34 IARAFIN gunicorn[111193]:     rv = self.dispatch_request()
+Apr 17 02:31:34 IARAFIN gunicorn[111193]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/flask/app.py", line 902, in dispatch_request
+Apr 17 02:31:34 IARAFIN gunicorn[111193]:     return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+Apr 17 02:31:34 IARAFIN gunicorn[111193]:   File "/root/FreeDownloader/freeStore/app.py", line 26, in home
+Apr 17 02:31:34 IARAFIN gunicorn[111193]:     return render_template('index.html', projects=projects)
+Apr 17 02:31:34 IARAFIN gunicorn[111193]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/flask/templating.py", line 150, in render_template
+Apr 17 02:31:34 IARAFIN gunicorn[111193]:     template = app.jinja_env.get_or_select_template(template_name_or_list)
+Apr 17 02:31:34 IARAFIN gunicorn[111193]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/jinja2/environment.py", line 1087, in get_or_select_template
+Apr 17 02:31:34 IARAFIN gunicorn[111193]:     return self.get_template(template_name_or_list, parent, globals)
+Apr 17 02:31:34 IARAFIN gunicorn[111193]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/jinja2/environment.py", line 1016, in get_template
+Apr 17 02:31:34 IARAFIN gunicorn[111193]:     return self._load_template(name, globals)
+Apr 17 02:31:34 IARAFIN gunicorn[111193]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/jinja2/environment.py", line 975, in _load_template
+Apr 17 02:31:34 IARAFIN gunicorn[111193]:     template = self.loader.load(self, name, self.make_globals(globals))
+Apr 17 02:31:34 IARAFIN gunicorn[111193]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/jinja2/loaders.py", line 138, in load
+Apr 17 02:31:34 IARAFIN gunicorn[111193]:     code = environment.compile(source, name, filename)
+Apr 17 02:31:34 IARAFIN gunicorn[111193]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/jinja2/environment.py", line 771, in compile
+Apr 17 02:31:34 IARAFIN gunicorn[111193]:     self.handle_exception(source=source_hint)
+Apr 17 02:31:34 IARAFIN gunicorn[111193]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/jinja2/environment.py", line 942, in handle_exception
+Apr 17 02:31:34 IARAFIN gunicorn[111193]:     raise rewrite_traceback_stack(source=source)
+Apr 17 02:31:34 IARAFIN gunicorn[111193]:   File "/root/FreeDownloader/freeStore/templates/index.html", line 140, in template
+Apr 17 02:31:34 IARAFIN gunicorn[111193]:     onclick="openModal('{{ project.title }}', '{{ project.developer }}', '{{ project.description }}', '{{ project.version }}', '{{ project.rating }}', '{{ project.price }}', '{{ project.download_link }}', '{{ project.slug }}', '{{ project.icon_url or \"
+Apr 17 02:31:34 IARAFIN gunicorn[111193]: jinja2.exceptions.TemplateSyntaxError: unexpected char '\\' at 6248
+Apr 17 02:31:37 IARAFIN gunicorn[111193]: [2026-04-17 02:31:37,537] ERROR in app: Exception on / [GET]
+Apr 17 02:31:37 IARAFIN gunicorn[111193]: Traceback (most recent call last):
+Apr 17 02:31:37 IARAFIN gunicorn[111193]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/flask/app.py", line 1511, in wsgi_app
+Apr 17 02:31:37 IARAFIN gunicorn[111193]:     response = self.full_dispatch_request()
+Apr 17 02:31:37 IARAFIN gunicorn[111193]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/flask/app.py", line 919, in full_dispatch_request
+Apr 17 02:31:37 IARAFIN gunicorn[111193]:     rv = self.handle_user_exception(e)
+Apr 17 02:31:37 IARAFIN gunicorn[111193]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/flask/app.py", line 917, in full_dispatch_request
+Apr 17 02:31:37 IARAFIN gunicorn[111193]:     rv = self.dispatch_request()
+Apr 17 02:31:37 IARAFIN gunicorn[111193]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/flask/app.py", line 902, in dispatch_request
+Apr 17 02:31:37 IARAFIN gunicorn[111193]:     return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+Apr 17 02:31:37 IARAFIN gunicorn[111193]:   File "/root/FreeDownloader/freeStore/app.py", line 26, in home
+Apr 17 02:31:37 IARAFIN gunicorn[111193]:     return render_template('index.html', projects=projects)
+Apr 17 02:31:37 IARAFIN gunicorn[111193]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/flask/templating.py", line 150, in render_template
+Apr 17 02:31:37 IARAFIN gunicorn[111193]:     template = app.jinja_env.get_or_select_template(template_name_or_list)
+Apr 17 02:31:37 IARAFIN gunicorn[111193]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/jinja2/environment.py", line 1087, in get_or_select_template
+Apr 17 02:31:37 IARAFIN gunicorn[111193]:     return self.get_template(template_name_or_list, parent, globals)
+Apr 17 02:31:37 IARAFIN gunicorn[111193]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/jinja2/environment.py", line 1016, in get_template
+Apr 17 02:31:37 IARAFIN gunicorn[111193]:     return self._load_template(name, globals)
+Apr 17 02:31:37 IARAFIN gunicorn[111193]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/jinja2/environment.py", line 975, in _load_template
+Apr 17 02:31:37 IARAFIN gunicorn[111193]:     template = self.loader.load(self, name, self.make_globals(globals))
+Apr 17 02:31:37 IARAFIN gunicorn[111193]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/jinja2/loaders.py", line 138, in load
+Apr 17 02:31:37 IARAFIN gunicorn[111193]:     code = environment.compile(source, name, filename)
+Apr 17 02:31:37 IARAFIN gunicorn[111193]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/jinja2/environment.py", line 771, in compile
+Apr 17 02:31:37 IARAFIN gunicorn[111193]:     self.handle_exception(source=source_hint)
+Apr 17 02:31:37 IARAFIN gunicorn[111193]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/jinja2/environment.py", line 942, in handle_exception
+Apr 17 02:31:37 IARAFIN gunicorn[111193]:     raise rewrite_traceback_stack(source=source)
+Apr 17 02:31:37 IARAFIN gunicorn[111193]:   File "/root/FreeDownloader/freeStore/templates/index.html", line 140, in template
+Apr 17 02:31:37 IARAFIN gunicorn[111193]:     onclick="openModal('{{ project.title }}', '{{ project.developer }}', '{{ project.description }}', '{{ project.version }}', '{{ project.rating }}', '{{ project.price }}', '{{ project.download_link }}', '{{ project.slug }}', '{{ project.icon_url or \"
+Apr 17 02:31:37 IARAFIN gunicorn[111193]: jinja2.exceptions.TemplateSyntaxError: unexpected char '\\' at 6248
+Apr 17 02:34:05 IARAFIN gunicorn[111193]: [2026-04-17 02:34:05,036] ERROR in app: Exception on / [GET]
+Apr 17 02:34:05 IARAFIN gunicorn[111193]: Traceback (most recent call last):
+Apr 17 02:34:05 IARAFIN gunicorn[111193]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/flask/app.py", line 1511, in wsgi_app
+Apr 17 02:34:05 IARAFIN gunicorn[111193]:     response = self.full_dispatch_request()
+Apr 17 02:34:05 IARAFIN gunicorn[111193]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/flask/app.py", line 919, in full_dispatch_request
+Apr 17 02:34:05 IARAFIN gunicorn[111193]:     rv = self.handle_user_exception(e)
+Apr 17 02:34:05 IARAFIN gunicorn[111193]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/flask/app.py", line 917, in full_dispatch_request
+Apr 17 02:34:05 IARAFIN gunicorn[111193]:     rv = self.dispatch_request()
+Apr 17 02:34:05 IARAFIN gunicorn[111193]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/flask/app.py", line 902, in dispatch_request
+Apr 17 02:34:05 IARAFIN gunicorn[111193]:     return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+Apr 17 02:34:05 IARAFIN gunicorn[111193]:   File "/root/FreeDownloader/freeStore/app.py", line 26, in home
+Apr 17 02:34:05 IARAFIN gunicorn[111193]:     return render_template('index.html', projects=projects)
+Apr 17 02:34:05 IARAFIN gunicorn[111193]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/flask/templating.py", line 150, in render_template
+Apr 17 02:34:05 IARAFIN gunicorn[111193]:     template = app.jinja_env.get_or_select_template(template_name_or_list)
+Apr 17 02:34:05 IARAFIN gunicorn[111193]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/jinja2/environment.py", line 1087, in get_or_select_template
+Apr 17 02:34:05 IARAFIN gunicorn[111193]:     return self.get_template(template_name_or_list, parent, globals)
+Apr 17 02:34:05 IARAFIN gunicorn[111193]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/jinja2/environment.py", line 1016, in get_template
+Apr 17 02:34:05 IARAFIN gunicorn[111193]:     return self._load_template(name, globals)
+Apr 17 02:34:05 IARAFIN gunicorn[111193]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/jinja2/environment.py", line 975, in _load_template
+Apr 17 02:34:05 IARAFIN gunicorn[111193]:     template = self.loader.load(self, name, self.make_globals(globals))
+Apr 17 02:34:05 IARAFIN gunicorn[111193]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/jinja2/loaders.py", line 138, in load
+Apr 17 02:34:05 IARAFIN gunicorn[111193]:     code = environment.compile(source, name, filename)
+Apr 17 02:34:05 IARAFIN gunicorn[111193]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/jinja2/environment.py", line 771, in compile
+Apr 17 02:34:05 IARAFIN gunicorn[111193]:     self.handle_exception(source=source_hint)
+Apr 17 02:34:05 IARAFIN gunicorn[111193]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/jinja2/environment.py", line 942, in handle_exception
+Apr 17 02:34:05 IARAFIN gunicorn[111193]:     raise rewrite_traceback_stack(source=source)
+Apr 17 02:34:05 IARAFIN gunicorn[111193]:   File "/root/FreeDownloader/freeStore/templates/index.html", line 140, in template
+Apr 17 02:34:05 IARAFIN gunicorn[111193]:     onclick="openModal('{{ project.title }}', '{{ project.developer }}', '{{ project.description }}', '{{ project.version }}', '{{ project.rating }}', '{{ project.price }}', '{{ project.download_link }}', '{{ project.slug }}', '{{ project.icon_url or \"
+Apr 17 02:34:05 IARAFIN gunicorn[111193]: jinja2.exceptions.TemplateSyntaxError: unexpected char '\\' at 6248
+----------------------------------------
+>>> cat /etc/nginx/sites-enabled/freestore-domains.conf
+OUT:
+# FREE STORE ECOSYSTEM DOMAIN ROUTING
+# Placed in /etc/nginx/conf.d/ or similar
+
+# 1. Main Free Store Frontend (Python Flask on port 8010)
+# This takes over the primary domain.
+server {
+    listen 80;
+    listen 443 ssl;
+    server_name freedownloader.top www.freedownloader.top;
+
+    ssl_certificate /etc/letsencrypt/live/freedownloader.top/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/freedownloader.top/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+    location / {
+        proxy_pass http://127.0.0.1:8010;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # Serve uploads directly via Nginx for speed
+    location /uploads/ {
+        alias /root/FreeDownloader/freeStore/uploads/;
+        autoindex off;
+        expires 30d;
+        add_header Cache-Control "public, no-transform";
+    }
+}
+
+# 2. Legacy Landing Free_D (Node/Static on port 8008)
+# Moved to web.freedownloader.top
+server {
+    listen 80;
+    server_name web.freedownloader.top;
+
+    location / {
+        proxy_pass http://127.0.0.1:8008;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+----------------------------------------
+>>> cat /etc/nginx/sites-enabled/freedownloader
+ERR:
+cat: /etc/nginx/sites-enabled/freedownloader: No such file or directory
+----------------------------------------

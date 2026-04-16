@@ -1,0 +1,174 @@
+>>> journalctl -u freedownloader.service --no-pager | grep -i 'Traceback' -A 15 | tail -n 100
+OUT:
+Apr 16 15:20:17 IARAFIN gunicorn[102197]:     rv = self.handle_user_exception(e)
+Apr 16 15:20:17 IARAFIN gunicorn[102197]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/flask_cors/extension.py", line 176, in wrapped_function
+Apr 16 15:20:17 IARAFIN gunicorn[102197]:     return cors_after_request(app.make_response(f(*args, **kwargs)))
+Apr 16 15:20:17 IARAFIN gunicorn[102197]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/flask/app.py", line 917, in full_dispatch_request
+Apr 16 15:20:17 IARAFIN gunicorn[102197]:     rv = self.dispatch_request()
+Apr 16 15:20:17 IARAFIN gunicorn[102197]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/flask/app.py", line 902, in dispatch_request
+Apr 16 15:20:17 IARAFIN gunicorn[102197]:     return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+Apr 16 15:20:17 IARAFIN gunicorn[102197]:   File "/root/FreeDownloader/backend/routes/install_routes.py", line 119, in get_stats
+Apr 16 15:20:17 IARAFIN gunicorn[102197]:     cursor.execute("""
+Apr 16 15:20:17 IARAFIN gunicorn[102197]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/mysql/connector/cursor_cext.py", line 353, in execute
+Apr 16 15:20:17 IARAFIN gunicorn[102197]:     self._connection.cmd_query(
+Apr 16 15:20:17 IARAFIN gunicorn[102197]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/mysql/connector/opentelemetry/context_propagation.py", line 97, in wrapper
+--
+Apr 16 15:20:17 IARAFIN gunicorn[102197]: Traceback (most recent call last):
+Apr 16 15:20:17 IARAFIN gunicorn[102197]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/mysql/connector/connection_cext.py", line 772, in cmd_query
+Apr 16 15:20:17 IARAFIN gunicorn[102197]:     self._cmysql.query(
+Apr 16 15:20:17 IARAFIN gunicorn[102197]: _mysql_connector.MySQLInterfaceError: Table 'downloader_analytics.store_items' doesn't exist
+Apr 16 15:20:17 IARAFIN gunicorn[102197]: The above exception was the direct cause of the following exception:
+Apr 16 15:20:17 IARAFIN gunicorn[102197]: Traceback (most recent call last):
+Apr 16 15:20:17 IARAFIN gunicorn[102197]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/flask/app.py", line 1511, in wsgi_app
+Apr 16 15:20:17 IARAFIN gunicorn[102197]:     response = self.full_dispatch_request()
+Apr 16 15:20:17 IARAFIN gunicorn[102197]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/flask/app.py", line 919, in full_dispatch_request
+Apr 16 15:20:17 IARAFIN gunicorn[102197]:     rv = self.handle_user_exception(e)
+Apr 16 15:20:17 IARAFIN gunicorn[102197]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/flask_cors/extension.py", line 176, in wrapped_function
+Apr 16 15:20:17 IARAFIN gunicorn[102197]:     return cors_after_request(app.make_response(f(*args, **kwargs)))
+Apr 16 15:20:17 IARAFIN gunicorn[102197]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/flask/app.py", line 917, in full_dispatch_request
+Apr 16 15:20:17 IARAFIN gunicorn[102197]:     rv = self.dispatch_request()
+Apr 16 15:20:17 IARAFIN gunicorn[102197]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/flask/app.py", line 902, in dispatch_request
+Apr 16 15:20:17 IARAFIN gunicorn[102197]:     return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+Apr 16 15:20:17 IARAFIN gunicorn[102197]:   File "/root/FreeDownloader/backend/routes/store_routes.py", line 28, in list_items
+Apr 16 15:20:17 IARAFIN gunicorn[102197]:     cursor.execute("SELECT * FROM store_items ORDER BY created_at DESC")
+Apr 16 15:20:17 IARAFIN gunicorn[102197]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/mysql/connector/cursor_cext.py", line 353, in execute
+Apr 16 15:20:17 IARAFIN gunicorn[102197]:     self._connection.cmd_query(
+Apr 16 15:20:17 IARAFIN gunicorn[102197]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/mysql/connector/opentelemetry/context_propagation.py", line 97, in wrapper
+--
+Apr 16 15:20:17 IARAFIN gunicorn[102197]: Traceback (most recent call last):
+Apr 16 15:20:17 IARAFIN gunicorn[102197]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/mysql/connector/connection_cext.py", line 772, in cmd_query
+Apr 16 15:20:17 IARAFIN gunicorn[102197]:     self._cmysql.query(
+Apr 16 15:20:17 IARAFIN gunicorn[102197]: _mysql_connector.MySQLInterfaceError: Table 'downloader_analytics.popup_campaigns' doesn't exist
+Apr 16 15:20:17 IARAFIN gunicorn[102197]: The above exception was the direct cause of the following exception:
+Apr 16 15:20:17 IARAFIN gunicorn[102197]: Traceback (most recent call last):
+Apr 16 15:20:17 IARAFIN gunicorn[102197]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/flask/app.py", line 1511, in wsgi_app
+Apr 16 15:20:17 IARAFIN gunicorn[102197]:     response = self.full_dispatch_request()
+Apr 16 15:20:17 IARAFIN gunicorn[102197]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/flask/app.py", line 919, in full_dispatch_request
+Apr 16 15:20:17 IARAFIN gunicorn[102197]:     rv = self.handle_user_exception(e)
+Apr 16 15:20:17 IARAFIN gunicorn[102197]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/flask_cors/extension.py", line 176, in wrapped_function
+Apr 16 15:20:17 IARAFIN gunicorn[102197]:     return cors_after_request(app.make_response(f(*args, **kwargs)))
+Apr 16 15:20:17 IARAFIN gunicorn[102197]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/flask/app.py", line 917, in full_dispatch_request
+Apr 16 15:20:17 IARAFIN gunicorn[102197]:     rv = self.dispatch_request()
+Apr 16 15:20:17 IARAFIN gunicorn[102197]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/flask/app.py", line 902, in dispatch_request
+Apr 16 15:20:17 IARAFIN gunicorn[102197]:     return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+Apr 16 15:20:17 IARAFIN gunicorn[102197]:   File "/root/FreeDownloader/backend/routes/popup_routes.py", line 127, in get_campaigns
+Apr 16 15:20:17 IARAFIN gunicorn[102197]:     cursor.execute("SELECT * FROM popup_campaigns ORDER BY priority DESC, created_at DESC")
+Apr 16 15:20:17 IARAFIN gunicorn[102197]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/mysql/connector/cursor_cext.py", line 353, in execute
+Apr 16 15:20:17 IARAFIN gunicorn[102197]:     self._connection.cmd_query(
+Apr 16 15:20:17 IARAFIN gunicorn[102197]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/mysql/connector/opentelemetry/context_propagation.py", line 97, in wrapper
+--
+Apr 16 15:20:47 IARAFIN gunicorn[102197]: Traceback (most recent call last):
+Apr 16 15:20:47 IARAFIN gunicorn[102197]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/mysql/connector/connection_cext.py", line 772, in cmd_query
+Apr 16 15:20:47 IARAFIN gunicorn[102197]:     self._cmysql.query(
+Apr 16 15:20:47 IARAFIN gunicorn[102197]: _mysql_connector.MySQLInterfaceError: Table 'downloader_analytics.software_installs' doesn't exist
+Apr 16 15:20:47 IARAFIN gunicorn[102197]: The above exception was the direct cause of the following exception:
+Apr 16 15:20:47 IARAFIN gunicorn[102197]: Traceback (most recent call last):
+Apr 16 15:20:47 IARAFIN gunicorn[102197]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/flask/app.py", line 1511, in wsgi_app
+Apr 16 15:20:47 IARAFIN gunicorn[102197]:     response = self.full_dispatch_request()
+Apr 16 15:20:47 IARAFIN gunicorn[102197]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/flask/app.py", line 919, in full_dispatch_request
+Apr 16 15:20:47 IARAFIN gunicorn[102197]:     rv = self.handle_user_exception(e)
+Apr 16 15:20:47 IARAFIN gunicorn[102197]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/flask_cors/extension.py", line 176, in wrapped_function
+Apr 16 15:20:47 IARAFIN gunicorn[102197]:     return cors_after_request(app.make_response(f(*args, **kwargs)))
+Apr 16 15:20:47 IARAFIN gunicorn[102197]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/flask/app.py", line 917, in full_dispatch_request
+Apr 16 15:20:47 IARAFIN gunicorn[102197]:     rv = self.dispatch_request()
+Apr 16 15:20:47 IARAFIN gunicorn[102197]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/flask/app.py", line 902, in dispatch_request
+Apr 16 15:20:47 IARAFIN gunicorn[102197]:     return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+Apr 16 15:20:47 IARAFIN gunicorn[102197]:   File "/root/FreeDownloader/backend/routes/install_routes.py", line 119, in get_stats
+Apr 16 15:20:47 IARAFIN gunicorn[102197]:     cursor.execute("""
+Apr 16 15:20:47 IARAFIN gunicorn[102197]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/mysql/connector/cursor_cext.py", line 353, in execute
+Apr 16 15:20:47 IARAFIN gunicorn[102197]:     self._connection.cmd_query(
+Apr 16 15:20:47 IARAFIN gunicorn[102197]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/mysql/connector/opentelemetry/context_propagation.py", line 97, in wrapper
+--
+Apr 16 15:22:48 IARAFIN gunicorn[102198]: Traceback (most recent call last):
+Apr 16 15:22:48 IARAFIN gunicorn[102198]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/mysql/connector/connection_cext.py", line 772, in cmd_query
+Apr 16 15:22:48 IARAFIN gunicorn[102198]:     self._cmysql.query(
+Apr 16 15:22:48 IARAFIN gunicorn[102198]: _mysql_connector.MySQLInterfaceError: Table 'downloader_analytics.popup_campaigns' doesn't exist
+Apr 16 15:22:48 IARAFIN gunicorn[102198]: The above exception was the direct cause of the following exception:
+Apr 16 15:22:48 IARAFIN gunicorn[102198]: Traceback (most recent call last):
+Apr 16 15:22:48 IARAFIN gunicorn[102198]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/flask/app.py", line 1511, in wsgi_app
+Apr 16 15:22:48 IARAFIN gunicorn[102198]:     response = self.full_dispatch_request()
+Apr 16 15:22:48 IARAFIN gunicorn[102198]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/flask/app.py", line 919, in full_dispatch_request
+Apr 16 15:22:48 IARAFIN gunicorn[102198]:     rv = self.handle_user_exception(e)
+Apr 16 15:22:48 IARAFIN gunicorn[102198]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/flask_cors/extension.py", line 176, in wrapped_function
+Apr 16 15:22:48 IARAFIN gunicorn[102198]:     return cors_after_request(app.make_response(f(*args, **kwargs)))
+Apr 16 15:22:48 IARAFIN gunicorn[102198]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/flask/app.py", line 917, in full_dispatch_request
+Apr 16 15:22:48 IARAFIN gunicorn[102198]:     rv = self.dispatch_request()
+Apr 16 15:22:48 IARAFIN gunicorn[102198]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/flask/app.py", line 902, in dispatch_request
+Apr 16 15:22:48 IARAFIN gunicorn[102198]:     return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+Apr 16 15:22:48 IARAFIN gunicorn[102198]:   File "/root/FreeDownloader/backend/routes/popup_routes.py", line 127, in get_campaigns
+Apr 16 15:22:48 IARAFIN gunicorn[102198]:     cursor.execute("SELECT * FROM popup_campaigns ORDER BY priority DESC, created_at DESC")
+Apr 16 15:22:48 IARAFIN gunicorn[102198]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/mysql/connector/cursor_cext.py", line 353, in execute
+Apr 16 15:22:48 IARAFIN gunicorn[102198]:     self._connection.cmd_query(
+Apr 16 15:22:48 IARAFIN gunicorn[102198]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/mysql/connector/opentelemetry/context_propagation.py", line 97, in wrapper
+----------------------------------------
+>>> journalctl -u freedownloader.service --no-pager | grep -i 'error' | tail -n 50
+OUT:
+Apr 16 15:31:06 IARAFIN gunicorn[102197]: [DB ERROR] Failed getting connection; pool exhausted
+Apr 16 15:31:06 IARAFIN gunicorn[102197]: [DB ERROR] Failed getting connection; pool exhausted
+Apr 16 15:31:06 IARAFIN gunicorn[102197]: [DB ERROR] Failed getting connection; pool exhausted
+Apr 16 15:31:06 IARAFIN gunicorn[102197]: [DB ERROR] Failed getting connection; pool exhausted
+Apr 16 15:31:06 IARAFIN gunicorn[102197]: [DB ERROR] Failed getting connection; pool exhausted
+Apr 16 15:31:06 IARAFIN gunicorn[102197]: [DB ERROR] Failed getting connection; pool exhausted
+Apr 16 15:31:06 IARAFIN gunicorn[102197]: [DB ERROR] Failed getting connection; pool exhausted
+Apr 16 15:31:06 IARAFIN gunicorn[102197]: [DB ERROR] Failed getting connection; pool exhausted
+Apr 16 15:31:06 IARAFIN gunicorn[102197]: [DB ERROR] Failed getting connection; pool exhausted
+Apr 16 15:31:06 IARAFIN gunicorn[102197]: [DB ERROR] Failed getting connection; pool exhausted
+Apr 16 15:31:06 IARAFIN gunicorn[102197]: [DB ERROR] Failed getting connection; pool exhausted
+Apr 16 15:31:06 IARAFIN gunicorn[102197]: [DB ERROR] Failed getting connection; pool exhausted
+Apr 16 15:31:06 IARAFIN gunicorn[102197]: [DB ERROR] Failed getting connection; pool exhausted
+Apr 16 15:31:06 IARAFIN gunicorn[102197]: [DB ERROR] Failed getting connection; pool exhausted
+Apr 16 15:31:06 IARAFIN gunicorn[102197]: [DB ERROR] Failed getting connection; pool exhausted
+Apr 16 15:31:06 IARAFIN gunicorn[102197]: [DB ERROR] Failed getting connection; pool exhausted
+Apr 16 15:31:06 IARAFIN gunicorn[102197]: [DB ERROR] Failed getting connection; pool exhausted
+Apr 16 15:31:06 IARAFIN gunicorn[102197]: [DB ERROR] Failed getting connection; pool exhausted
+Apr 16 15:31:06 IARAFIN gunicorn[102197]: [DB ERROR] Failed getting connection; pool exhausted
+Apr 16 15:31:06 IARAFIN gunicorn[102197]: [DB ERROR] Failed getting connection; pool exhausted
+Apr 16 15:31:06 IARAFIN gunicorn[102197]: [DB ERROR] Failed getting connection; pool exhausted
+Apr 16 15:31:06 IARAFIN gunicorn[102197]: [DB ERROR] Failed getting connection; pool exhausted
+Apr 16 15:31:06 IARAFIN gunicorn[102197]: [DB ERROR] Failed getting connection; pool exhausted
+Apr 16 15:31:06 IARAFIN gunicorn[102197]: [DB ERROR] Failed getting connection; pool exhausted
+Apr 16 15:31:06 IARAFIN gunicorn[102197]: [DB ERROR] Failed getting connection; pool exhausted
+Apr 16 15:31:06 IARAFIN gunicorn[102197]: [DB ERROR] Failed getting connection; pool exhausted
+Apr 16 15:31:06 IARAFIN gunicorn[102197]: [DB ERROR] Failed getting connection; pool exhausted
+Apr 16 15:31:06 IARAFIN gunicorn[102197]: [DB ERROR] Failed getting connection; pool exhausted
+Apr 16 15:31:06 IARAFIN gunicorn[102197]: [DB ERROR] Failed getting connection; pool exhausted
+Apr 16 15:31:06 IARAFIN gunicorn[102197]: [DB ERROR] Failed getting connection; pool exhausted
+Apr 16 15:31:06 IARAFIN gunicorn[102197]: [DB ERROR] Failed getting connection; pool exhausted
+Apr 16 15:31:06 IARAFIN gunicorn[102197]: [DB ERROR] Failed getting connection; pool exhausted
+Apr 16 15:31:06 IARAFIN gunicorn[102197]: [DB ERROR] Failed getting connection; pool exhausted
+Apr 16 15:31:06 IARAFIN gunicorn[102197]: [DB ERROR] Failed getting connection; pool exhausted
+Apr 16 15:31:06 IARAFIN gunicorn[102197]: [DB ERROR] Failed getting connection; pool exhausted
+Apr 16 15:31:06 IARAFIN gunicorn[102197]: [DB ERROR] Failed getting connection; pool exhausted
+Apr 16 15:31:06 IARAFIN gunicorn[102197]: [DB ERROR] Failed getting connection; pool exhausted
+Apr 16 15:31:06 IARAFIN gunicorn[102198]: [EVENT ERROR] 1213 (40001): Deadlock found when trying to get lock; try restarting transaction
+Apr 16 15:31:06 IARAFIN gunicorn[102198]: [CLEANUP ERROR] 1146 (42S02): Table 'downloader_analytics.software_installs' doesn't exist
+Apr 16 15:47:28 IARAFIN gunicorn[103232]: [2026-04-16 15:47:28 +0600] [103232] [ERROR] Worker (pid:103247) was sent SIGTERM!
+Apr 16 19:39:54 IARAFIN gunicorn[104604]: [EVENT ERROR] 1213 (40001): Deadlock found when trying to get lock; try restarting transaction
+Apr 16 19:39:54 IARAFIN gunicorn[104604]: [EVENT ERROR] 1213 (40001): Deadlock found when trying to get lock; try restarting transaction
+Apr 16 23:42:39 IARAFIN gunicorn[106270]: [PING ERROR] 1213 (40001): Deadlock found when trying to get lock; try restarting transaction
+Apr 16 23:42:39 IARAFIN gunicorn[106270]: [EVENT ERROR] 1213 (40001): Deadlock found when trying to get lock; try restarting transaction
+Apr 16 23:42:39 IARAFIN gunicorn[106270]: [EVENT ERROR] 1213 (40001): Deadlock found when trying to get lock; try restarting transaction
+Apr 16 23:42:39 IARAFIN gunicorn[106269]: [EVENT ERROR] 1213 (40001): Deadlock found when trying to get lock; try restarting transaction
+Apr 16 23:42:39 IARAFIN gunicorn[106269]: [EVENT ERROR] 1213 (40001): Deadlock found when trying to get lock; try restarting transaction
+Apr 16 23:42:39 IARAFIN gunicorn[106264]: [2026-04-16 23:42:39 +0600] [106264] [ERROR] Worker (pid:106269) was sent SIGTERM!
+Apr 16 23:42:39 IARAFIN gunicorn[106264]: [2026-04-16 23:42:39 +0600] [106264] [ERROR] Worker (pid:106270) was sent SIGTERM!
+Apr 16 23:54:09 IARAFIN gunicorn[108376]: [2026-04-16 23:54:09 +0600] [108376] [ERROR] Worker (pid:108390) was sent SIGTERM!
+----------------------------------------
+>>> cat /var/log/nginx/error.log | tail -n 50
+OUT:
+2026/04/17 00:27:36 [crit] 108869#108869: *51733 SSL_do_handshake() failed (SSL: error:141CF06C:SSL routines:tls_parse_ctos_key_share:bad key share) while SSL handshaking, client: 159.203.106.242, server: 0.0.0.0:443
+2026/04/17 00:40:50 [crit] 108869#108869: *51899 SSL_do_handshake() failed (SSL: error:141CF06C:SSL routines:tls_parse_ctos_key_share:bad key share) while SSL handshaking, client: 167.71.128.26, server: 0.0.0.0:443
+2026/04/17 00:47:58 [crit] 108869#108869: *51928 SSL_do_handshake() failed (SSL: error:141CF06C:SSL routines:tls_parse_ctos_key_share:bad key share) while SSL handshaking, client: 104.131.94.196, server: 0.0.0.0:443
+2026/04/17 01:04:51 [crit] 108869#108869: *52124 SSL_do_handshake() failed (SSL: error:141CF06C:SSL routines:tls_parse_ctos_key_share:bad key share) while SSL handshaking, client: 124.117.192.219, server: 0.0.0.0:443
+2026/04/17 01:11:10 [notice] 109476#109476: signal process started
+2026/04/17 01:36:51 [crit] 109478#109478: *52253 SSL_do_handshake() failed (SSL: error:141CF06C:SSL routines:tls_parse_ctos_key_share:bad key share) while SSL handshaking, client: 95.215.0.144, server: 0.0.0.0:443
+2026/04/17 02:23:49 [notice] 111080#111080: signal process started
+2026/04/17 02:23:55 [error] 111081#111081: *52367 recv() failed (104: Connection reset by peer) while reading response header from upstream, client: 103.124.226.203, server: admin.freedownloader.top, request: "GET /api/dashboard/summary HTTP/1.1", upstream: "http://127.0.0.1:8000/api/dashboard/summary", host: "admin.freedownloader.top", referrer: "https://admin.freedownloader.top/"
+2026/04/17 02:23:55 [error] 111081#111081: *52368 recv() failed (104: Connection reset by peer) while reading response header from upstream, client: 103.124.226.203, server: admin.freedownloader.top, request: "GET /api/dashboard/chart/daily HTTP/1.1", upstream: "http://127.0.0.1:8000/api/dashboard/chart/daily", host: "admin.freedownloader.top", referrer: "https://admin.freedownloader.top/"
+2026/04/17 02:23:55 [error] 111081#111081: *52369 recv() failed (104: Connection reset by peer) while reading response header from upstream, client: 103.124.226.203, server: admin.freedownloader.top, request: "GET /api/dashboard/chart/hourly HTTP/1.1", upstream: "http://127.0.0.1:8000/api/dashboard/chart/hourly", host: "admin.freedownloader.top", referrer: "https://admin.freedownloader.top/"
+2026/04/17 02:23:55 [error] 111081#111081: *52367 connect() failed (111: Connection refused) while connecting to upstream, client: 103.124.226.203, server: admin.freedownloader.top, request: "GET /api/dashboard/top-events HTTP/1.1", upstream: "http://127.0.0.1:8000/api/dashboard/top-events", host: "admin.freedownloader.top", referrer: "https://admin.freedownloader.top/"
+2026/04/17 02:23:55 [error] 111081#111081: *52369 connect() failed (111: Connection refused) while connecting to upstream, client: 103.124.226.203, server: admin.freedownloader.top, request: "GET /api/dashboard/recent-sessions HTTP/1.1", upstream: "http://127.0.0.1:8000/api/dashboard/recent-sessions", host: "admin.freedownloader.top", referrer: "https://admin.freedownloader.top/"
+2026/04/17 02:23:55 [error] 111081#111081: *52368 connect() failed (111: Connection refused) while connecting to upstream, client: 103.124.226.203, server: admin.freedownloader.top, request: "GET /api/install/stats HTTP/1.1", upstream: "http://127.0.0.1:8000/api/install/stats", host: "admin.freedownloader.top", referrer: "https://admin.freedownloader.top/"
+2026/04/17 02:23:55 [error] 111081#111081: *52377 connect() failed (111: Connection refused) while connecting to upstream, client: 103.124.226.203, server: admin.freedownloader.top, request: "GET /api/store/items HTTP/1.1", upstream: "http://127.0.0.1:8000/api/store/items", host: "admin.freedownloader.top", referrer: "https://admin.freedownloader.top/"
+2026/04/17 02:23:55 [error] 111081#111081: *52378 connect() failed (111: Connection refused) while connecting to upstream, client: 103.124.226.203, server: admin.freedownloader.top, request: "GET /api/popup/campaigns HTTP/1.1", upstream: "http://127.0.0.1:8000/api/popup/campaigns", host: "admin.freedownloader.top", referrer: "https://admin.freedownloader.top/"
+----------------------------------------

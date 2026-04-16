@@ -135,10 +135,8 @@
             {% for project in projects %}
 
             <div class="project-card {{ project.category }} group bg-slate-900/80 backdrop-blur-sm p-5 rounded-xl cursor-pointer border border-slate-800 card-hover"
-                {% if project.category=='web' %} onclick="window.open('{{ project.download_link }}', '_blank')" {% else
-                %}
-                onclick="openModal('{{ project.title }}', '{{ project.developer }}', '{{ project.description }}', '{{ project.version }}', '{{ project.rating }}', '{{ project.price }}', '{{ project.download_link }}', '{{ project.slug }}', '{{ project.icon_url or \"
-                \" }}')" {% endif %}>
+                {% if project.category=='web' %} onclick="window.open('{{ project.download_link }}', '_blank')" {% else %}
+                onclick="openModal('{{ project.title }}', '{{ project.developer }}', '{{ project.description }}', '{{ project.version }}', '{{ project.rating }}', '{{ project.price }}', '{{ project.download_link }}', '{{ project.slug }}', '{{ project.icon_url or '' }}')" {% endif %}>
 
                 <div
                     class="w-24 h-24 mx-auto mb-5 rounded-2xl bg-slate-800 border border-slate-700 flex items-center justify-center shadow-inner group-hover:bg-gradient-to-br from-slate-800 to-slate-700 transition-all overflow-hidden">
