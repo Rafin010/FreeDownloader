@@ -1,10 +1,8 @@
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
 <head>
-    <!-- AD SCRIPT DISABLED 
-    <meta name="google-adsense-account" content="ca-pub-8275641937649551"> -->
-    <!-- AD SCRIPT DISABLED 
-    <meta name="monetag" content="8eecf201ca29a630232ba4e117b33e26"> -->
+    
+    
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -154,12 +152,8 @@ tiktok video downloader professional,tiktok downloader enterprise,tiktok video s
     
     
 <!-- Adsterra Popunder / Direct JS -->
-    <!-- AD SCRIPT DISABLED
-<script src="https://pl29169631.profitablecpmratenetwork.com/61/da/42/61da42f06fe184577aa472af517e61c2.js"></script>
--->
-    <!-- AD SCRIPT DISABLED
-<script src="https://pl29169633.profitablecpmratenetwork.com/40/cf/15/40cf152bda6c66873fc6153fa9019423.js"></script>
--->
+    
+    
 </head>
 <body class="font-sans antialiased text-gray-800">
 
@@ -239,20 +233,7 @@ tiktok video downloader professional,tiktok downloader enterprise,tiktok video s
             </button>
         </div>
 
-        <!-- AD SCRIPT DISABLED
-<div class="hidden md:flex justify-center my-6 w-full overflow-hidden">
-<script>
-  atOptions = {
-    'key' : '769022bd3df750ba0e9c753489b4dabb',
-    'format' : 'iframe',
-    'height' : 90,
-    'width' : 728,
-    'params' : {}
-  };
-</script>
-<script src="https://www.highperformanceformat.com/769022bd3df750ba0e9c753489b4dabb/invoke.js"></script>
-</div>
--->
+        
 <div id="loading" class="hidden mt-8 text-[#FE2C55]">
             <i class="fa-solid fa-spinner fa-spin text-4xl"></i>
             <p class="mt-2 font-medium">Fetching video information...</p>
@@ -402,20 +383,7 @@ tiktok video downloader professional,tiktok downloader enterprise,tiktok video s
         </div>
     </section>
 
-<!-- AD SCRIPT DISABLED
-<div class="flex md:hidden justify-center my-4 w-full overflow-hidden">
-<script>
-  atOptions = {
-    'key' : '697d33d8a1f05f7cc25386cb936cb90e',
-    'format' : 'iframe',
-    'height' : 50,
-    'width' : 320,
-    'params' : {}
-  };
-</script>
-<script src="https://www.highperformanceformat.com/697d33d8a1f05f7cc25386cb936cb90e/invoke.js"></script>
-</div>
--->
+
 <footer class="bg-[#0B0F19] text-gray-400 py-10 md:py-16 font-sans border-t border-gray-800">
 
     <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-8">
@@ -512,31 +480,7 @@ tiktok video downloader professional,tiktok downloader enterprise,tiktok video s
             });
         }
 
-        // AD SCRIPT DISABLED // --- POP-UNDER / ON-CLICK AD LOGIC ---
-// AD SCRIPT DISABLED         let popUnderTriggered = false;
-// AD SCRIPT DISABLED 
-// AD SCRIPT DISABLED         function triggerPopUnder(e) {
-// AD SCRIPT DISABLED             if (!popUnderTriggered && window.AD_CONFIG && window.AD_CONFIG.POP_UNDER_URL.includes("http")) {
-// AD SCRIPT DISABLED                 if (e.target.tagName && e.target.tagName.toLowerCase() === 'a' && e.target.target !== '_blank') {
-// AD SCRIPT DISABLED                    return; 
-// AD SCRIPT DISABLED                 }
-// AD SCRIPT DISABLED                 popUnderTriggered = true;
-// AD SCRIPT DISABLED                 const newWin = window.open(window.AD_CONFIG.POP_UNDER_URL, '_blank');
-// AD SCRIPT DISABLED                 if (newWin) window.focus();
-// AD SCRIPT DISABLED                 
-// AD SCRIPT DISABLED                 document.removeEventListener('click', triggerPopUnder, true);
-// AD SCRIPT DISABLED                 document.removeEventListener('paste', triggerPopUnder, true);
-// AD SCRIPT DISABLED             }
-// AD SCRIPT DISABLED         }
-// AD SCRIPT DISABLED 
-// AD SCRIPT DISABLED         document.addEventListener('click', triggerPopUnder, { capture: true });
-// AD SCRIPT DISABLED         document.addEventListener('paste', triggerPopUnder, { capture: true });
 
-// AD SCRIPT DISABLED         // --- DIRECT LINK AD & DOWNLOAD ---
-// AD SCRIPT DISABLED         function openAdAndDownload(downloadUrl) {
-// AD SCRIPT DISABLED             if (window.AD_CONFIG && window.AD_CONFIG.DIRECT_LINK_URL.includes("http")) {
-// AD SCRIPT DISABLED                 window.open(window.AD_CONFIG.DIRECT_LINK_URL, '_blank');
-// AD SCRIPT DISABLED             }
             
             // Use an anchor tag to prevent browser blocking
             const a = document.createElement('a');
@@ -588,8 +532,15 @@ tiktok video downloader professional,tiktok downloader enterprise,tiktok video s
                     btn.className = "w-full block text-center bg-gray-100 hover:bg-[#FE2C55] hover:text-white text-gray-800 font-semibold py-2 px-4 rounded-lg transition border border-gray-200";
                     btn.innerHTML = `<i class="fa-solid fa-download mr-2"></i> Download ${f.resolution}`;
                     
-                    // Attach the Ad function to the click event
-                    btn.onclick = () => openAdAndDownload(downloadUrl);
+                                        btn.onclick = () => {
+                        const a = document.createElement('a');
+                        a.style.display = 'none';
+                        a.href = downloadUrl;
+                        a.download = '';
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                    };
                     
                     list.appendChild(btn);
                 });
@@ -610,19 +561,6 @@ tiktok video downloader professional,tiktok downloader enterprise,tiktok video s
       data-category="tiktok"
       data-backend-url="https://admin.freedownloader.top"
     ></script>
-<!-- AD SCRIPT DISABLED
-<div class="hidden xl:block fixed right-4 top-1/2 transform -translate-y-1/2 z-[100]">
-<script>
-  atOptions = {
-    'key' : 'af22fee015371594b9f71002d68a9d72',
-    'format' : 'iframe',
-    'height' : 300,
-    'width' : 160,
-    'params' : {}
-  };
-</script>
-<script src="https://www.highperformanceformat.com/af22fee015371594b9f71002d68a9d72/invoke.js"></script>
-</div>
--->
+
 </body>
 </html>
