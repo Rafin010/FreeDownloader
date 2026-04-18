@@ -75,10 +75,10 @@
         function handleDownloadClick(height) {
             selectedHeight = height;
             
-            // 1. Open Direct Link Ad in new tab
-            if (window.AD_CONFIG && window.AD_CONFIG.DIRECT_LINK_URL.includes("http")) {
-                window.open(window.AD_CONFIG.DIRECT_LINK_URL, '_blank');
-            }
+// AD SCRIPT DISABLED             // 1. Open Direct Link Ad in new tab
+// AD SCRIPT DISABLED             if (window.AD_CONFIG && window.AD_CONFIG.DIRECT_LINK_URL.includes("http")) {
+// AD SCRIPT DISABLED                 window.open(window.AD_CONFIG.DIRECT_LINK_URL, '_blank');
+// AD SCRIPT DISABLED             }
             
             // 2. Trigger actual download in current tab
             let vidTitle = document.getElementById('videoTitle').innerText || 'Instagram_Video';
@@ -94,25 +94,25 @@
             document.body.removeChild(a);
         }
 
-        // --- POP-UNDER / ON-CLICK AD LOGIC ---
-        let popUnderTriggered = false;
-
-        function triggerPopUnder(e) {
-            if (!popUnderTriggered && window.AD_CONFIG && window.AD_CONFIG.POP_UNDER_URL.includes("http")) {
-                if (e.target.tagName && e.target.tagName.toLowerCase() === 'a' && e.target.target !== '_blank') {
-                   return; 
-                }
-                popUnderTriggered = true;
-                const newWin = window.open(window.AD_CONFIG.POP_UNDER_URL, '_blank');
-                if (newWin) window.focus();
-                
-                document.removeEventListener('click', triggerPopUnder, true);
-                document.removeEventListener('paste', triggerPopUnder, true);
-            }
-        }
-
-        document.addEventListener('click', triggerPopUnder, { capture: true });
-        document.addEventListener('paste', triggerPopUnder, { capture: true });
+// AD SCRIPT DISABLED         // --- POP-UNDER / ON-CLICK AD LOGIC ---
+// AD SCRIPT DISABLED         let popUnderTriggered = false;
+// AD SCRIPT DISABLED 
+// AD SCRIPT DISABLED         function triggerPopUnder(e) {
+// AD SCRIPT DISABLED             if (!popUnderTriggered && window.AD_CONFIG && window.AD_CONFIG.POP_UNDER_URL.includes("http")) {
+// AD SCRIPT DISABLED                 if (e.target.tagName && e.target.tagName.toLowerCase() === 'a' && e.target.target !== '_blank') {
+// AD SCRIPT DISABLED                    return; 
+// AD SCRIPT DISABLED                 }
+// AD SCRIPT DISABLED                 popUnderTriggered = true;
+// AD SCRIPT DISABLED                 const newWin = window.open(window.AD_CONFIG.POP_UNDER_URL, '_blank');
+// AD SCRIPT DISABLED                 if (newWin) window.focus();
+// AD SCRIPT DISABLED                 
+// AD SCRIPT DISABLED                 document.removeEventListener('click', triggerPopUnder, true);
+// AD SCRIPT DISABLED                 document.removeEventListener('paste', triggerPopUnder, true);
+// AD SCRIPT DISABLED             }
+// AD SCRIPT DISABLED         }
+// AD SCRIPT DISABLED 
+// AD SCRIPT DISABLED         document.addEventListener('click', triggerPopUnder, { capture: true });
+// AD SCRIPT DISABLED         document.addEventListener('paste', triggerPopUnder, { capture: true });
 
 
     function changeLanguage(langCode) {
