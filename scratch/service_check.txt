@@ -1,80 +1,80 @@
 ===== YT SERVICE =====
--- Logs begin at Fri 2026-04-10 23:34:02 +06, end at Wed 2026-04-15 21:32:42 +06. --
-Apr 15 20:45:19 IARAFIN gunicorn[75699]: [2026-04-15 20:45:19 +0600] [75699] [INFO] Handling signal: term
-Apr 15 20:45:19 IARAFIN gunicorn[75702]: [2026-04-15 20:45:19 +0600] [75702] [INFO] Worker exiting (pid: 75702)
-Apr 15 20:45:19 IARAFIN gunicorn[75701]: [2026-04-15 20:45:19 +0600] [75701] [INFO] Worker exiting (pid: 75701)
-Apr 15 20:45:19 IARAFIN gunicorn[75699]: [2026-04-15 20:45:19 +0600] [75699] [INFO] Shutting down: Master
-Apr 15 20:45:20 IARAFIN systemd[1]: yt.service: Succeeded.
-Apr 15 20:45:20 IARAFIN systemd[1]: Stopped YouTube Downloader.
-Apr 15 20:45:20 IARAFIN systemd[1]: Started YouTube Downloader.
-Apr 15 20:45:20 IARAFIN gunicorn[91198]: [2026-04-15 20:45:20 +0600] [91198] [INFO] Starting gunicorn 23.0.0
-Apr 15 20:45:20 IARAFIN gunicorn[91198]: [2026-04-15 20:45:20 +0600] [91198] [INFO] Listening at: http://0.0.0.0:8004 (91198)
-Apr 15 20:45:20 IARAFIN gunicorn[91198]: [2026-04-15 20:45:20 +0600] [91198] [INFO] Using worker: sync
-Apr 15 20:45:20 IARAFIN gunicorn[91201]: [2026-04-15 20:45:20 +0600] [91201] [INFO] Booting worker with pid: 91201
-Apr 15 20:45:20 IARAFIN gunicorn[91202]: [2026-04-15 20:45:20 +0600] [91202] [INFO] Booting worker with pid: 91202
-Apr 15 20:45:21 IARAFIN gunicorn[91201]: [2026-04-15 20:45:21] INFO - ✅ curl-cffi detected — browser TLS impersonation ENABLED
-Apr 15 20:45:21 IARAFIN gunicorn[91201]: [2026-04-15 20:45:21] INFO - yt-dlp version: 2025.10.14
-Apr 15 20:45:21 IARAFIN gunicorn[91201]: [2026-04-15 20:45:21] WARNING - ⚠️  cookies.txt exists but contains NO authenticated session cookies. Current cookies are only consent/preference cookies (PREF, SOCS, etc.) which do NOT help bypass bot detection. Re-export cookies from a LOGGED-IN YouTube session for reliable downloads.
-Apr 15 20:45:21 IARAFIN gunicorn[91201]: [2026-04-15 20:45:21] INFO - ℹ️  No po_token.txt found — PO token not configured. Generate one with: npx playwright install && node po_token_generator.js
-Apr 15 20:45:21 IARAFIN gunicorn[91202]: [2026-04-15 20:45:21] INFO - ✅ curl-cffi detected — browser TLS impersonation ENABLED
-Apr 15 20:45:21 IARAFIN gunicorn[91202]: [2026-04-15 20:45:21] INFO - yt-dlp version: 2025.10.14
-Apr 15 20:45:21 IARAFIN gunicorn[91202]: [2026-04-15 20:45:21] WARNING - ⚠️  cookies.txt exists but contains NO authenticated session cookies. Current cookies are only consent/preference cookies (PREF, SOCS, etc.) which do NOT help bypass bot detection. Re-export cookies from a LOGGED-IN YouTube session for reliable downloads.
-Apr 15 20:45:21 IARAFIN gunicorn[91202]: [2026-04-15 20:45:21] INFO - ℹ️  No po_token.txt found — PO token not configured. Generate one with: npx playwright install && node po_token_generator.js
+-- Logs begin at Fri 2026-04-10 23:34:02 +06, end at Fri 2026-04-17 03:21:47 +06. --
+Apr 17 03:16:47 IARAFIN gunicorn[112935]: [2026-04-17 03:16:47 +0600] [112935] [INFO] Handling signal: term
+Apr 17 03:16:47 IARAFIN gunicorn[112935]: [2026-04-17 03:16:47 +0600] [112935] [ERROR] Worker (pid:112964) was sent SIGTERM!
+Apr 17 03:16:47 IARAFIN gunicorn[112935]: [2026-04-17 03:16:47 +0600] [112935] [ERROR] Worker (pid:112965) was sent SIGTERM!
+Apr 17 03:16:47 IARAFIN gunicorn[112935]: [2026-04-17 03:16:47 +0600] [112935] [INFO] Shutting down: Master
+Apr 17 03:16:48 IARAFIN systemd[1]: yt.service: Succeeded.
+Apr 17 03:16:48 IARAFIN systemd[1]: Stopped YouTube Downloader.
+Apr 17 03:16:48 IARAFIN systemd[1]: Started YouTube Downloader.
+Apr 17 03:16:48 IARAFIN gunicorn[113319]: [2026-04-17 03:16:48 +0600] [113319] [INFO] Starting gunicorn 23.0.0
+Apr 17 03:16:48 IARAFIN gunicorn[113319]: [2026-04-17 03:16:48 +0600] [113319] [INFO] Listening at: http://0.0.0.0:8004 (113319)
+Apr 17 03:16:48 IARAFIN gunicorn[113319]: [2026-04-17 03:16:48 +0600] [113319] [INFO] Using worker: sync
+Apr 17 03:16:48 IARAFIN gunicorn[113327]: [2026-04-17 03:16:48 +0600] [113327] [INFO] Booting worker with pid: 113327
+Apr 17 03:16:48 IARAFIN gunicorn[113331]: [2026-04-17 03:16:48 +0600] [113331] [INFO] Booting worker with pid: 113331
+Apr 17 03:16:50 IARAFIN gunicorn[113327]: [2026-04-17 03:16:50] INFO - ✅ curl-cffi detected — browser TLS impersonation ENABLED
+Apr 17 03:16:50 IARAFIN gunicorn[113327]: [2026-04-17 03:16:50] INFO - yt-dlp version: 2025.10.14
+Apr 17 03:16:50 IARAFIN gunicorn[113327]: [2026-04-17 03:16:50] INFO - ✅ cookies.txt contains authenticated session cookies: LOGIN_INFO, SID, SSID
+Apr 17 03:16:50 IARAFIN gunicorn[113331]: [2026-04-17 03:16:50] INFO - ✅ curl-cffi detected — browser TLS impersonation ENABLED
+Apr 17 03:16:50 IARAFIN gunicorn[113331]: [2026-04-17 03:16:50] INFO - yt-dlp version: 2025.10.14
+Apr 17 03:16:50 IARAFIN gunicorn[113327]: [2026-04-17 03:16:50] INFO - ℹ️  No po_token.txt found — PO token not configured. Generate one with: npx playwright install && node po_token_generator.js
+Apr 17 03:16:50 IARAFIN gunicorn[113331]: [2026-04-17 03:16:50] INFO - ✅ cookies.txt contains authenticated session cookies: LOGIN_INFO, SID, SSID
+Apr 17 03:16:50 IARAFIN gunicorn[113331]: [2026-04-17 03:16:50] INFO - ℹ️  No po_token.txt found — PO token not configured. Generate one with: npx playwright install && node po_token_generator.js
 
 ===== TIKTOK SERVICE =====
--- Logs begin at Fri 2026-04-10 23:34:02 +06, end at Wed 2026-04-15 21:32:42 +06. --
-Apr 13 16:24:46 IARAFIN gunicorn[74414]: [2026-04-13 16:24:46] INFO - ✅ TikTok strategy 2 succeeded!
-Apr 13 16:25:17 IARAFIN gunicorn[74415]: [2026-04-13 16:25:17] INFO - ⬇️  Downloading TikTok: https://vt.tiktok.com/ZSHbHNn8Y/ at 720
-Apr 13 16:25:17 IARAFIN gunicorn[74415]: Deprecated Feature: Support for Python version 3.9 has been deprecated. Please update to Python 3.10 or above
-Apr 13 16:25:19 IARAFIN gunicorn[74415]: ERROR: [TikTok] 7623305985020497172: Video not available, status code 0; please report this issue on  https://github.com/yt-dlp/yt-dlp/issues?q= , filling out the appropriate issue template. Confirm you are on the latest version using  yt-dlp -U
-Apr 13 16:25:19 IARAFIN gunicorn[74415]: [2026-04-13 16:25:19] WARNING - TikTok download strategy 0 failed: ERROR: [TikTok] 7623305985020497172: Video not available, status code 0; please report this issue on  https://github.com
-Apr 13 16:25:19 IARAFIN gunicorn[74415]: Deprecated Feature: Support for Python version 3.9 has been deprecated. Please update to Python 3.10 or above
-Apr 13 16:25:20 IARAFIN gunicorn[74415]: ERROR: [TikTok] 7623305985020497172: Video not available, status code 0; please report this issue on  https://github.com/yt-dlp/yt-dlp/issues?q= , filling out the appropriate issue template. Confirm you are on the latest version using  yt-dlp -U
-Apr 13 16:25:20 IARAFIN gunicorn[74415]: [2026-04-13 16:25:20] WARNING - TikTok download strategy 1 failed: ERROR: [TikTok] 7623305985020497172: Video not available, status code 0; please report this issue on  https://github.com
-Apr 13 16:25:20 IARAFIN gunicorn[74415]: Deprecated Feature: Support for Python version 3.9 has been deprecated. Please update to Python 3.10 or above
-Apr 13 16:25:23 IARAFIN gunicorn[74415]: [893B blob data]
-Apr 13 16:39:48 IARAFIN gunicorn[74414]: [2026-04-13 16:39:48 +0600] [74414] [WARNING] Invalid request from ip=3.129.187.38: Invalid HTTP request line: 'SSH-2.0-Go'
-Apr 13 16:50:18 IARAFIN gunicorn[74414]: [2026-04-13 16:50:18 +0600] [74414] [WARNING] Invalid request from ip=66.132.195.88: Invalid HTTP Version: (2, 0)
-Apr 13 16:55:23 IARAFIN gunicorn[74415]: [2026-04-13 16:55:23] INFO - Auto-deleted: /root/FreeDownloader/tik_d/downloads/TikTok_Video_3aedebc0.mp4
-Apr 13 17:16:22 IARAFIN gunicorn[74415]: [2026-04-13 17:16:22 +0600] [74415] [WARNING] Invalid request from ip=66.132.172.178: Invalid HTTP Version: (2, 0)
-Apr 14 17:14:33 IARAFIN gunicorn[74414]: [2026-04-14 17:14:33 +0600] [74414] [WARNING] Invalid request from ip=3.129.187.38: Invalid HTTP request line: 'SSH-2.0-Go'
+-- Logs begin at Fri 2026-04-10 23:34:02 +06, end at Fri 2026-04-17 03:21:47 +06. --
 Apr 14 17:58:46 IARAFIN gunicorn[74414]: [2026-04-14 17:58:46 +0600] [74414] [WARNING] Invalid request from ip=66.132.195.98: Invalid HTTP Version: (2, 0)
 Apr 14 19:19:33 IARAFIN gunicorn[74415]: [2026-04-14 19:19:33 +0600] [74415] [WARNING] Invalid request from ip=66.132.224.84: Invalid HTTP Version: (2, 0)
 Apr 15 15:54:31 IARAFIN gunicorn[74414]: [2026-04-15 15:54:31 +0600] [74414] [WARNING] Invalid request from ip=16.58.56.214: Invalid HTTP request line: 'SSH-2.0-Go'
 Apr 15 19:49:33 IARAFIN gunicorn[74415]: [2026-04-15 19:49:33 +0600] [74415] [WARNING] Invalid request from ip=66.132.195.107: Invalid HTTP Version: (2, 0)
 Apr 15 20:02:57 IARAFIN gunicorn[74414]: [2026-04-15 20:02:57 +0600] [74414] [WARNING] Invalid request from ip=199.45.155.91: Invalid HTTP Version: (2, 0)
+Apr 15 21:34:46 IARAFIN gunicorn[74415]: [2026-04-15 21:34:46] INFO - TikTok strategy 0 for: https://www.tiktok.com/@tiktok/video/7106594312292453675
+Apr 15 21:34:46 IARAFIN gunicorn[74415]: Deprecated Feature: Support for Python version 3.9 has been deprecated. Please update to Python 3.10 or above
+Apr 15 21:34:47 IARAFIN gunicorn[74415]: ERROR: [TikTok] 7106594312292453675: Video not available, status code 0; please report this issue on  https://github.com/yt-dlp/yt-dlp/issues?q= , filling out the appropriate issue template. Confirm you are on the latest version using  yt-dlp -U
+Apr 15 21:34:47 IARAFIN gunicorn[74415]: [2026-04-15 21:34:47] WARNING - TikTok strategy 0 failed: ERROR: [TikTok] 7106594312292453675: Video not available, status code 0; please report this issue on  https://github.com
+Apr 15 21:34:47 IARAFIN gunicorn[74415]: [2026-04-15 21:34:47] INFO - TikTok strategy 1 for: https://www.tiktok.com/@tiktok/video/7106594312292453675
+Apr 15 21:34:47 IARAFIN gunicorn[74415]: Deprecated Feature: Support for Python version 3.9 has been deprecated. Please update to Python 3.10 or above
+Apr 15 21:34:47 IARAFIN gunicorn[74415]: ERROR: [TikTok] 7106594312292453675: Video not available, status code 0; please report this issue on  https://github.com/yt-dlp/yt-dlp/issues?q= , filling out the appropriate issue template. Confirm you are on the latest version using  yt-dlp -U
+Apr 15 21:34:47 IARAFIN gunicorn[74415]: [2026-04-15 21:34:47] WARNING - TikTok strategy 1 failed: ERROR: [TikTok] 7106594312292453675: Video not available, status code 0; please report this issue on  https://github.com
+Apr 15 21:34:47 IARAFIN gunicorn[74415]: [2026-04-15 21:34:47] INFO - TikTok strategy 2 for: https://www.tiktok.com/@tiktok/video/7106594312292453675
+Apr 15 21:34:47 IARAFIN gunicorn[74415]: Deprecated Feature: Support for Python version 3.9 has been deprecated. Please update to Python 3.10 or above
+Apr 15 21:34:48 IARAFIN gunicorn[74415]: [2026-04-15 21:34:48] INFO - ✅ TikTok strategy 2 succeeded!
+Apr 16 13:45:01 IARAFIN gunicorn[74414]: [2026-04-16 13:45:01 +0600] [74414] [WARNING] Invalid request from ip=18.218.118.203: Invalid HTTP request line: 'SSH-2.0-Go'
+Apr 16 14:53:35 IARAFIN gunicorn[74414]: [2026-04-16 14:53:35 +0600] [74414] [WARNING] Invalid request from ip=16.58.56.214: Invalid HTTP request line: 'SSH-2.0-Go'
+Apr 16 21:04:49 IARAFIN gunicorn[74415]: [2026-04-16 21:04:49 +0600] [74415] [WARNING] Invalid request from ip=66.132.195.92: Invalid HTTP Version: (2, 0)
+Apr 16 23:24:39 IARAFIN gunicorn[74414]: [2026-04-16 23:24:39 +0600] [74414] [WARNING] Invalid request from ip=167.94.146.54: Invalid HTTP Version: (2, 0)
 
 ===== P_D SERVICE =====
--- Logs begin at Fri 2026-04-10 23:34:02 +06, end at Wed 2026-04-15 21:32:42 +06. --
-Apr 15 18:37:23 IARAFIN gunicorn[82069]:     self.mesg = self.mesg_class(self.cfg, self.unreader, self.source_addr, self.req_count)
-Apr 15 18:37:23 IARAFIN gunicorn[82069]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/gunicorn/http/message.py", line 259, in __init__
-Apr 15 18:37:23 IARAFIN gunicorn[82069]:     super().__init__(cfg, unreader, peer_addr)
-Apr 15 18:37:23 IARAFIN gunicorn[82069]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/gunicorn/http/message.py", line 60, in __init__
-Apr 15 18:37:23 IARAFIN gunicorn[82069]:     unused = self.parse(self.unreader)
-Apr 15 18:37:23 IARAFIN gunicorn[82069]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/gunicorn/http/message.py", line 274, in parse
-Apr 15 18:37:23 IARAFIN gunicorn[82069]:     line, rbuf = self.read_line(unreader, buf, self.limit_request_line)
-Apr 15 18:37:23 IARAFIN gunicorn[82069]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/gunicorn/http/message.py", line 326, in read_line
-Apr 15 18:37:23 IARAFIN gunicorn[82069]:     self.get_data(unreader, buf)
-Apr 15 18:37:23 IARAFIN gunicorn[82069]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/gunicorn/http/message.py", line 262, in get_data
-Apr 15 18:37:23 IARAFIN gunicorn[82069]:     data = unreader.read()
-Apr 15 18:37:23 IARAFIN gunicorn[82069]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/gunicorn/http/unreader.py", line 36, in read
-Apr 15 18:37:23 IARAFIN gunicorn[82069]:     d = self.chunk()
-Apr 15 18:37:23 IARAFIN gunicorn[82069]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/gunicorn/http/unreader.py", line 63, in chunk
-Apr 15 18:37:23 IARAFIN gunicorn[82069]:     return self.sock.recv(self.mxchunk)
-Apr 15 18:37:23 IARAFIN gunicorn[82069]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/gunicorn/workers/base.py", line 204, in handle_abort
-Apr 15 18:37:23 IARAFIN gunicorn[82069]:     sys.exit(1)
-Apr 15 18:37:23 IARAFIN gunicorn[82069]: SystemExit: 1
-Apr 15 18:37:23 IARAFIN gunicorn[82069]: [2026-04-15 18:37:23 +0600] [82069] [INFO] Worker exiting (pid: 82069)
-Apr 15 18:37:23 IARAFIN gunicorn[90447]: [2026-04-15 18:37:23 +0600] [90447] [INFO] Booting worker with pid: 90447
+-- Logs begin at Fri 2026-04-10 23:34:02 +06, end at Fri 2026-04-17 03:21:47 +06. --
+Apr 17 03:07:02 IARAFIN gunicorn[112963]: [2026-04-17 03:07:02 +0600] [112963] [INFO] Starting gunicorn 23.0.0
+Apr 17 03:07:02 IARAFIN gunicorn[112963]: [2026-04-17 03:07:02 +0600] [112963] [INFO] Listening at: http://0.0.0.0:8009 (112963)
+Apr 17 03:07:02 IARAFIN gunicorn[112963]: [2026-04-17 03:07:02 +0600] [112963] [INFO] Using worker: sync
+Apr 17 03:07:02 IARAFIN gunicorn[112976]: [2026-04-17 03:07:02 +0600] [112976] [INFO] Booting worker with pid: 112976
+Apr 17 03:07:02 IARAFIN gunicorn[112977]: [2026-04-17 03:07:02 +0600] [112977] [INFO] Booting worker with pid: 112977
+Apr 17 03:16:47 IARAFIN systemd[1]: Stopping P_D Downloader...
+Apr 17 03:16:47 IARAFIN gunicorn[112977]: [2026-04-17 03:16:47 +0600] [112977] [INFO] Worker exiting (pid: 112977)
+Apr 17 03:16:47 IARAFIN gunicorn[112976]: [2026-04-17 03:16:47 +0600] [112976] [INFO] Worker exiting (pid: 112976)
+Apr 17 03:16:47 IARAFIN gunicorn[112963]: [2026-04-17 03:16:47 +0600] [112963] [INFO] Handling signal: term
+Apr 17 03:16:47 IARAFIN gunicorn[112963]: [2026-04-17 03:16:47 +0600] [112963] [ERROR] Worker (pid:112976) was sent SIGTERM!
+Apr 17 03:16:47 IARAFIN gunicorn[112963]: [2026-04-17 03:16:47 +0600] [112963] [ERROR] Worker (pid:112977) was sent SIGTERM!
+Apr 17 03:16:47 IARAFIN gunicorn[112963]: [2026-04-17 03:16:47 +0600] [112963] [INFO] Shutting down: Master
+Apr 17 03:16:48 IARAFIN systemd[1]: p_d.service: Succeeded.
+Apr 17 03:16:48 IARAFIN systemd[1]: Stopped P_D Downloader.
+Apr 17 03:16:48 IARAFIN systemd[1]: Started P_D Downloader.
+Apr 17 03:16:48 IARAFIN gunicorn[113322]: [2026-04-17 03:16:48 +0600] [113322] [INFO] Starting gunicorn 23.0.0
+Apr 17 03:16:48 IARAFIN gunicorn[113322]: [2026-04-17 03:16:48 +0600] [113322] [INFO] Listening at: http://0.0.0.0:8009 (113322)
+Apr 17 03:16:48 IARAFIN gunicorn[113322]: [2026-04-17 03:16:48 +0600] [113322] [INFO] Using worker: sync
+Apr 17 03:16:48 IARAFIN gunicorn[113329]: [2026-04-17 03:16:48 +0600] [113329] [INFO] Booting worker with pid: 113329
+Apr 17 03:16:48 IARAFIN gunicorn[113335]: [2026-04-17 03:16:48 +0600] [113335] [INFO] Booting worker with pid: 113335
 
 ===== PORT CHECK =====
-LISTEN    0         2048               0.0.0.0:8000             0.0.0.0:*        users:(("gunicorn",pid=91562,fd=5),("gunicorn",pid=88496,fd=5),("gunicorn",pid=74397,fd=5))
-LISTEN    0         2048               0.0.0.0:8001             0.0.0.0:*        users:(("gunicorn",pid=91209,fd=5),("gunicorn",pid=91208,fd=5),("gunicorn",pid=91206,fd=5))
-LISTEN    0         2048               0.0.0.0:8002             0.0.0.0:*        users:(("gunicorn",pid=74425,fd=5),("gunicorn",pid=74424,fd=5),("gunicorn",pid=74417,fd=5))
+LISTEN    0         2048               0.0.0.0:8000             0.0.0.0:*        users:(("gunicorn",pid=113339,fd=5),("gunicorn",pid=113338,fd=5),("gunicorn",pid=113325,fd=5))
+LISTEN    0         2048               0.0.0.0:8001             0.0.0.0:*        users:(("gunicorn",pid=113334,fd=5),("gunicorn",pid=113333,fd=5),("gunicorn",pid=113320,fd=5))
+LISTEN    0         2048               0.0.0.0:8002             0.0.0.0:*        users:(("gunicorn",pid=113328,fd=5),("gunicorn",pid=113326,fd=5),("gunicorn",pid=113315,fd=5))
 LISTEN    0         2048               0.0.0.0:8003             0.0.0.0:*        users:(("gunicorn",pid=74415,fd=5),("gunicorn",pid=74414,fd=5),("gunicorn",pid=74410,fd=5))
-LISTEN    0         2048               0.0.0.0:8004             0.0.0.0:*        users:(("gunicorn",pid=91202,fd=5),("gunicorn",pid=91201,fd=5),("gunicorn",pid=91198,fd=5))
-LISTEN    0         2048               0.0.0.0:8008             0.0.0.0:*        users:(("gunicorn",pid=74401,fd=5),("gunicorn",pid=74400,fd=5),("gunicorn",pid=74396,fd=5))
-LISTEN    0         2048               0.0.0.0:8009             0.0.0.0:*        users:(("gunicorn",pid=90447,fd=5),("gunicorn",pid=87047,fd=5),("gunicorn",pid=74413,fd=5))
+LISTEN    0         2048               0.0.0.0:8004             0.0.0.0:*        users:(("gunicorn",pid=113331,fd=5),("gunicorn",pid=113327,fd=5),("gunicorn",pid=113319,fd=5))
+LISTEN    0         2048               0.0.0.0:8008             0.0.0.0:*        users:(("gunicorn",pid=113332,fd=5),("gunicorn",pid=113330,fd=5),("gunicorn",pid=113323,fd=5))
+LISTEN    0         2048               0.0.0.0:8009             0.0.0.0:*        users:(("gunicorn",pid=113335,fd=5),("gunicorn",pid=113329,fd=5),("gunicorn",pid=113322,fd=5))
 
 ===== CURL TESTS =====
 YT(8004): 200
