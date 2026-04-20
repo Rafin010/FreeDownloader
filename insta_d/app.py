@@ -1,14 +1,30 @@
 import os
+import sys
 import uuid
 import threading
 import time
 import re
+import random
 import logging
+from urllib.parse import quote, urlparse
 from flask import Flask, render_template, request, jsonify, send_file, Response
 import yt_dlp
 import requests as http_requests
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from infra.redis_client import get_limiter_storage_uri, cache_get, cache_set
+from infra.progress import get_progress
 
 app = Flask(__name__)
+limiter = Limiter(
+    app=app,
+    key_func=get_remote_address,
+    default_limits=["60 per minute"],
+    storage_uri=get_limiter_storage_uri()
+)
 
 # ── Logging Setup ──────────────────────────────────────────────
 logging.basicConfig(
@@ -26,13 +42,27 @@ os.makedirs(DOWNLOAD_DIR, exist_ok=True)
 
 FILE_EXPIRY_TIME = 1800  # 30 minutes
 
+# Magic bytes for MP4 validation
+MP4_SIGNATURES = [b'ftyp', b'moov', b'mdat']
+MIN_VIDEO_SIZE = 10240  # 10KB minimum for a valid video file
+
+# ── Check if curl-cffi is available for browser impersonation ──
+_HAS_CURL_CFFI = False
+try:
+    import curl_cffi  # noqa: F401
+    _HAS_CURL_CFFI = True
+    logger.info("✅ curl-cffi detected — browser TLS impersonation ENABLED")
+except ImportError:
+    logger.warning("⚠️  curl-cffi not installed — browser impersonation DISABLED.")
+
 
 # ── Multi-Strategy UA Rotation ────────────────────────────────
 USER_AGENTS = [
     "Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1",
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-    "Mozilla/5.0 (Linux; Android 14; SM-S918B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36",
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Safari/605.1.15",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Linux; Android 14; SM-S918B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Mobile Safari/537.36",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/19.2 Safari/605.1.15",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0",
 ]
 
 
@@ -42,6 +72,7 @@ def get_ydl_opts_for_attempt(attempt=0):
         "User-Agent": ua,
         "Referer": "https://www.instagram.com/",
         "Accept-Language": "en-US,en;q=0.9",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
     }
     opts = {
         'quiet': True,
@@ -49,38 +80,79 @@ def get_ydl_opts_for_attempt(attempt=0):
         'http_headers': headers,
         'socket_timeout': 30,
         'force_ipv4': True,
+        # SSL: prefer verified certs, fallback handled in retry logic
+        'nocheckcertificate': False,
+        # Rate limiting: sleep between requests
+        'sleep_interval': 1,
+        'max_sleep_interval': 4,
+        'sleep_interval_requests': 1,
+        # Retry internal downloads
+        'retries': 5,
+        'fragment_retries': 5,
     }
+    # Browser TLS impersonation (requires curl-cffi)
+    if _HAS_CURL_CFFI:
+        opts['impersonate'] = 'chrome'
     if os.path.exists(COOKIES_FILE):
         opts['cookiefile'] = COOKIES_FILE
     return opts
 
 
+def _is_unrecoverable_ig_error(error_str):
+    """Check if an Instagram error is truly unrecoverable."""
+    unrecoverable = [
+        'is not a valid url',
+        'private',
+        'login_required',
+        'not available',
+        'does not exist',
+    ]
+    error_lower = error_str.lower()
+    return any(pattern in error_lower for pattern in unrecoverable)
+
+
 def extract_with_retry(video_url):
-    """Try extracting video info with rotating User-Agents. Retries on ALL errors."""
+    """Try extracting video info with rotating User-Agents and jittered backoff."""
     last_error = None
-    for i in range(len(USER_AGENTS)):
+    num_attempts = len(USER_AGENTS)
+
+    for i in range(num_attempts):
         try:
-            logger.info("IG attempt %d for: %s", i, video_url)
+            logger.info("IG attempt %d/%d for: %s", i + 1, num_attempts, video_url)
             opts = get_ydl_opts_for_attempt(i)
             with yt_dlp.YoutubeDL(opts) as ydl:
                 info = ydl.extract_info(video_url, download=False)
-                logger.info("✅ IG attempt %d succeeded!", i)
+                logger.info("✅ IG attempt %d succeeded!", i + 1)
                 return info, i
         except Exception as e:
             last_error = e
-            error_lower = str(e).lower()
-            # Only skip retry for truly unrecoverable errors
-            if 'is not a valid url' in error_lower or 'private' in error_lower:
+            error_str = str(e)
+
+            if _is_unrecoverable_ig_error(error_str):
+                logger.error("❌ Unrecoverable IG error: %s", error_str[:150])
                 raise e
-            logger.warning("IG attempt %d failed: %s — trying next...", i, str(e)[:120])
+
+            # Jittered exponential backoff
+            base_backoff = min(2 * (i + 1), 10)
+            jitter = random.uniform(0, 1.5)
+            backoff = base_backoff + jitter
+            logger.warning("IG attempt %d failed: %s — backing off %.1fs...",
+                           i + 1, error_str[:120], backoff)
+
+            if i < num_attempts - 1:
+                time.sleep(backoff)
             continue
+
+    logger.error("❌ ALL Instagram strategies exhausted for: %s", video_url)
     raise last_error
 
 
 def download_with_retry(video_url, filepath, res_height):
-    """Download video with rotating User-Agents and retry on ALL errors."""
+    """Download video with rotating User-Agents, jittered backoff, and retry on transient errors."""
     last_error = None
-    for i in range(len(USER_AGENTS)):
+    num_attempts = len(USER_AGENTS)
+
+    for i in range(num_attempts):
         try:
             opts = get_ydl_opts_for_attempt(i)
             opts['socket_timeout'] = 120  # Longer timeout for downloads
@@ -89,21 +161,51 @@ def download_with_retry(video_url, filepath, res_height):
                 'merge_output_format': 'mp4',
                 'outtmpl': filepath,
             })
+            logger.info("IG download attempt %d/%d", i + 1, num_attempts)
             with yt_dlp.YoutubeDL(opts) as ydl:
                 ydl.download([video_url])
             if os.path.exists(filepath):
+                # Validate file is actually a video (not JSON API response)
+                file_size = os.path.getsize(filepath)
+                if file_size < MIN_VIDEO_SIZE:
+                    logger.warning("Downloaded file too small (%d bytes), likely not a video", file_size)
+                    os.remove(filepath)
+                    raise Exception("Downloaded file is not a valid video (too small)")
+                # Check magic bytes
+                with open(filepath, 'rb') as vf:
+                    header = vf.read(32)
+                    if b'ftyp' not in header and b'{' in header[:2]:
+                        logger.warning("Downloaded file appears to be JSON, not video")
+                        os.remove(filepath)
+                        raise Exception("Instagram returned API data instead of video. Please retry.")
+                logger.info("✅ IG download attempt %d succeeded!", i + 1)
                 return True
         except Exception as e:
             last_error = e
-            error_lower = str(e).lower()
-            if 'is not a valid url' in error_lower or 'private' in error_lower:
+            error_str = str(e)
+
+            if _is_unrecoverable_ig_error(error_str):
                 raise e
+
             # Clean up partial files before retry
             for partial in [filepath, filepath + '.part', filepath + '.ytdl']:
                 if os.path.exists(partial):
-                    os.remove(partial)
-            logger.warning("IG download attempt %d failed: %s — trying next...", i, str(e)[:120])
+                    try:
+                        os.remove(partial)
+                    except OSError:
+                        pass
+
+            base_backoff = min(2 * (i + 1), 10)
+            jitter = random.uniform(0, 1.5)
+            backoff = base_backoff + jitter
+            logger.warning("IG download attempt %d failed: %s — backing off %.1fs...",
+                           i + 1, error_str[:120], backoff)
+
+            if i < num_attempts - 1:
+                time.sleep(backoff)
             continue
+
+    logger.error("❌ ALL Instagram download strategies exhausted")
     raise last_error
 
 
@@ -158,15 +260,16 @@ def index():
 
 
 @app.route('/api/get_info', methods=['POST'])
+@limiter.limit("30/minute")
 def get_info():
-    data = request.json
-    video_url = data.get('url')
+    data = request.get_json(silent=True) or {}
+    video_url = data.get('url', '').strip()
     if not video_url:
         return jsonify({"error": "No URL provided!"}), 400
 
-    ig_regex = r'(https?://(?:www\.)?instagram\.com/(?:p|reel|tv|reels)/.+)'
+    ig_regex = r'(https?://(?:www\.)?instagram\.com/(?:p|reel|tv|reels|stories|s)/.+)'
     if not re.match(ig_regex, video_url):
-        return jsonify({"error": "Sorry, this downloader only supports Instagram videos and reels."}), 400
+        return jsonify({"error": "Sorry, this downloader only supports Instagram videos, reels, and stories."}), 400
 
     try:
         info_dict, _ = extract_with_retry(video_url)
@@ -191,7 +294,6 @@ def get_info():
                     break
 
         if thumbnail:
-            from urllib.parse import quote
             thumbnail = f"/api/thumb_proxy?url={quote(thumbnail, safe='')}"
 
         available_formats = [
@@ -215,36 +317,67 @@ def get_info():
         return jsonify({"error": user_message}), 500
 
 
+# ── SSRF-Safe Thumbnail Proxy ─────────────────────────────────
+THUMB_ALLOWED_DOMAINS = [
+    'cdninstagram.com', 'scontent.cdninstagram.com',
+    'i.ytimg.com', 'img.youtube.com',
+    'p16-sign-sg.tiktokcdn.com', 'p16-sign-va.tiktokcdn.com',
+    'scontent.xx.fbcdn.net', 'external.xx.fbcdn.net',
+    'i.imgur.com',
+]
+MAX_THUMB_SIZE = 5 * 1024 * 1024  # 5MB max
+
+def _is_thumb_url_safe(url):
+    try:
+        parsed = urlparse(url)
+        if parsed.scheme not in ('http', 'https'):
+            return False
+        host = parsed.hostname or ''
+        return any(host == d or host.endswith('.' + d) for d in THUMB_ALLOWED_DOMAINS)
+    except Exception:
+        return False
+
 @app.route('/api/thumb_proxy')
+@limiter.limit("60/minute")
 def thumb_proxy():
     img_url = request.args.get('url', '')
     if not img_url:
-        return "No URL", 400
+        return jsonify({"error": "No URL"}), 400
+    if not _is_thumb_url_safe(img_url):
+        return jsonify({"error": "URL not allowed"}), 403
     try:
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
             "Referer": "https://www.instagram.com/"
         }
         resp = http_requests.get(img_url, headers=headers, timeout=10, stream=True)
-        if resp.status_code == 200:
-            return Response(
-                resp.content,
-                content_type=resp.headers.get('Content-Type', 'image/jpeg'),
-                headers={'Cache-Control': 'public, max-age=3600'}
-            )
-        return "Thumbnail not available", 404
+        if resp.status_code != 200:
+            return jsonify({"error": "Thumbnail not available"}), 404
+        def generate():
+            downloaded = 0
+            for chunk in resp.iter_content(chunk_size=8192):
+                downloaded += len(chunk)
+                if downloaded > MAX_THUMB_SIZE:
+                    break
+                yield chunk
+        return Response(
+            generate(),
+            content_type=resp.headers.get('Content-Type', 'image/jpeg'),
+            headers={'Cache-Control': 'public, max-age=3600'}
+        )
     except Exception:
-        return "Thumbnail fetch failed", 500
+        return jsonify({"error": "Thumbnail fetch failed"}), 500
 
 
 @app.route('/api/download')
+@limiter.limit("10/minute")
 def download_video():
     video_url = request.args.get('url')
     res_height = request.args.get('res', '1080')
     req_title = request.args.get('title', 'Instagram_Video')
 
     if not video_url:
-        return "URL Missing", 400
+        return jsonify({"error": "URL Missing"}), 400
 
     safe_title = re.sub(r'[\\/*?:"<>|]', "", req_title).strip()
     if not safe_title:
@@ -257,15 +390,46 @@ def download_video():
     try:
         logger.info("⬇️  Downloading IG: %s at %sp", video_url, res_height)
         download_with_retry(video_url, filepath, res_height)
+
+        # Magic bytes validation — ensure the file is actually a video
+        VALID_MAGIC_BYTES = [
+            b'\x00\x00\x00',    # MP4/MOV (ftyp box, offset varies)
+            b'\x1a\x45\xdf\xa3', # WebM/MKV (EBML header)
+            b'\x47',             # MPEG-TS
+        ]
+        if os.path.exists(filepath) and os.path.getsize(filepath) > 16:
+            with open(filepath, 'rb') as check_f:
+                header = check_f.read(12)
+            # MP4 check: 'ftyp' appears at byte 4
+            is_valid = (b'ftyp' in header[:12]) or any(header.startswith(m) for m in VALID_MAGIC_BYTES)
+            if not is_valid:
+                logger.warning("❌ Downloaded file failed magic bytes check: %s", filepath)
+                os.remove(filepath)
+                return jsonify({"error": "Download failed: the file received was not a valid video. The source may be unavailable."}), 500
+
         delete_file_delayed(filepath, delay=1800)
         logger.info("✅ Download complete: %s", unique_filename)
 
-        return send_file(
-            filepath,
-            as_attachment=True,
-            download_name=user_download_name,
-            mimetype='video/mp4'
+        def stream_file():
+            with open(filepath, 'rb') as f:
+                while True:
+                    chunk = f.read(64 * 1024)
+                    if not chunk:
+                        break
+                    yield chunk
+
+        file_size = os.path.getsize(filepath)
+        response = Response(
+            stream_file(),
+            mimetype='video/mp4',
+            headers={
+                'Content-Disposition': f'attachment; filename="{user_download_name}"',
+                'Content-Length': str(file_size),
+                'X-Download-Status': 'completed'
+            }
         )
+        response.set_cookie('download_status', 'completed', path='/')
+        return response
 
     except Exception as e:
         import traceback
@@ -276,6 +440,53 @@ def download_video():
         user_message = classify_download_error(error_msg, "Instagram")
         return jsonify({"error": user_message}), 500
 
+# ── Async Download Routes (Celery-powered) ───────────────────
+@app.route('/api/download_async', methods=['POST'])
+@limiter.limit("10/minute")
+def download_async():
+    data = request.get_json(silent=True) or {}
+    video_url = data.get('url', '').strip()
+    res_height = data.get('res', '720')
+    req_title = data.get('title', 'IG_Video')
+    if not video_url:
+        return jsonify({"error": "URL Missing"}), 400
+    try:
+        from tasks import celery_download_insta
+        task = celery_download_insta.delay(video_url, res_height, req_title)
+        return jsonify({"task_id": task.id, "status": "queued"})
+    except Exception as e:
+        return jsonify({"error": "Task queue unavailable. Please try again."}), 503
+
+@app.route('/api/task_status/<task_id>')
+@limiter.limit("120/minute")
+def task_status(task_id):
+    return jsonify(get_progress(task_id))
+
+@app.route('/api/download_file/<task_id>')
+@limiter.limit("10/minute")
+def download_file(task_id):
+    progress = get_progress(task_id)
+    if progress.get('stage') != 'ready':
+        return jsonify({"error": "File not ready yet"}), 404
+    filepath = progress.get('filepath')
+    download_name = progress.get('download_name', 'video.mp4')
+    if not filepath or not os.path.exists(filepath):
+        return jsonify({"error": "File has expired or was not found"}), 410
+    def stream_file():
+        with open(filepath, 'rb') as f:
+            while True:
+                chunk = f.read(64 * 1024)
+                if not chunk: break
+                yield chunk
+    file_size = os.path.getsize(filepath)
+    return Response(stream_file(), mimetype='video/mp4', headers={
+        'Content-Disposition': f'attachment; filename="{download_name}"',
+        'Content-Length': str(file_size),
+    })
+
+@app.route('/sitemap.xml')
+def sitemap():
+    return send_file('sitemap.xml')
 
 if __name__ == '__main__':
     app.run(debug=True, threaded=True)

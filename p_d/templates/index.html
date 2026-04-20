@@ -371,7 +371,7 @@
         <div class="max-w-4xl mx-auto px-4 sm:px-6">
             <div class="text-center mb-10">
                 <span class="bg-[#080896]/10 text-[#080896] font-bold px-3 py-1 rounded-full text-sm">Complete Guide</span>
-                <h1 class="text-3xl md:text-4xl font-bold mt-4 mb-4 text-gray-900 leading-tight">How to Download Videos Online (HD Quality)</h1>
+                <h2 class="text-3xl md:text-4xl font-bold mt-4 mb-4 text-gray-900 leading-tight">How to Download Videos Online (HD Quality)</h2>
                 <p class="text-gray-500">Master the art of saving videos directly to your device from any platform.</p>
             </div>
 
@@ -500,9 +500,9 @@
                      alt="MWA Logo" 
                      class="w-auto h-14 md:h-16 max-w-full group-hover:scale-105 transition-transform duration-300 drop-shadow-lg">
                 <div class="flex flex-col justify-center">
-                    <h1 class="text-green-300 font-extrabold text-xl md:text-2xl tracking-[0.15em] uppercase">
+                    <div class="text-green-300 font-extrabold text-xl md:text-2xl tracking-[0.15em] uppercase">
                         MICRO WEB APP
-                    </h1>
+                    </div>
                     <span class="text-[11px] text-blue-500 font-bold tracking-[0.25em] uppercase mt-0.5"> <span style="color: rgb(35, 128, 94);">MWA</span>  PLATFORM</span>
                 </div>
             </a>
@@ -576,7 +576,50 @@
 
 </footer>
 
+<!-- Custom Beautiful Alert Modal -->
+<div id="customAlert" class="fixed inset-0 z-[200] hidden flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm transition-opacity duration-300 opacity-0">
+    <div class="bg-white rounded-2xl shadow-2xl overflow-hidden w-full max-w-sm transform scale-95 transition-transform duration-300">
+        <div class="bg-gradient-to-r from-[#080896] to-[#F79A28] p-6 flex justify-center text-white">
+            <i id="alertIcon" class="fa-solid fa-circle-exclamation text-5xl animate-bounce"></i>
+        </div>
+        <div class="p-8 text-center bg-white">
+            <h3 id="alertTitle" class="text-2xl font-extrabold text-gray-800 mb-3 tracking-tight">Oops!</h3>
+            <p id="alertMessage" class="text-gray-600 mb-8 text-sm md:text-base font-medium leading-relaxed">Please enter a valid video URL.</p>
+            <button onclick="closeCustomAlert()" class="w-full bg-gradient-to-r from-[#080896] to-[#F79A28] hover:opacity-90 text-white font-bold py-3.5 px-4 rounded-xl transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-1">
+                Got it!
+            </button>
+        </div>
+    </div>
+</div>
+
 <script>
+    // ── Custom Alert Modal ──
+    function showCustomAlert(message, title, icon) {
+        document.getElementById('alertMessage').innerText = message;
+        if (title) document.getElementById('alertTitle').innerText = title;
+        if (icon) document.getElementById('alertIcon').className = icon + ' text-5xl animate-bounce';
+        const modal = document.getElementById('customAlert');
+        modal.classList.remove('hidden');
+        void modal.offsetWidth;
+        modal.classList.remove('opacity-0');
+        modal.classList.add('opacity-100');
+        modal.querySelector('.bg-white.rounded-2xl').classList.remove('scale-95');
+        modal.querySelector('.bg-white.rounded-2xl').classList.add('scale-100');
+    }
+
+    function closeCustomAlert() {
+        const modal = document.getElementById('customAlert');
+        modal.classList.remove('opacity-100');
+        modal.classList.add('opacity-0');
+        modal.querySelector('.bg-white.rounded-2xl').classList.remove('scale-100');
+        modal.querySelector('.bg-white.rounded-2xl').classList.add('scale-95');
+        document.getElementById('alertTitle').innerText = 'Oops!';
+        document.getElementById('alertIcon').className = 'fa-solid fa-circle-exclamation text-5xl animate-bounce';
+        setTimeout(() => {
+            modal.classList.add('hidden');
+        }, 300);
+    }
+
     // ==========================================
     // JS Logic Included within the file 
     // ==========================================
@@ -609,7 +652,7 @@
             const text = await navigator.clipboard.readText();
             document.getElementById('videoUrl').value = text;
         } catch (err) {
-            alert('Browser blocked clipboard access! Please manually paste the link.');
+            showCustomAlert('Browser blocked clipboard access! Please manually paste the link.');
         }
     }
 
@@ -618,7 +661,7 @@
     async function fetchVideoInfo() {
         currentVideoUrl = document.getElementById('videoUrl').value.trim();
         if(!currentVideoUrl) {
-            alert('Please enter a video URL!');
+            showCustomAlert('Please enter a video URL!');
             return;
         }
 
@@ -661,49 +704,55 @@
                 
                 document.getElementById('resultSection').classList.remove('hidden');
             } else {
-                alert(data.error || 'An error occurred while fetching video info.');
+                showCustomAlert(data.error || 'An error occurred while fetching video info.');
             }
         } catch (err) {
             document.getElementById('loading').classList.add('hidden');
-            alert('Server connection failed. Is the Python backend running?');
+            showCustomAlert('Server connection failed. Is the Python backend running?');
         }
     }
 
     let selectedHeight = '';
     
-    function handleDownloadClick(height) {
+    // ── Robust Download Handler (fetch + Blob with error catching) ──
+    async function handleDownloadClick(height) {
         selectedHeight = height;
         
-// AD SCRIPT DISABLED         // Open Direct Link Ad in new tab
-// AD SCRIPT DISABLED         if (window.AD_CONFIG && window.AD_CONFIG.DIRECT_LINK_URL && window.AD_CONFIG.DIRECT_LINK_URL.includes("http")) {
-// AD SCRIPT DISABLED             window.open(window.AD_CONFIG.DIRECT_LINK_URL, '_blank');
-// AD SCRIPT DISABLED         }
-        
-        // Trigger actual download in current tab
-        let vidTitle = document.getElementById('videoTitle').innerText || 'Universal_Video';
+        let vidTitle = document.getElementById('videoTitle').innerText || 'Video';
         const downloadUrl = `/api/download?url=${encodeURIComponent(currentVideoUrl)}&res=${selectedHeight}&title=${encodeURIComponent(vidTitle)}`;
-        window.location.href = downloadUrl;
-    }
+        
+        // Show processing state
+        showCustomAlert('Processing your download... Please wait.', 'Downloading', 'fa-solid fa-spinner fa-spin');
 
-    // AD SCRIPT DISABLED // --- POP-UNDER / ON-CLICK AD LOGIC ---
-// AD SCRIPT DISABLED     let popUnderTriggered = false;
-// AD SCRIPT DISABLED 
-// AD SCRIPT DISABLED     function triggerPopUnder(e) {
-// AD SCRIPT DISABLED         if (!popUnderTriggered && window.AD_CONFIG && window.AD_CONFIG.POP_UNDER_URL && window.AD_CONFIG.POP_UNDER_URL.includes("http")) {
-// AD SCRIPT DISABLED             if (e.target.tagName && e.target.tagName.toLowerCase() === 'a' && e.target.target !== '_blank') {
-// AD SCRIPT DISABLED                return; 
-// AD SCRIPT DISABLED             }
-// AD SCRIPT DISABLED             popUnderTriggered = true;
-// AD SCRIPT DISABLED             const newWin = window.open(window.AD_CONFIG.POP_UNDER_URL, '_blank');
-// AD SCRIPT DISABLED             if (newWin) window.focus();
-// AD SCRIPT DISABLED             
-// AD SCRIPT DISABLED             document.removeEventListener('click', triggerPopUnder, true);
-// AD SCRIPT DISABLED             document.removeEventListener('paste', triggerPopUnder, true);
-// AD SCRIPT DISABLED         }
-// AD SCRIPT DISABLED     }
-// AD SCRIPT DISABLED 
-// AD SCRIPT DISABLED     document.addEventListener('click', triggerPopUnder, { capture: true });
-// AD SCRIPT DISABLED     document.addEventListener('paste', triggerPopUnder, { capture: true });
+        try {
+            const response = await fetch(downloadUrl);
+            const contentType = response.headers.get('Content-Type') || '';
+
+            if (response.ok && (contentType.includes('video') || contentType.includes('octet-stream'))) {
+                // Success — create blob download
+                const blob = await response.blob();
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${vidTitle}.mp4`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                closeCustomAlert();
+            } else {
+                // Error response — parse JSON and show error in modal
+                try {
+                    const data = await response.json();
+                    showCustomAlert(data.error || 'Download failed. Please try again.');
+                } catch (e) {
+                    showCustomAlert('Download failed. The server returned an unexpected response.');
+                }
+            }
+        } catch (err) {
+            showCustomAlert('Download failed. Please check your connection and try again.');
+        }
+    }
 
     // Translation Logic
     function changeLanguage(langCode) {

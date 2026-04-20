@@ -1,0 +1,8 @@
+flask
+flask-cors
+flask-limiter
+requests
+yt-dlp
+redis
+celery[redis]
+gevent

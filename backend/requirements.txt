@@ -6,3 +6,5 @@ gunicorn
 requests
 APScheduler
 Werkzeug
+bcrypt
+flask-limiter

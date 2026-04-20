@@ -8,7 +8,7 @@ install_bp = Blueprint('install', __name__)
 # ─────────────────────────────────────────────
 @install_bp.route('/register', methods=['POST'])
 def register_install():
-    data = request.json
+    data = request.get_json(silent=True) or {}
     install_id = data.get('install_id')
     user_id = data.get('user_id')
     software_name = data.get('software_name')
@@ -48,7 +48,7 @@ def register_install():
 # ─────────────────────────────────────────────
 @install_bp.route('/heartbeat', methods=['POST'])
 def heartbeat():
-    data = request.json
+    data = request.get_json(silent=True) or {}
     install_id = data.get('install_id')
     
     if not install_id:
@@ -80,7 +80,7 @@ def heartbeat():
 # ─────────────────────────────────────────────
 @install_bp.route('/uninstall', methods=['POST'])
 def uninstall():
-    data = request.json
+    data = request.get_json(silent=True) or {}
     install_id = data.get('install_id')
     
     if not install_id:

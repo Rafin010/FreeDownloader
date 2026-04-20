@@ -348,7 +348,7 @@
         <div class="max-w-4xl mx-auto px-4 sm:px-6">
             <div class="text-center mb-10">
                 <span class="bg-pink-100 text-[#E1306C] font-bold px-3 py-1 rounded-full text-sm">Complete Guide</span>
-                <h1 class="text-3xl md:text-4xl font-bold mt-4 mb-4 text-gray-900 leading-tight">How to Download Instagram Videos Online (HD Quality)</h1>
+                <h2 class="text-3xl md:text-4xl font-bold mt-4 mb-4 text-gray-900 leading-tight">How to Download Instagram Videos Online (HD Quality)</h2>
                 <p class="text-gray-500">Master the art of saving Instagram videos, reels, photos, and stories directly to your device.</p>
             </div>
 
@@ -497,9 +497,9 @@
                      alt="MWA Logo" 
                      class="w-auto h-14 md:h-16 max-w-full group-hover:scale-105 transition-transform duration-300 drop-shadow-lg">
                 <div class="flex flex-col justify-center">
-                    <h1 class="text-green-300 font-extrabold text-xl md:text-2xl tracking-[0.15em] uppercase">
+                    <div class="text-green-300 font-extrabold text-xl md:text-2xl tracking-[0.15em] uppercase">
                         MICRO WEB APP
-                    </h1>
+                    </div>
                     <span class="text-[11px] text-blue-500 font-bold tracking-[0.25em] uppercase mt-0.5"> <span style="color: rgb(35, 128, 94);">MWA</span>  PLATFORM</span>
                 </div>
             </a>
@@ -572,6 +572,52 @@
     </div>
 
 </footer>
+
+<!-- Custom Beautiful Alert Modal -->
+<div id="customAlert" class="fixed inset-0 z-[200] hidden flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm transition-opacity duration-300 opacity-0">
+    <div class="bg-white rounded-2xl shadow-2xl overflow-hidden w-full max-w-sm transform scale-95 transition-transform duration-300">
+        <div class="bg-gradient-to-r from-[#833AB4] via-[#FD1D1D] to-[#F77737] p-6 flex justify-center text-white">
+            <i id="alertIcon" class="fa-solid fa-circle-exclamation text-5xl animate-bounce"></i>
+        </div>
+        <div class="p-8 text-center bg-white">
+            <h3 id="alertTitle" class="text-2xl font-extrabold text-gray-800 mb-3 tracking-tight">Oops!</h3>
+            <p id="alertMessage" class="text-gray-600 mb-8 text-sm md:text-base font-medium leading-relaxed">Please enter a valid Instagram video URL.</p>
+            <button onclick="closeCustomAlert()" class="w-full bg-gradient-to-r from-[#833AB4] via-[#FD1D1D] to-[#F77737] hover:opacity-90 text-white font-bold py-3.5 px-4 rounded-xl transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-1">
+                Got it!
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ── Custom Alert Modal ──
+    function showCustomAlert(message, title, icon) {
+        document.getElementById('alertMessage').innerText = message;
+        if (title) document.getElementById('alertTitle').innerText = title;
+        if (icon) document.getElementById('alertIcon').className = icon + ' text-5xl animate-bounce';
+        const modal = document.getElementById('customAlert');
+        modal.classList.remove('hidden');
+        void modal.offsetWidth;
+        modal.classList.remove('opacity-0');
+        modal.classList.add('opacity-100');
+        modal.querySelector('.bg-white.rounded-2xl').classList.remove('scale-95');
+        modal.querySelector('.bg-white.rounded-2xl').classList.add('scale-100');
+    }
+
+    function closeCustomAlert() {
+        const modal = document.getElementById('customAlert');
+        modal.classList.remove('opacity-100');
+        modal.classList.add('opacity-0');
+        modal.querySelector('.bg-white.rounded-2xl').classList.remove('scale-100');
+        modal.querySelector('.bg-white.rounded-2xl').classList.add('scale-95');
+        document.getElementById('alertTitle').innerText = 'Oops!';
+        document.getElementById('alertIcon').className = 'fa-solid fa-circle-exclamation text-5xl animate-bounce';
+        setTimeout(() => {
+            modal.classList.add('hidden');
+        }, 300);
+    }
+</script>
+
 <script src="../static/js/seo.js"></script>
 <script src="../static/js/script.js"></script>  
 

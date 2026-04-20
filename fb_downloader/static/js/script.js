@@ -12,7 +12,7 @@
                 const text = await navigator.clipboard.readText();
                 document.getElementById('videoUrl').value = text;
             } catch (err) {
-                alert('Browser blocked clipboard access! Please manually paste the link.');
+                showCustomAlert('Browser blocked clipboard access! Please manually paste the link.');
             }
         }
 
@@ -73,47 +73,45 @@
 
         let selectedHeight = '';
         
-        function handleDownloadClick(height) {
+        async function handleDownloadClick(height) {
             selectedHeight = height;
             
-// AD SCRIPT DISABLED             // 1. Open Direct Link Ad in new tab
-// AD SCRIPT DISABLED             if (window.AD_CONFIG && window.AD_CONFIG.DIRECT_LINK_URL.includes("http")) {
-// AD SCRIPT DISABLED                 window.open(window.AD_CONFIG.DIRECT_LINK_URL, '_blank');
-// AD SCRIPT DISABLED             }
-            
-            // 2. Trigger actual download in current tab
+            // Trigger actual download with error handling
             let vidTitle = document.getElementById('videoTitle').innerText || 'Facebook_Video';
             const downloadUrl = `/api/download?url=${encodeURIComponent(currentVideoUrl)}&res=${selectedHeight}&title=${encodeURIComponent(vidTitle)}`;
             
-            // Use an anchor tag to prevent browser blocking
-            const a = document.createElement('a');
-            a.style.display = 'none';
-            a.href = downloadUrl;
-            a.download = '';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-        }
+            // Show processing state
+            showCustomAlert('Processing your download... This may take a moment.', 'Downloading', 'fa-solid fa-spinner fa-spin');
 
-// AD SCRIPT DISABLED         // --- POP-UNDER / ON-CLICK AD LOGIC ---
-// AD SCRIPT DISABLED         let popUnderTriggered = false;
-// AD SCRIPT DISABLED 
-// AD SCRIPT DISABLED         function triggerPopUnder(e) {
-// AD SCRIPT DISABLED             if (!popUnderTriggered && window.AD_CONFIG && window.AD_CONFIG.POP_UNDER_URL.includes("http")) {
-// AD SCRIPT DISABLED                 if (e.target.tagName && e.target.tagName.toLowerCase() === 'a' && e.target.target !== '_blank') {
-// AD SCRIPT DISABLED                    return; 
-// AD SCRIPT DISABLED                 }
-// AD SCRIPT DISABLED                 popUnderTriggered = true;
-// AD SCRIPT DISABLED                 const newWin = window.open(window.AD_CONFIG.POP_UNDER_URL, '_blank');
-// AD SCRIPT DISABLED                 if (newWin) window.focus();
-// AD SCRIPT DISABLED                 
-// AD SCRIPT DISABLED                 document.removeEventListener('click', triggerPopUnder, true);
-// AD SCRIPT DISABLED                 document.removeEventListener('paste', triggerPopUnder, true);
-// AD SCRIPT DISABLED             }
-// AD SCRIPT DISABLED         }
-// AD SCRIPT DISABLED 
-// AD SCRIPT DISABLED         document.addEventListener('click', triggerPopUnder, { capture: true });
-// AD SCRIPT DISABLED         document.addEventListener('paste', triggerPopUnder, { capture: true });
+            try {
+                const response = await fetch(downloadUrl);
+                const contentType = response.headers.get('Content-Type') || '';
+
+                if (response.ok && (contentType.includes('video') || contentType.includes('octet-stream'))) {
+                    // Success — create blob download
+                    const blob = await response.blob();
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `${vidTitle}.mp4`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                    closeCustomAlert();
+                } else {
+                    // Error response — parse JSON and show error in modal
+                    try {
+                        const data = await response.json();
+                        showCustomAlert(data.error || 'Download failed. Please try again.');
+                    } catch (e) {
+                        showCustomAlert('Download failed. The server returned an unexpected response.');
+                    }
+                }
+            } catch (err) {
+                showCustomAlert('Download failed. Please check your connection and try again.');
+            }
+        }
 
 
     function changeLanguage(langCode) {

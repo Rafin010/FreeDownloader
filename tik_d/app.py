@@ -1,14 +1,30 @@
 import os
+import sys
 import uuid
 import threading
 import time
 import re
+import random
 import logging
+from urllib.parse import quote, urlparse
 from flask import Flask, render_template, request, jsonify, send_file, Response
 import yt_dlp
 import requests as http_requests
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from infra.redis_client import get_limiter_storage_uri, cache_get, cache_set
+from infra.progress import get_progress
 
 app = Flask(__name__)
+limiter = Limiter(
+    app=app,
+    key_func=get_remote_address,
+    default_limits=["60 per minute"],
+    storage_uri=get_limiter_storage_uri()
+)
 
 # ── Logging Setup ──────────────────────────────────────────────
 logging.basicConfig(
@@ -26,6 +42,15 @@ os.makedirs(DOWNLOAD_DIR, exist_ok=True)
 
 FILE_EXPIRY_TIME = 1800  # 30 minutes
 
+# ── Check if curl-cffi is available for browser impersonation ──
+_HAS_CURL_CFFI = False
+try:
+    import curl_cffi  # noqa: F401
+    _HAS_CURL_CFFI = True
+    logger.info("✅ curl-cffi detected — browser TLS impersonation ENABLED")
+except ImportError:
+    logger.warning("⚠️  curl-cffi not installed — browser impersonation DISABLED.")
+
 
 # ── TikTok-specific strategies ────────────────────────────────
 # TikTok blocks certain API endpoints. We rotate between
@@ -37,9 +62,9 @@ def build_tiktok_opts(strategy_idx=0):
         # Mobile UA (best for TikTok)
         "Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1",
         # Android 
-        "Mozilla/5.0 (Linux; Android 14; SM-S918B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36",
+        "Mozilla/5.0 (Linux; Android 14; SM-S918B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Mobile Safari/537.36",
         # Desktop Chrome
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
     ]
 
     # Different TikTok API hostnames to try
@@ -69,11 +94,24 @@ def build_tiktok_opts(strategy_idx=0):
         'http_headers': headers,
         'socket_timeout': 30,
         'force_ipv4': True,
+        # SSL: prefer verified certs, fallback handled in retry logic
+        'nocheckcertificate': False,
+        # Rate limiting: sleep between requests
+        'sleep_interval': 1,
+        'max_sleep_interval': 4,
+        'sleep_interval_requests': 1,
+        # Retry internal downloads
+        'retries': 5,
+        'fragment_retries': 5,
     }
     
     ext_args = tiktok_strategies[idx]
     if ext_args:
         opts['extractor_args'] = ext_args
+
+    # Browser TLS impersonation (requires curl-cffi)
+    if _HAS_CURL_CFFI:
+        opts['impersonate'] = 'chrome'
 
     if os.path.exists(COOKIES_FILE):
         opts['cookiefile'] = COOKIES_FILE
@@ -82,17 +120,17 @@ def build_tiktok_opts(strategy_idx=0):
 
 
 def extract_with_retry(video_url):
-    """Try ALL strategies for TikTok extraction."""
+    """Try ALL strategies for TikTok extraction with jittered exponential backoff."""
     _, num_strategies = build_tiktok_opts(0)
     last_error = None
 
     for i in range(num_strategies):
         try:
             opts, _ = build_tiktok_opts(i)
-            logger.info("TikTok strategy %d for: %s", i, video_url)
+            logger.info("TikTok strategy %d/%d for: %s", i + 1, num_strategies, video_url)
             with yt_dlp.YoutubeDL(opts) as ydl:
                 info = ydl.extract_info(video_url, download=False)
-                logger.info("✅ TikTok strategy %d succeeded!", i)
+                logger.info("✅ TikTok strategy %d succeeded!", i + 1)
                 return info, i
         except Exception as e:
             last_error = e
@@ -100,9 +138,19 @@ def extract_with_retry(video_url):
             # Don't retry for truly invalid URLs
             if 'is not a valid url' in error_str:
                 raise e
-            logger.warning("TikTok strategy %d failed: %s", i, str(e)[:120])
+
+            # Jittered exponential backoff
+            base_backoff = min(2 * (i + 1), 10)
+            jitter = random.uniform(0, 1.5)
+            backoff = base_backoff + jitter
+            logger.warning("TikTok strategy %d failed: %s — backing off %.1fs...",
+                           i + 1, str(e)[:120], backoff)
+
+            if i < num_strategies - 1:
+                time.sleep(backoff)
             continue
 
+    logger.error("❌ ALL TikTok strategies exhausted for: %s", video_url)
     raise last_error
 
 
@@ -188,9 +236,10 @@ def index():
 
 
 @app.route('/api/get_info', methods=['POST'])
+@limiter.limit("30/minute")
 def get_info():
-    data = request.json
-    video_url = data.get('url')
+    data = request.get_json(silent=True) or {}
+    video_url = data.get('url', '').strip()
     if not video_url:
         return jsonify({"error": "No URL provided!"}), 400
 
@@ -221,7 +270,6 @@ def get_info():
                     break
 
         if thumbnail:
-            from urllib.parse import quote
             thumbnail = f"/api/thumb_proxy?url={quote(thumbnail, safe='')}"
 
         available_formats = [
@@ -244,36 +292,68 @@ def get_info():
         return jsonify({"error": user_message}), 500
 
 
+# ── SSRF-Safe Thumbnail Proxy ─────────────────────────────────
+THUMB_ALLOWED_DOMAINS = [
+    'p16-sign-sg.tiktokcdn.com', 'p16-sign-va.tiktokcdn.com',
+    'p77-sign-sg.tiktokcdn.com', 'p19-sign.tiktokcdn-us.com',
+    'i.ytimg.com', 'img.youtube.com',
+    'cdninstagram.com', 'scontent.cdninstagram.com',
+    'scontent.xx.fbcdn.net', 'external.xx.fbcdn.net',
+    'i.imgur.com',
+]
+MAX_THUMB_SIZE = 5 * 1024 * 1024  # 5MB max
+
+def _is_thumb_url_safe(url):
+    try:
+        parsed = urlparse(url)
+        if parsed.scheme not in ('http', 'https'):
+            return False
+        host = parsed.hostname or ''
+        return any(host == d or host.endswith('.' + d) for d in THUMB_ALLOWED_DOMAINS)
+    except Exception:
+        return False
+
 @app.route('/api/thumb_proxy')
+@limiter.limit("60/minute")
 def thumb_proxy():
     img_url = request.args.get('url', '')
     if not img_url:
-        return "No URL", 400
+        return jsonify({"error": "No URL"}), 400
+    if not _is_thumb_url_safe(img_url):
+        return jsonify({"error": "URL not allowed"}), 403
     try:
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
             "Referer": "https://www.tiktok.com/"
         }
         resp = http_requests.get(img_url, headers=headers, timeout=10, stream=True)
-        if resp.status_code == 200:
-            return Response(
-                resp.content,
-                content_type=resp.headers.get('Content-Type', 'image/jpeg'),
-                headers={'Cache-Control': 'public, max-age=3600'}
-            )
-        return "Thumbnail not available", 404
+        if resp.status_code != 200:
+            return jsonify({"error": "Thumbnail not available"}), 404
+        def generate():
+            downloaded = 0
+            for chunk in resp.iter_content(chunk_size=8192):
+                downloaded += len(chunk)
+                if downloaded > MAX_THUMB_SIZE:
+                    break
+                yield chunk
+        return Response(
+            generate(),
+            content_type=resp.headers.get('Content-Type', 'image/jpeg'),
+            headers={'Cache-Control': 'public, max-age=3600'}
+        )
     except Exception:
-        return "Thumbnail fetch failed", 500
+        return jsonify({"error": "Thumbnail fetch failed"}), 500
 
 
 @app.route('/api/download')
+@limiter.limit("10/minute")
 def download_video():
     video_url = request.args.get('url')
     res_height = request.args.get('res', '720')
     req_title = request.args.get('title', 'TikTok_Video')
 
     if not video_url:
-        return "URL Missing", 400
+        return jsonify({"error": "URL Missing"}), 400
 
     safe_title = re.sub(r'[\\/*?:"<>|]', "", req_title).strip()
     if not safe_title:
@@ -292,7 +372,27 @@ def download_video():
         if os.path.exists(filepath):
             delete_file_delayed(filepath, delay=1800)
             logger.info("✅ Download complete: %s", unique_filename)
-            return send_file(filepath, as_attachment=True, download_name=user_download_name, mimetype='video/mp4')
+            
+            def stream_file():
+                with open(filepath, 'rb') as f:
+                    while True:
+                        chunk = f.read(64 * 1024)
+                        if not chunk:
+                            break
+                        yield chunk
+            
+            file_size = os.path.getsize(filepath)
+            response = Response(
+                stream_file(),
+                mimetype='video/mp4',
+                headers={
+                    'Content-Disposition': f'attachment; filename="{user_download_name}"',
+                    'Content-Length': str(file_size),
+                    'X-Download-Status': 'completed'
+                }
+            )
+            response.set_cookie('download_status', 'completed', path='/')
+            return response
         else:
             return jsonify({"error": "Download failed to process."}), 500
 
@@ -305,6 +405,53 @@ def download_video():
         user_message = classify_download_error(error_msg, "TikTok")
         return jsonify({"error": user_message}), 500
 
+# ── Async Download Routes (Celery-powered) ───────────────────
+@app.route('/api/download_async', methods=['POST'])
+@limiter.limit("10/minute")
+def download_async():
+    data = request.get_json(silent=True) or {}
+    video_url = data.get('url', '').strip()
+    fmt = data.get('format', 'best')
+    req_title = data.get('title', 'TikTok_Video')
+    if not video_url:
+        return jsonify({"error": "URL Missing"}), 400
+    try:
+        from tasks import celery_download_tik
+        task = celery_download_tik.delay(video_url, fmt, req_title)
+        return jsonify({"task_id": task.id, "status": "queued"})
+    except Exception as e:
+        return jsonify({"error": "Task queue unavailable. Please try again."}), 503
+
+@app.route('/api/task_status/<task_id>')
+@limiter.limit("120/minute")
+def task_status(task_id):
+    return jsonify(get_progress(task_id))
+
+@app.route('/api/download_file/<task_id>')
+@limiter.limit("10/minute")
+def download_file(task_id):
+    progress = get_progress(task_id)
+    if progress.get('stage') != 'ready':
+        return jsonify({"error": "File not ready yet"}), 404
+    filepath = progress.get('filepath')
+    download_name = progress.get('download_name', 'video.mp4')
+    if not filepath or not os.path.exists(filepath):
+        return jsonify({"error": "File has expired or was not found"}), 410
+    def stream_file():
+        with open(filepath, 'rb') as f:
+            while True:
+                chunk = f.read(64 * 1024)
+                if not chunk: break
+                yield chunk
+    file_size = os.path.getsize(filepath)
+    return Response(stream_file(), mimetype='video/mp4', headers={
+        'Content-Disposition': f'attachment; filename="{download_name}"',
+        'Content-Length': str(file_size),
+    })
+
+@app.route('/sitemap.xml')
+def sitemap():
+    return send_file('sitemap.xml')
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(debug=True, host='0.0.0.0', port=5000, threaded=True)

@@ -1,15 +1,30 @@
 import os
+import sys
 import uuid
 import threading
 import time
 import re
+import random
 import logging
 from urllib.parse import urlparse, quote
 from flask import Flask, render_template, request, jsonify, send_file, Response
 import yt_dlp
 import requests as http_requests
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from infra.redis_client import get_limiter_storage_uri, cache_get, cache_set
+from infra.progress import get_progress
 
 app = Flask(__name__)
+limiter = Limiter(
+    app=app,
+    key_func=get_remote_address,
+    default_limits=["60 per minute"],
+    storage_uri=get_limiter_storage_uri()
+)
 
 # ── Logging Setup ──────────────────────────────────────────────
 logging.basicConfig(
@@ -27,6 +42,15 @@ os.makedirs(DOWNLOAD_DIR, exist_ok=True)
 
 FILE_EXPIRY_TIME = 1800  # 30 minutes
 
+# ── Check if curl-cffi is available for browser impersonation ──
+_HAS_CURL_CFFI = False
+try:
+    import curl_cffi  # noqa: F401
+    _HAS_CURL_CFFI = True
+    logger.info("✅ curl-cffi detected — browser TLS impersonation ENABLED")
+except ImportError:
+    logger.warning("⚠️  curl-cffi not installed — browser impersonation DISABLED.")
+
 
 # ── Utility: Get Platform Name ─────────────────────────────────
 def get_platform_name(url):
@@ -40,18 +64,17 @@ def get_platform_name(url):
 
 
 # ── Multi-Strategy Options Builder ────────────────────────────
-# We use rotating User-Agents and headers instead of 'impersonate'
-# since curl_cffi is not installed on the server.
 USER_AGENTS = [
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
     "Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1",
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Safari/605.1.15",
-    "Mozilla/5.0 (Linux; Android 14; SM-S918B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/19.2 Safari/605.1.15",
+    "Mozilla/5.0 (Linux; Android 14; SM-S918B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Mobile Safari/537.36",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0",
 ]
 
 
 def build_opts(strategy_idx=0, referer_url=""):
-    """Build yt-dlp options rotating User-Agents. No 'impersonate' to avoid curl_cffi dependency."""
+    """Build yt-dlp options rotating User-Agents with full hardening."""
     ua = USER_AGENTS[strategy_idx % len(USER_AGENTS)]
     headers = {
         "User-Agent": ua,
@@ -67,8 +90,20 @@ def build_opts(strategy_idx=0, referer_url=""):
         'http_headers': headers,
         'socket_timeout': 30,
         'force_ipv4': True,
-        # NO 'impersonate' key — avoids curl_cffi error
+        # SSL: prefer verified certs, fallback handled in retry logic
+        'nocheckcertificate': False,
+        # Rate limiting: sleep between requests
+        'sleep_interval': 1,
+        'max_sleep_interval': 4,
+        'sleep_interval_requests': 1,
+        # Retry internal downloads
+        'retries': 5,
+        'fragment_retries': 5,
     }
+
+    # Browser TLS impersonation (requires curl-cffi) — graceful fallback
+    if _HAS_CURL_CFFI:
+        opts['impersonate'] = 'chrome'
 
     if os.path.exists(COOKIES_FILE):
         opts['cookiefile'] = COOKIES_FILE
@@ -77,30 +112,45 @@ def build_opts(strategy_idx=0, referer_url=""):
 
 
 def extract_with_retry(video_url):
-    """Try extraction with rotating User-Agents."""
+    """Try extraction with rotating User-Agents and jittered exponential backoff."""
     last_error = None
-    for i in range(len(USER_AGENTS)):
+    num_attempts = len(USER_AGENTS)
+
+    for i in range(num_attempts):
         try:
             opts = build_opts(i, video_url)
-            logger.info("P_D attempt %d for: %s", i, video_url)
+            logger.info("P_D attempt %d/%d for: %s", i + 1, num_attempts, video_url)
             with yt_dlp.YoutubeDL(opts) as ydl:
                 info = ydl.extract_info(video_url, download=False)
-                logger.info("✅ P_D attempt %d succeeded!", i)
+                logger.info("✅ P_D attempt %d succeeded!", i + 1)
                 return info, i
         except Exception as e:
             last_error = e
             error_str = str(e).lower()
             if 'is not a valid url' in error_str:
                 raise e
-            logger.warning("P_D attempt %d failed: %s", i, str(e)[:100])
+
+            # Jittered exponential backoff
+            base_backoff = min(2 * (i + 1), 10)
+            jitter = random.uniform(0, 1.5)
+            backoff = base_backoff + jitter
+            logger.warning("P_D attempt %d failed: %s — backing off %.1fs...",
+                           i + 1, str(e)[:120], backoff)
+
+            if i < num_attempts - 1:
+                time.sleep(backoff)
             continue
+
+    logger.error("❌ ALL P_D strategies exhausted for: %s", video_url)
     raise last_error
 
 
 def download_with_retry(video_url, filepath, format_string):
-    """Download with rotating strategies."""
+    """Download with rotating strategies, jittered backoff, and retry on transient errors."""
     last_error = None
-    for i in range(len(USER_AGENTS)):
+    num_attempts = len(USER_AGENTS)
+
+    for i in range(num_attempts):
         try:
             opts = build_opts(i, video_url)
             opts['socket_timeout'] = 120  # Longer timeout for downloads
@@ -109,9 +159,11 @@ def download_with_retry(video_url, filepath, format_string):
                 'merge_output_format': 'mp4',
                 'outtmpl': filepath,
             })
+            logger.info("P_D download attempt %d/%d", i + 1, num_attempts)
             with yt_dlp.YoutubeDL(opts) as ydl:
                 ydl.download([video_url])
             if os.path.exists(filepath):
+                logger.info("✅ P_D download attempt %d succeeded!", i + 1)
                 return True
         except Exception as e:
             last_error = e
@@ -120,9 +172,22 @@ def download_with_retry(video_url, filepath, format_string):
                 raise e
             for partial in [filepath, filepath + '.part', filepath + '.ytdl']:
                 if os.path.exists(partial):
-                    os.remove(partial)
-            logger.warning("P_D download attempt %d failed: %s", i, str(e)[:120])
+                    try:
+                        os.remove(partial)
+                    except OSError:
+                        pass
+
+            base_backoff = min(2 * (i + 1), 10)
+            jitter = random.uniform(0, 1.5)
+            backoff = base_backoff + jitter
+            logger.warning("P_D download attempt %d failed: %s — backing off %.1fs...",
+                           i + 1, str(e)[:120], backoff)
+
+            if i < num_attempts - 1:
+                time.sleep(backoff)
             continue
+
+    logger.error("❌ ALL P_D download strategies exhausted")
     raise last_error
 
 
@@ -179,9 +244,10 @@ def index():
 
 
 @app.route('/api/get_info', methods=['POST'])
+@limiter.limit("30/minute")
 def get_info():
-    data = request.json
-    video_url = data.get('url')
+    data = request.get_json(silent=True) or {}
+    video_url = data.get('url', '').strip()
 
     if not video_url:
         return jsonify({"error": "No URL provided!"}), 400
@@ -255,37 +321,64 @@ def get_info():
         return jsonify({"error": user_message}), 500
 
 
+# ── SSRF-Safe Thumbnail Proxy ─────────────────────────────────
+MAX_THUMB_SIZE = 5 * 1024 * 1024  # 5MB max
+
+def _is_thumb_url_safe(url):
+    try:
+        parsed = urlparse(url)
+        if parsed.scheme not in ('http', 'https'):
+            return False
+        # For the generic downloader, block internal/private IPs only
+        host = parsed.hostname or ''
+        if host in ('localhost', '127.0.0.1', '0.0.0.0') or host.startswith('169.254.') or host.startswith('10.') or host.startswith('192.168.'):
+            return False
+        return True
+    except Exception:
+        return False
+
 @app.route('/api/thumb_proxy')
+@limiter.limit("60/minute")
 def thumb_proxy():
     img_url = request.args.get('url', '')
     referer_url = request.args.get('referer', 'https://google.com/')
     if not img_url:
-        return "No URL", 400
+        return jsonify({"error": "No URL"}), 400
+    if not _is_thumb_url_safe(img_url):
+        return jsonify({"error": "URL not allowed"}), 403
     try:
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
             "Referer": referer_url
         }
         resp = http_requests.get(img_url, headers=headers, timeout=10, stream=True)
-        if resp.status_code == 200:
-            return Response(
-                resp.content,
-                content_type=resp.headers.get('Content-Type', 'image/jpeg'),
-                headers={'Cache-Control': 'public, max-age=3600'}
-            )
-        return "Thumbnail not available", 404
+        if resp.status_code != 200:
+            return jsonify({"error": "Thumbnail not available"}), 404
+        def generate():
+            downloaded = 0
+            for chunk in resp.iter_content(chunk_size=8192):
+                downloaded += len(chunk)
+                if downloaded > MAX_THUMB_SIZE:
+                    break
+                yield chunk
+        return Response(
+            generate(),
+            content_type=resp.headers.get('Content-Type', 'image/jpeg'),
+            headers={'Cache-Control': 'public, max-age=3600'}
+        )
     except Exception:
-        return "Thumbnail fetch failed", 500
+        return jsonify({"error": "Thumbnail fetch failed"}), 500
 
 
 @app.route('/api/download')
+@limiter.limit("10/minute")
 def download_video():
     video_url = request.args.get('url')
     res_height = request.args.get('res', '1080')
     req_title = request.args.get('title', 'Video')
 
     if not video_url:
-        return "URL Missing", 400
+        return jsonify({"error": "URL Missing"}), 400
 
     platform = get_platform_name(video_url)
 
@@ -310,12 +403,26 @@ def download_video():
         delete_file_delayed(filepath, delay=1800)
         logger.info("✅ Download complete: %s", unique_filename)
 
-        return send_file(
-            filepath,
-            as_attachment=True,
-            download_name=user_download_name,
-            mimetype='video/mp4'
+        def stream_file():
+            with open(filepath, 'rb') as f:
+                while True:
+                    chunk = f.read(64 * 1024)
+                    if not chunk:
+                        break
+                    yield chunk
+
+        file_size = os.path.getsize(filepath)
+        response = Response(
+            stream_file(),
+            mimetype='video/mp4',
+            headers={
+                'Content-Disposition': f'attachment; filename="{user_download_name}"',
+                'Content-Length': str(file_size),
+                'X-Download-Status': 'completed'
+            }
         )
+        response.set_cookie('download_status', 'completed', path='/')
+        return response
 
     except Exception as e:
         import traceback
@@ -326,6 +433,53 @@ def download_video():
         user_message = classify_download_error(error_msg, platform)
         return jsonify({"error": user_message}), 500
 
+# ── Async Download Routes (Celery-powered) ───────────────────
+@app.route('/api/download_async', methods=['POST'])
+@limiter.limit("10/minute")
+def download_async():
+    data = request.get_json(silent=True) or {}
+    video_url = data.get('url', '').strip()
+    res_height = data.get('res', '720')
+    req_title = data.get('title', 'Video')
+    if not video_url:
+        return jsonify({"error": "URL Missing"}), 400
+    try:
+        from tasks import celery_download_pd
+        task = celery_download_pd.delay(video_url, res_height, req_title)
+        return jsonify({"task_id": task.id, "status": "queued"})
+    except Exception as e:
+        return jsonify({"error": "Task queue unavailable. Please try again."}), 503
+
+@app.route('/api/task_status/<task_id>')
+@limiter.limit("120/minute")
+def task_status(task_id):
+    return jsonify(get_progress(task_id))
+
+@app.route('/api/download_file/<task_id>')
+@limiter.limit("10/minute")
+def download_file(task_id):
+    progress = get_progress(task_id)
+    if progress.get('stage') != 'ready':
+        return jsonify({"error": "File not ready yet"}), 404
+    filepath = progress.get('filepath')
+    download_name = progress.get('download_name', 'video.mp4')
+    if not filepath or not os.path.exists(filepath):
+        return jsonify({"error": "File has expired or was not found"}), 410
+    def stream_file():
+        with open(filepath, 'rb') as f:
+            while True:
+                chunk = f.read(64 * 1024)
+                if not chunk: break
+                yield chunk
+    file_size = os.path.getsize(filepath)
+    return Response(stream_file(), mimetype='video/mp4', headers={
+        'Content-Disposition': f'attachment; filename="{download_name}"',
+        'Content-Length': str(file_size),
+    })
+
+@app.route('/sitemap.xml')
+def sitemap():
+    return send_file('sitemap.xml')
 
 if __name__ == '__main__':
     app.run(debug=True, threaded=True)

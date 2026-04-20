@@ -1,4 +1,5 @@
 import os
+import sys
 import uuid
 import threading
 import time
@@ -6,11 +7,27 @@ import re
 import random
 import logging
 import json
+from urllib.parse import quote, urlparse
 from flask import Flask, render_template, request, jsonify, send_file, make_response, Response
 import yt_dlp
 import requests as http_requests
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+
+# Add parent dir to path for shared infra imports
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from infra.redis_client import get_limiter_storage_uri, cache_get, cache_set, is_redis_available
+from infra.progress import get_progress
+from infra.proxy_pool import get_proxy, mark_bad as mark_proxy_bad
 
 app = Flask(__name__)
+limiter = Limiter(
+    app=app,
+    key_func=get_remote_address,
+    default_limits=["60 per minute"],
+    storage_uri=get_limiter_storage_uri()
+)
 
 # ── Logging Setup ──────────────────────────────────────────────
 logging.basicConfig(
@@ -187,6 +204,8 @@ def build_yt_opts(strategy_idx=0):
         # Retry internal yt-dlp fragment downloads
         'retries': 5,
         'fragment_retries': 5,
+        # SSL: prefer verified certs, fallback handled in retry logic
+        'nocheckcertificate': False,
     }
 
     if ext_args:
@@ -599,16 +618,23 @@ def index():
 
 
 @app.route('/api/get_info', methods=['POST'])
+@limiter.limit("30/minute")
 def get_info():
-    data = request.json
-    video_url = data.get('url')
+    data = request.get_json(silent=True) or {}
+    video_url = data.get('url', '').strip()
 
     if not video_url:
         return jsonify({"error": "No URL provided!"}), 400
 
-    yt_regex = r'(https?://(?:www\.)?(?:youtube\.com|youtu\.be|youtube\.com/shorts)/.+)'
+    yt_regex = r'(https?://(?:www\.|m\.|music\.)?(?:youtube\.com|youtu\.be)/.+)'
     if not re.match(yt_regex, video_url):
         return jsonify({"error": "Sorry, this downloader only supports YouTube videos and Shorts."}), 400
+
+    # ── Redis Cache Check ─────────────────────────────────────
+    cached = cache_get('yt_info', video_url)
+    if cached:
+        logger.info("🎯 Cache HIT for: %s", video_url[:60])
+        return jsonify(cached)
 
     try:
         info_dict, strategy_idx = extract_with_retry(video_url)
@@ -634,7 +660,6 @@ def get_info():
                     break
 
         if thumbnail:
-            from urllib.parse import quote
             thumbnail = f"/api/thumb_proxy?url={quote(thumbnail, safe='')}"
 
         available_formats = [
@@ -644,11 +669,16 @@ def get_info():
             {"resolution": "360p", "height": 360},
         ]
 
-        return jsonify({
+        result = {
             "title": title,
             "thumbnail": thumbnail,
             "formats": available_formats
-        })
+        }
+
+        # ── Cache result for 10 minutes ───────────────────────
+        cache_set('yt_info', video_url, result, ttl=600)
+
+        return jsonify(result)
 
     except Exception as e:
         import traceback
@@ -658,36 +688,74 @@ def get_info():
         return jsonify({"error": user_message}), 500
 
 
+# ── SSRF-Safe Thumbnail Proxy ─────────────────────────────────
+THUMB_ALLOWED_DOMAINS = [
+    'i.ytimg.com', 'img.youtube.com', 'yt3.ggpht.com',
+    'i.imgur.com', 'lh3.googleusercontent.com',
+    'cdninstagram.com', 'scontent.cdninstagram.com',
+    'p16-sign-sg.tiktokcdn.com', 'p16-sign-va.tiktokcdn.com',
+    'scontent.xx.fbcdn.net', 'external.xx.fbcdn.net',
+]
+MAX_THUMB_SIZE = 5 * 1024 * 1024  # 5MB max thumbnail
+
+def _is_thumb_url_safe(url):
+    """Validate thumbnail URL against allowlist to prevent SSRF."""
+    try:
+        parsed = urlparse(url)
+        if parsed.scheme not in ('http', 'https'):
+            return False
+        host = parsed.hostname or ''
+        # Allow any subdomain of allowed domains
+        return any(host == d or host.endswith('.' + d) for d in THUMB_ALLOWED_DOMAINS)
+    except Exception:
+        return False
+
 @app.route('/api/thumb_proxy')
+@limiter.limit("60/minute")
 def thumb_proxy():
     img_url = request.args.get('url', '')
     if not img_url:
-        return "No URL", 400
+        return jsonify({"error": "No URL"}), 400
+
+    if not _is_thumb_url_safe(img_url):
+        return jsonify({"error": "URL not allowed"}), 403
+
     try:
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
             "Referer": "https://www.youtube.com/"
         }
         resp = http_requests.get(img_url, headers=headers, timeout=10, stream=True)
-        if resp.status_code == 200:
-            return Response(
-                resp.content,
-                content_type=resp.headers.get('Content-Type', 'image/jpeg'),
-                headers={'Cache-Control': 'public, max-age=3600'}
-            )
-        return "Thumbnail not available", 404
+        if resp.status_code != 200:
+            return jsonify({"error": "Thumbnail not available"}), 404
+
+        # Stream with size limit to prevent memory exhaustion
+        def generate():
+            downloaded = 0
+            for chunk in resp.iter_content(chunk_size=8192):
+                downloaded += len(chunk)
+                if downloaded > MAX_THUMB_SIZE:
+                    break
+                yield chunk
+
+        return Response(
+            generate(),
+            content_type=resp.headers.get('Content-Type', 'image/jpeg'),
+            headers={'Cache-Control': 'public, max-age=3600'}
+        )
     except Exception:
-        return "Thumbnail fetch failed", 500
+        return jsonify({"error": "Thumbnail fetch failed"}), 500
 
 
 @app.route('/api/download')
+@limiter.limit("10/minute")
 def download_video():
     video_url = request.args.get('url')
     res_height = request.args.get('res', '720')
     req_title = request.args.get('title', 'YouTube_Video')
 
     if not video_url:
-        return "URL Missing", 400
+        return jsonify({"error": "URL Missing"}), 400
 
     safe_title = re.sub(r'[\\/*?:"<>|]', "", req_title).strip()
     if not safe_title:
@@ -715,12 +783,25 @@ def download_video():
         delete_file_delayed(filepath, delay=1800)
         logger.info("✅ Download complete: %s", unique_filename)
 
-        response = make_response(send_file(
-            filepath,
-            as_attachment=True,
-            download_name=user_download_name,
-            mimetype='video/mp4'
-        ))
+        # Chunked streaming — avoids loading entire video into RAM
+        def stream_file():
+            with open(filepath, 'rb') as f:
+                while True:
+                    chunk = f.read(64 * 1024)  # 64KB chunks
+                    if not chunk:
+                        break
+                    yield chunk
+
+        file_size = os.path.getsize(filepath)
+        response = Response(
+            stream_file(),
+            mimetype='video/mp4',
+            headers={
+                'Content-Disposition': f'attachment; filename="{user_download_name}"',
+                'Content-Length': str(file_size),
+                'X-Download-Status': 'completed'
+            }
+        )
         response.set_cookie('download_status', 'completed', path='/')
         return response
 
@@ -733,6 +814,83 @@ def download_video():
         user_message = classify_yt_error(error_msg)
         return jsonify({"error": user_message}), 500
 
+# ── Async Download Routes (Celery-powered) ───────────────────
+@app.route('/api/download_async', methods=['POST'])
+@limiter.limit("10/minute")
+def download_async():
+    """Submit a download task to Celery. Returns task_id for polling."""
+    data = request.get_json(silent=True) or {}
+    video_url = data.get('url', '').strip()
+    res_height = data.get('res', '720')
+    req_title = data.get('title', 'YouTube_Video')
+
+    if not video_url:
+        return jsonify({"error": "URL Missing"}), 400
+
+    yt_regex = r'(https?://(?:www\.|m\.|music\.)?(?:youtube\.com|youtu\.be)/.+)'
+    if not re.match(yt_regex, video_url):
+        return jsonify({"error": "Invalid YouTube URL"}), 400
+
+    try:
+        from tasks import celery_download_yt
+        task = celery_download_yt.delay(video_url, res_height, req_title)
+        logger.info("📋 Queued download task: %s for %s", task.id, video_url[:60])
+        return jsonify({"task_id": task.id, "status": "queued"})
+    except Exception as e:
+        logger.error("Failed to queue task: %s", str(e)[:120])
+        # Fallback: if Celery is unavailable, tell user to use sync route
+        return jsonify({"error": "Task queue unavailable. Please try again."}), 503
+
+
+@app.route('/api/task_status/<task_id>')
+@limiter.limit("120/minute")
+def task_status(task_id):
+    """Poll for task progress. Frontend calls this every 1-2 seconds."""
+    progress = get_progress(task_id)
+    return jsonify(progress)
+
+
+@app.route('/api/download_file/<task_id>')
+@limiter.limit("10/minute")
+def download_file(task_id):
+    """Serve the completed download file via chunked streaming.
+    Only works after task status is 'ready'."""
+    progress = get_progress(task_id)
+
+    if progress.get('stage') != 'ready':
+        return jsonify({"error": "File not ready yet", "stage": progress.get('stage')}), 404
+
+    filepath = progress.get('filepath')
+    download_name = progress.get('download_name', 'video.mp4')
+
+    if not filepath or not os.path.exists(filepath):
+        return jsonify({"error": "File has expired or was not found"}), 410
+
+    # Chunked streaming — avoids loading entire video into RAM
+    def stream_file():
+        with open(filepath, 'rb') as f:
+            while True:
+                chunk = f.read(64 * 1024)  # 64KB chunks
+                if not chunk:
+                    break
+                yield chunk
+
+    file_size = os.path.getsize(filepath)
+    response = Response(
+        stream_file(),
+        mimetype='video/mp4',
+        headers={
+            'Content-Disposition': f'attachment; filename="{download_name}"',
+            'Content-Length': str(file_size),
+            'X-Download-Status': 'completed'
+        }
+    )
+    return response
+
+
+@app.route('/sitemap.xml')
+def sitemap():
+    return send_file('sitemap.xml')
 
 if __name__ == '__main__':
     app.run(debug=True, threaded=True)

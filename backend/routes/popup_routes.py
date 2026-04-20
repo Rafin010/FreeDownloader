@@ -79,7 +79,7 @@ def check_popup():
 # ─────────────────────────────────────────────
 @popup_bp.route('/interact', methods=['POST'])
 def log_interaction():
-    data = request.json
+    data = request.get_json(silent=True) or {}
     campaign_id = data.get('campaign_id')
     user_id = data.get('user_id')
     action = data.get('action') # shown, clicked, dismissed
@@ -138,7 +138,7 @@ def get_campaigns():
 
 @popup_bp.route('/campaigns', methods=['POST'])
 def create_campaign():
-    data = request.json
+    data = request.get_json(silent=True) or {}
     conn = get_connection()
     if not conn:
         return jsonify({"error": "Database unavailable"}), 500

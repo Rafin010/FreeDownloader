@@ -9,19 +9,31 @@ from apscheduler.schedulers.background import BackgroundScheduler
 import os
 import secrets
 import time
+import bcrypt
 
 # Load .env BEFORE accessing any env vars
 load_dotenv()
 
-# ── Hardcoded admin credentials ──
-ADMIN_EMAIL    = "admin@freedownloader.top"
-ADMIN_PASSWORD = "@freedownloader"
+# ── Admin credentials from environment (NEVER hardcode in production) ──
+ADMIN_EMAIL         = os.getenv("ADMIN_EMAIL", "admin@freedownloader.top")
+ADMIN_PASSWORD      = os.getenv("ADMIN_PASSWORD", "@freedownloader")
+ADMIN_PASSWORD_HASH = os.getenv("ADMIN_PASSWORD_HASH")
 
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY") or secrets.token_hex(32)
 
-# Allow all origins (tighten in production)
-CORS(app, resources={r"/api/*": {"origins": "*"}})
+# Restrict CORS to actual domains in production
+CORS(app, resources={r"/api/*": {"origins": [
+    "https://freedownloader.top",
+    "https://www.freedownloader.top",
+    "https://admin.freedownloader.top",
+    "https://youtube.freedownloader.top",
+    "https://tiktok.freedownloader.top",
+    "https://instagram.freedownloader.top",
+    "https://facebook.freedownloader.top",
+    "https://porn.freedownloader.top",
+    "http://localhost:5000"
+]}})
 
 # Register blueprints
 app.register_blueprint(analytics_bp,  url_prefix="/api")
@@ -104,7 +116,14 @@ def login():
         email    = request.form.get("email", "").strip()
         password = request.form.get("password", "")
 
-        if email == ADMIN_EMAIL and password == ADMIN_PASSWORD:
+        is_valid = False
+        if email == ADMIN_EMAIL:
+            if ADMIN_PASSWORD_HASH:
+                is_valid = bcrypt.checkpw(password.encode('utf-8'), ADMIN_PASSWORD_HASH.encode('utf-8'))
+            else:
+                is_valid = (password == ADMIN_PASSWORD)
+
+        if is_valid:
             session["logged_in"] = True
             session["user"]      = email
             return redirect(url_for("dashboard"))

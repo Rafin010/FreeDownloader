@@ -87,7 +87,7 @@ def get_item(slug):
 @store_bp.route('/items', methods=['POST'])
 def create_item():
     # Require admin authentication conceptually (omitted for brevity here, assume protected)
-    data = request.json
+    data = request.get_json(silent=True) or {}
     required = ['title', 'slug', 'category']
     if not all(k in data for k in required):
         return jsonify({"error": "Missing required fields"}), 400
@@ -129,7 +129,7 @@ def create_item():
 # ─────────────────────────────────────────────
 @store_bp.route('/items/<int:item_id>', methods=['PUT'])
 def update_item(item_id):
-    data = request.json
+    data = request.get_json(silent=True) or {}
     conn = get_connection()
     if not conn:
         return jsonify({"error": "Database unavailable"}), 500

@@ -160,10 +160,10 @@ youtube video downloader professional,youtube downloader enterprise,youtube vide
     <div id="customAlert" class="fixed inset-0 z-[200] hidden flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm transition-opacity duration-300 opacity-0">
         <div class="bg-white rounded-2xl shadow-2xl overflow-hidden w-full max-w-sm transform scale-95 transition-transform duration-300">
             <div class="bg-gradient-to-r from-red-500 to-[#FF0000] p-6 flex justify-center text-white">
-                <i class="fa-solid fa-circle-exclamation text-5xl animate-bounce"></i>
+                <i id="alertIcon" class="fa-solid fa-circle-exclamation text-5xl animate-bounce"></i>
             </div>
             <div class="p-8 text-center bg-white">
-                <h3 class="text-2xl font-extrabold text-gray-800 mb-3 tracking-tight">Oops!</h3>
+                <h3 id="alertTitle" class="text-2xl font-extrabold text-gray-800 mb-3 tracking-tight">Oops!</h3>
                 <p id="alertMessage" class="text-gray-600 mb-8 text-sm md:text-base font-medium leading-relaxed">Please enter a valid YouTube video URL.</p>
                 <button onclick="closeCustomAlert()" class="w-full bg-[#FF0000] hover:bg-red-700 text-white font-bold py-3.5 px-4 rounded-xl transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-1">
                     Got it!
@@ -172,8 +172,10 @@ youtube video downloader professional,youtube downloader enterprise,youtube vide
         </div>
     </div>
     <script>
-    function showCustomAlert(message) {
+    function showCustomAlert(message, title, icon) {
         document.getElementById('alertMessage').innerText = message;
+        if (title) document.getElementById('alertTitle').innerText = title;
+        if (icon) document.getElementById('alertIcon').className = icon + ' text-5xl animate-bounce';
         const modal = document.getElementById('customAlert');
         modal.classList.remove('hidden');
         // trigger reflow
@@ -190,6 +192,9 @@ youtube video downloader professional,youtube downloader enterprise,youtube vide
         modal.classList.add('opacity-0');
         modal.querySelector('div').classList.remove('scale-100');
         modal.querySelector('div').classList.add('scale-95');
+        // Reset title and icon for next use
+        document.getElementById('alertTitle').innerText = 'Oops!';
+        document.getElementById('alertIcon').className = 'fa-solid fa-circle-exclamation text-5xl animate-bounce';
         setTimeout(() => {
             modal.classList.add('hidden');
         }, 300);
@@ -197,64 +202,8 @@ youtube video downloader professional,youtube downloader enterprise,youtube vide
     </script>
 
 
-    <div id="videoAdModal"
-        class="fixed inset-0 bg-black/95 z-[100] hidden flex-col items-center justify-center p-4 backdrop-blur-md transition-all duration-500">
 
-        <!-- Ad State -->
-        <div id="adState" class="flex flex-col items-center justify-center w-full animate-fade-in">
-            <p class="text-white mb-4 text-lg font-bold animate-pulse text-center">
-                Please wait, your download will start in <span id="timeCount"
-                    class="text-[#FF0000] text-3xl font-extrabold mx-2">5</span> seconds...
-            </p>
-            <video id="adVideo" class="max-w-full max-h-[70vh] rounded-lg shadow-2xl border-2 border-[#FF0000]"
-                playsinline autoplay muted loop>
-                <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
-                Your browser does not support HTML video.
-            </video>
-            <p class="text-gray-400 mt-4 text-sm">Download starts automatically when ad ends</p>
-        </div>
 
-        <!-- Professional Processing State (Hidden initially) -->
-        <div id="processingState"
-            class="hidden flex-col items-center justify-center w-full max-w-md p-8 bg-gray-900/80 border border-gray-700 rounded-2xl shadow-2xl">
-            <div class="relative w-24 h-24 mb-6 flex items-center justify-center">
-                <!-- Outer spinning ring -->
-                <div
-                    class="absolute inset-0 rounded-full border-t-4 border-[#FF0000] animate-spin shadow-[0_0_15px_rgba(255,0,0,0.5)]">
-                </div>
-                <!-- Inner spinning ring -->
-                <div
-                    class="absolute inset-2 border-b-4 border-l-4 border-white rounded-full animate-[spin_1.5s_linear_infinite_reverse]">
-                </div>
-                <!-- Center icon -->
-                <div class="absolute inset-0 flex items-center justify-center text-white text-3xl">
-                    <i class="fa-solid fa-cloud-arrow-down animate-pulse"></i>
-                </div>
-            </div>
-
-            <h3 class="text-white text-2xl font-bold mb-2 tracking-wide text-center">Processing Video...</h3>
-            <p id="processingText" class="text-gray-300 text-center text-sm font-medium h-5">
-                Fetching highest quality streams
-            </p>
-
-            <div class="w-full h-2 bg-gray-800 rounded-full mt-6 overflow-hidden relative shadow-inner shadow-black">
-                <div id="fakeProgressBar"
-                    class="absolute top-0 left-0 h-full bg-gradient-to-r from-[#FF0000] to-red-500 rounded-full transition-all duration-1000 w-[5%]">
-                </div>
-            </div>
-
-            <p class="text-xs text-gray-500 mt-4 text-center px-4 leading-relaxed">
-                Please do not close this page. High-quality videos may take up to a minute to merge audio and video
-                layers.
-            </p>
-
-            <button onclick="closeProcessingModal()"
-                class="mt-6 px-6 py-2 border border-gray-600 rounded-full text-gray-400 hover:text-white hover:bg-gray-800 hover:border-gray-500 transition-all text-sm font-semibold">
-                Close Dialog
-            </button>
-        </div>
-
-    </div>
 
     <nav class="bg-white shadow-md sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -314,16 +263,16 @@ youtube video downloader professional,youtube downloader enterprise,youtube vide
             <a href="/"
                 class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-[#FF0000] hover:bg-gray-50">Home</a>
             <p class="px-3 py-2 text-sm font-semibold text-gray-400 uppercase tracking-wider">Other Downloaders</p>
-            <a href="https://f.freedownloader.top" target="_blank"
+            <a href="https://facebook.freedownloader.top" target="_blank"
                 class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-[#1877F2] hover:bg-gray-50"><i
                     class="fa-brands fa-facebook text-[#1877F2] w-6"></i> Facebook</a>
-            <a href="https://y.freedownloader.top" target="_blank"
+            <a href="https://youtube.freedownloader.top" target="_blank"
                 class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-red-600 hover:bg-gray-50"><i
                     class="fa-brands fa-youtube text-red-600 w-6"></i> YouTube</a>
-            <a href="https://t.freedownloader.top" target="_blank"
+            <a href="https://tiktok.freedownloader.top" target="_blank"
                 class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50"><i
                     class="fa-brands fa-tiktok text-black w-6"></i> TikTok</a>
-            <a href="https://i.freedownloader.top" target="_blank"
+            <a href="https://instagram.freedownloader.top" target="_blank"
                 class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-[#E1306C] hover:bg-gray-50"><i
                     class="fa-brands fa-instagram text-[#E1306C] w-6"></i> Instagram</a>
 
@@ -387,6 +336,23 @@ youtube video downloader professional,youtube downloader enterprise,youtube vide
                 </div>
             </div>
         </div>
+
+        <!-- Download Progress Bar -->
+        <div id="progressSection" class="hidden mt-6 max-w-xl mx-auto">
+            <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
+                <div class="flex items-center gap-3 mb-4">
+                    <i id="progressIcon" class="fa-solid fa-spinner fa-spin text-[#FF0000] text-2xl"></i>
+                    <div>
+                        <p id="progressStage" class="font-bold text-gray-800">Preparing download...</p>
+                        <p id="progressMessage" class="text-sm text-gray-500">Please wait</p>
+                    </div>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                    <div id="progressBar" class="bg-gradient-to-r from-red-500 to-[#FF0000] h-3 rounded-full transition-all duration-500 ease-out" style="width: 0%"></div>
+                </div>
+                <p id="progressPercent" class="text-right text-xs text-gray-400 mt-1">0%</p>
+            </div>
+        </div>
     </div>
 
     <div class="py-10 bg-gray-50 border-t border-gray-200">
@@ -432,8 +398,8 @@ youtube video downloader professional,youtube downloader enterprise,youtube vide
         <div class="max-w-4xl mx-auto px-4 sm:px-6">
             <div class="text-center mb-10">
                 <span class="bg-red-100 text-[#FF0000] font-bold px-3 py-1 rounded-full text-sm">Complete Guide</span>
-                <h1 class="text-3xl md:text-4xl font-bold mt-4 mb-4 text-gray-900 leading-tight">How to Download YouTube
-                    Videos & Shorts in HD</h1>
+                <h2 class="text-3xl md:text-4xl font-bold mt-4 mb-4 text-gray-900 leading-tight">How to Download YouTube
+                    Videos & Shorts in HD</h2>
                 <p class="text-gray-500">Master the art of saving YouTube videos directly to your device in original HD
                     quality.</p>
             </div>
@@ -576,9 +542,9 @@ youtube video downloader professional,youtube downloader enterprise,youtube vide
                     <img src="https://i.ibb.co.com/MkJSfHKC/mwa.png" alt="MWA Logo"
                         class="w-auto h-14 md:h-16 max-w-full group-hover:scale-105 transition-transform duration-300 drop-shadow-lg">
                     <div class="flex flex-col justify-center">
-                        <h1 class="text-green-300 font-extrabold text-xl md:text-2xl tracking-[0.15em] uppercase">
+                        <div class="text-green-300 font-extrabold text-xl md:text-2xl tracking-[0.15em] uppercase">
                             MICRO WEB APP
-                        </h1>
+                        </div>
                         <span class="text-[11px] text-blue-500 font-bold tracking-[0.25em] uppercase mt-0.5"> <span
                                 style="color: rgb(35, 128, 94);">MWA</span> PLATFORM</span>
                     </div>
@@ -728,48 +694,140 @@ youtube video downloader professional,youtube downloader enterprise,youtube vide
         }
 
         let selectedHeight = '';
+        let currentPollInterval = null;
 
-        function handleDownloadClick(height) {
-            selectedHeight = height;
+        function showProgress(stage, percent, message) {
+            const section = document.getElementById('progressSection');
+            section.classList.remove('hidden');
+            document.getElementById('progressBar').style.width = percent + '%';
+            document.getElementById('progressPercent').innerText = percent + '%';
+            document.getElementById('progressMessage').innerText = message || '';
 
-            // AD SCRIPT DISABLED // 1. Open Direct Link Ad in new tab
-// AD SCRIPT DISABLED             if (window.AD_CONFIG && window.AD_CONFIG.DIRECT_LINK_URL.includes("http")) {
-// AD SCRIPT DISABLED                 window.open(window.AD_CONFIG.DIRECT_LINK_URL, '_blank');
-// AD SCRIPT DISABLED             }
+            const stageNames = {
+                'queued': 'Waiting in queue...',
+                'extracting': 'Extracting video info...',
+                'downloading': 'Downloading video...',
+                'merging': 'Merging audio & video...',
+                'ready': 'Download ready!',
+                'error': 'Error occurred'
+            };
+            document.getElementById('progressStage').innerText = stageNames[stage] || stage;
 
-            // 2. Trigger actual download in current tab
-            let vidTitle = document.getElementById('videoTitle').innerText || 'YouTube_Video';
-            const downloadUrl = `/api/download?url=${encodeURIComponent(currentVideoUrl)}&res=${selectedHeight}&title=${encodeURIComponent(vidTitle)}`;
-
-            // Use an anchor tag to prevent browser blocking
-            const a = document.createElement('a');
-            a.style.display = 'none';
-            a.href = downloadUrl;
-            a.download = '';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
+            const icon = document.getElementById('progressIcon');
+            if (stage === 'ready') {
+                icon.className = 'fa-solid fa-circle-check text-green-500 text-2xl';
+            } else if (stage === 'error') {
+                icon.className = 'fa-solid fa-circle-xmark text-red-500 text-2xl';
+            } else {
+                icon.className = 'fa-solid fa-spinner fa-spin text-[#FF0000] text-2xl';
+            }
         }
 
-        // AD SCRIPT DISABLED // --- POP-UNDER / ON-CLICK AD LOGIC ---
-// AD SCRIPT DISABLED         let popUnderTriggered = false;
-// AD SCRIPT DISABLED 
-// AD SCRIPT DISABLED         function triggerPopUnder(e) {
-// AD SCRIPT DISABLED             if (!popUnderTriggered && window.AD_CONFIG && window.AD_CONFIG.POP_UNDER_URL.includes("http")) {
-// AD SCRIPT DISABLED                 if (e.target.tagName && e.target.tagName.toLowerCase() === 'a' && e.target.target !== '_blank') {
-// AD SCRIPT DISABLED                     return;
-// AD SCRIPT DISABLED                 }
-// AD SCRIPT DISABLED                 popUnderTriggered = true;
-// AD SCRIPT DISABLED                 const newWin = window.open(window.AD_CONFIG.POP_UNDER_URL, '_blank');
-// AD SCRIPT DISABLED                 if (newWin) window.focus();
-// AD SCRIPT DISABLED 
-// AD SCRIPT DISABLED                 document.removeEventListener('click', triggerPopUnder, true);
-// AD SCRIPT DISABLED                 document.removeEventListener('paste', triggerPopUnder, true);
-// AD SCRIPT DISABLED             }
-// AD SCRIPT DISABLED         }
-// AD SCRIPT DISABLED 
-// AD SCRIPT DISABLED         document.addEventListener('click', triggerPopUnder, { capture: true });
-// AD SCRIPT DISABLED         document.addEventListener('paste', triggerPopUnder, { capture: true });
+        function hideProgress() {
+            document.getElementById('progressSection').classList.add('hidden');
+            document.getElementById('progressBar').style.width = '0%';
+            if (currentPollInterval) {
+                clearInterval(currentPollInterval);
+                currentPollInterval = null;
+            }
+        }
+
+        async function handleDownloadClick(height) {
+            selectedHeight = height;
+            let vidTitle = document.getElementById('videoTitle').innerText || 'YouTube_Video';
+
+            // Show progress bar
+            showProgress('queued', 5, 'Submitting download request...');
+
+            try {
+                // Step 1: Submit async download task
+                const submitRes = await fetch('/api/download_async', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url: currentVideoUrl, res: selectedHeight, title: vidTitle })
+                });
+                const submitData = await submitRes.json();
+
+                if (!submitRes.ok || submitData.error) {
+                    // Celery unavailable — fallback to sync download
+                    hideProgress();
+                    return fallbackSyncDownload(height);
+                }
+
+                const taskId = submitData.task_id;
+
+                // Step 2: Poll for progress every 1.5 seconds
+                currentPollInterval = setInterval(async () => {
+                    try {
+                        const statusRes = await fetch(`/api/task_status/${taskId}`);
+                        const status = await statusRes.json();
+
+                        showProgress(status.stage, status.percent, status.message);
+
+                        if (status.stage === 'ready') {
+                            clearInterval(currentPollInterval);
+                            currentPollInterval = null;
+
+                            // Step 3: Trigger browser download (streams to disk, no RAM bloat)
+                            setTimeout(() => {
+                                window.location.href = `/api/download_file/${taskId}`;
+                                setTimeout(() => hideProgress(), 3000);
+                            }, 500);
+                        } else if (status.stage === 'error') {
+                            clearInterval(currentPollInterval);
+                            currentPollInterval = null;
+                            setTimeout(() => {
+                                hideProgress();
+                                showCustomAlert(status.error || status.message || 'Download failed.');
+                            }, 1500);
+                        }
+                    } catch (pollErr) {
+                        // Network error during polling — don't stop, retry
+                        console.warn('Poll error:', pollErr);
+                    }
+                }, 1500);
+
+            } catch (err) {
+                hideProgress();
+                showCustomAlert('Download failed. Please check your connection and try again.');
+            }
+        }
+
+        // Fallback: sync download if Celery is unavailable
+        async function fallbackSyncDownload(height) {
+            let vidTitle = document.getElementById('videoTitle').innerText || 'YouTube_Video';
+            const downloadUrl = `/api/download?url=${encodeURIComponent(currentVideoUrl)}&res=${height}&title=${encodeURIComponent(vidTitle)}`;
+
+            showCustomAlert('Processing your download... This may take a moment.', 'Downloading', 'fa-solid fa-spinner fa-spin');
+
+            try {
+                const response = await fetch(downloadUrl);
+                const contentType = response.headers.get('Content-Type') || '';
+
+                if (response.ok && (contentType.includes('video') || contentType.includes('octet-stream'))) {
+                    const blob = await response.blob();
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `${vidTitle}.mp4`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                    closeCustomAlert();
+                } else {
+                    try {
+                        const data = await response.json();
+                        showCustomAlert(data.error || 'Download failed. Please try again.');
+                    } catch (e) {
+                        showCustomAlert('Download failed. The server returned an unexpected response.');
+                    }
+                }
+            } catch (err) {
+                showCustomAlert('Download failed. Please check your connection and try again.');
+            }
+        }
+
 
         // ড্রপডাউন পরিবর্তন হলে গুগল ট্রান্সলেটরকে ট্রিগার করার ফাংশন
         function changeLanguage(langCode) {
