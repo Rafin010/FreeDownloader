@@ -1,0 +1,101 @@
+-- Logs begin at Fri 2026-04-10 23:34:02 +06, end at Mon 2026-04-20 23:41:40 +06. --
+Apr 20 23:40:42 IARAFIN tik[220771]: [2026-04-20 23:40:42 +0600] [220771] [ERROR] Connection in use: ('127.0.0.1', 8003)
+Apr 20 23:40:42 IARAFIN tik[220771]: [2026-04-20 23:40:42 +0600] [220771] [ERROR] connection to ('127.0.0.1', 8003) failed: [Errno 98] Address already in use
+Apr 20 23:40:43 IARAFIN tik[220771]: [2026-04-20 23:40:43 +0600] [220771] [ERROR] Can't connect to ('127.0.0.1', 8003)
+Apr 20 23:40:43 IARAFIN systemd[1]: tik.service: Main process exited, code=exited, status=1/FAILURE
+Apr 20 23:40:43 IARAFIN systemd[1]: tik.service: Failed with result 'exit-code'.
+Apr 20 23:40:48 IARAFIN systemd[1]: tik.service: Scheduled restart job, restart counter is at 178.
+Apr 20 23:40:48 IARAFIN systemd[1]: Stopped tik Downloader (Flask + Gunicorn gevent).
+Apr 20 23:40:48 IARAFIN systemd[1]: Started tik Downloader (Flask + Gunicorn gevent).
+Apr 20 23:40:48 IARAFIN tik[220786]: ⚠️  redis package not installed — caching DISABLED. Install with: pip install redis
+Apr 20 23:40:48 IARAFIN tik[220786]: [2026-04-20 23:40:48] INFO - ✅ curl-cffi detected — browser TLS impersonation ENABLED
+Apr 20 23:40:48 IARAFIN tik[220786]: [2026-04-20 23:40:48 +0600] [220786] [INFO] Starting gunicorn 23.0.0
+Apr 20 23:40:48 IARAFIN tik[220786]: [2026-04-20 23:40:48 +0600] [220786] [ERROR] Connection in use: ('127.0.0.1', 8003)
+Apr 20 23:40:48 IARAFIN tik[220786]: [2026-04-20 23:40:48 +0600] [220786] [ERROR] connection to ('127.0.0.1', 8003) failed: [Errno 98] Address already in use
+Apr 20 23:40:49 IARAFIN tik[220786]: [2026-04-20 23:40:49 +0600] [220786] [ERROR] Connection in use: ('127.0.0.1', 8003)
+Apr 20 23:40:49 IARAFIN tik[220786]: [2026-04-20 23:40:49 +0600] [220786] [ERROR] connection to ('127.0.0.1', 8003) failed: [Errno 98] Address already in use
+Apr 20 23:40:50 IARAFIN tik[220786]: [2026-04-20 23:40:50 +0600] [220786] [ERROR] Connection in use: ('127.0.0.1', 8003)
+Apr 20 23:40:50 IARAFIN tik[220786]: [2026-04-20 23:40:50 +0600] [220786] [ERROR] connection to ('127.0.0.1', 8003) failed: [Errno 98] Address already in use
+Apr 20 23:40:51 IARAFIN tik[220786]: [2026-04-20 23:40:51 +0600] [220786] [ERROR] Connection in use: ('127.0.0.1', 8003)
+Apr 20 23:40:51 IARAFIN tik[220786]: [2026-04-20 23:40:51 +0600] [220786] [ERROR] connection to ('127.0.0.1', 8003) failed: [Errno 98] Address already in use
+Apr 20 23:40:52 IARAFIN tik[220786]: [2026-04-20 23:40:52 +0600] [220786] [ERROR] Connection in use: ('127.0.0.1', 8003)
+Apr 20 23:40:52 IARAFIN tik[220786]: [2026-04-20 23:40:52 +0600] [220786] [ERROR] connection to ('127.0.0.1', 8003) failed: [Errno 98] Address already in use
+Apr 20 23:40:53 IARAFIN tik[220786]: [2026-04-20 23:40:53 +0600] [220786] [ERROR] Can't connect to ('127.0.0.1', 8003)
+Apr 20 23:40:54 IARAFIN systemd[1]: tik.service: Main process exited, code=exited, status=1/FAILURE
+Apr 20 23:40:54 IARAFIN systemd[1]: tik.service: Failed with result 'exit-code'.
+Apr 20 23:40:59 IARAFIN systemd[1]: tik.service: Scheduled restart job, restart counter is at 179.
+Apr 20 23:40:59 IARAFIN systemd[1]: Stopped tik Downloader (Flask + Gunicorn gevent).
+Apr 20 23:40:59 IARAFIN systemd[1]: Started tik Downloader (Flask + Gunicorn gevent).
+Apr 20 23:40:59 IARAFIN tik[220801]: ⚠️  redis package not installed — caching DISABLED. Install with: pip install redis
+Apr 20 23:40:59 IARAFIN tik[220801]: [2026-04-20 23:40:59] INFO - ✅ curl-cffi detected — browser TLS impersonation ENABLED
+Apr 20 23:40:59 IARAFIN tik[220801]: [2026-04-20 23:40:59 +0600] [220801] [INFO] Starting gunicorn 23.0.0
+Apr 20 23:40:59 IARAFIN tik[220801]: [2026-04-20 23:40:59 +0600] [220801] [ERROR] Connection in use: ('127.0.0.1', 8003)
+Apr 20 23:40:59 IARAFIN tik[220801]: [2026-04-20 23:40:59 +0600] [220801] [ERROR] connection to ('127.0.0.1', 8003) failed: [Errno 98] Address already in use
+Apr 20 23:41:00 IARAFIN tik[220801]: [2026-04-20 23:41:00 +0600] [220801] [ERROR] Connection in use: ('127.0.0.1', 8003)
+Apr 20 23:41:00 IARAFIN tik[220801]: [2026-04-20 23:41:00 +0600] [220801] [ERROR] connection to ('127.0.0.1', 8003) failed: [Errno 98] Address already in use
+Apr 20 23:41:01 IARAFIN tik[220801]: [2026-04-20 23:41:01 +0600] [220801] [ERROR] Connection in use: ('127.0.0.1', 8003)
+Apr 20 23:41:01 IARAFIN tik[220801]: [2026-04-20 23:41:01 +0600] [220801] [ERROR] connection to ('127.0.0.1', 8003) failed: [Errno 98] Address already in use
+Apr 20 23:41:02 IARAFIN tik[220801]: [2026-04-20 23:41:02 +0600] [220801] [ERROR] Connection in use: ('127.0.0.1', 8003)
+Apr 20 23:41:02 IARAFIN tik[220801]: [2026-04-20 23:41:02 +0600] [220801] [ERROR] connection to ('127.0.0.1', 8003) failed: [Errno 98] Address already in use
+Apr 20 23:41:03 IARAFIN tik[220801]: [2026-04-20 23:41:03 +0600] [220801] [ERROR] Connection in use: ('127.0.0.1', 8003)
+Apr 20 23:41:03 IARAFIN tik[220801]: [2026-04-20 23:41:03 +0600] [220801] [ERROR] connection to ('127.0.0.1', 8003) failed: [Errno 98] Address already in use
+Apr 20 23:41:04 IARAFIN tik[220801]: [2026-04-20 23:41:04 +0600] [220801] [ERROR] Can't connect to ('127.0.0.1', 8003)
+Apr 20 23:41:04 IARAFIN systemd[1]: tik.service: Main process exited, code=exited, status=1/FAILURE
+Apr 20 23:41:04 IARAFIN systemd[1]: tik.service: Failed with result 'exit-code'.
+Apr 20 23:41:09 IARAFIN systemd[1]: tik.service: Scheduled restart job, restart counter is at 180.
+Apr 20 23:41:09 IARAFIN systemd[1]: Stopped tik Downloader (Flask + Gunicorn gevent).
+Apr 20 23:41:09 IARAFIN systemd[1]: Started tik Downloader (Flask + Gunicorn gevent).
+Apr 20 23:41:10 IARAFIN tik[220816]: ⚠️  redis package not installed — caching DISABLED. Install with: pip install redis
+Apr 20 23:41:10 IARAFIN tik[220816]: [2026-04-20 23:41:10] INFO - ✅ curl-cffi detected — browser TLS impersonation ENABLED
+Apr 20 23:41:10 IARAFIN tik[220816]: [2026-04-20 23:41:10 +0600] [220816] [INFO] Starting gunicorn 23.0.0
+Apr 20 23:41:10 IARAFIN tik[220816]: [2026-04-20 23:41:10 +0600] [220816] [ERROR] Connection in use: ('127.0.0.1', 8003)
+Apr 20 23:41:10 IARAFIN tik[220816]: [2026-04-20 23:41:10 +0600] [220816] [ERROR] connection to ('127.0.0.1', 8003) failed: [Errno 98] Address already in use
+Apr 20 23:41:11 IARAFIN tik[220816]: [2026-04-20 23:41:11 +0600] [220816] [ERROR] Connection in use: ('127.0.0.1', 8003)
+Apr 20 23:41:11 IARAFIN tik[220816]: [2026-04-20 23:41:11 +0600] [220816] [ERROR] connection to ('127.0.0.1', 8003) failed: [Errno 98] Address already in use
+Apr 20 23:41:12 IARAFIN tik[220816]: [2026-04-20 23:41:12 +0600] [220816] [ERROR] Connection in use: ('127.0.0.1', 8003)
+Apr 20 23:41:12 IARAFIN tik[220816]: [2026-04-20 23:41:12 +0600] [220816] [ERROR] connection to ('127.0.0.1', 8003) failed: [Errno 98] Address already in use
+Apr 20 23:41:13 IARAFIN tik[220816]: [2026-04-20 23:41:13 +0600] [220816] [ERROR] Connection in use: ('127.0.0.1', 8003)
+Apr 20 23:41:13 IARAFIN tik[220816]: [2026-04-20 23:41:13 +0600] [220816] [ERROR] connection to ('127.0.0.1', 8003) failed: [Errno 98] Address already in use
+Apr 20 23:41:14 IARAFIN tik[220816]: [2026-04-20 23:41:14 +0600] [220816] [ERROR] Connection in use: ('127.0.0.1', 8003)
+Apr 20 23:41:14 IARAFIN tik[220816]: [2026-04-20 23:41:14 +0600] [220816] [ERROR] connection to ('127.0.0.1', 8003) failed: [Errno 98] Address already in use
+Apr 20 23:41:15 IARAFIN tik[220816]: [2026-04-20 23:41:15 +0600] [220816] [ERROR] Can't connect to ('127.0.0.1', 8003)
+Apr 20 23:41:15 IARAFIN systemd[1]: tik.service: Main process exited, code=exited, status=1/FAILURE
+Apr 20 23:41:15 IARAFIN systemd[1]: tik.service: Failed with result 'exit-code'.
+Apr 20 23:41:20 IARAFIN systemd[1]: tik.service: Scheduled restart job, restart counter is at 181.
+Apr 20 23:41:20 IARAFIN systemd[1]: Stopped tik Downloader (Flask + Gunicorn gevent).
+Apr 20 23:41:20 IARAFIN systemd[1]: Started tik Downloader (Flask + Gunicorn gevent).
+Apr 20 23:41:21 IARAFIN tik[220934]: ⚠️  redis package not installed — caching DISABLED. Install with: pip install redis
+Apr 20 23:41:21 IARAFIN tik[220934]: [2026-04-20 23:41:21] INFO - ✅ curl-cffi detected — browser TLS impersonation ENABLED
+Apr 20 23:41:21 IARAFIN tik[220934]: [2026-04-20 23:41:21 +0600] [220934] [INFO] Starting gunicorn 23.0.0
+Apr 20 23:41:21 IARAFIN tik[220934]: [2026-04-20 23:41:21 +0600] [220934] [ERROR] Connection in use: ('127.0.0.1', 8003)
+Apr 20 23:41:21 IARAFIN tik[220934]: [2026-04-20 23:41:21 +0600] [220934] [ERROR] connection to ('127.0.0.1', 8003) failed: [Errno 98] Address already in use
+Apr 20 23:41:22 IARAFIN tik[220934]: [2026-04-20 23:41:22 +0600] [220934] [ERROR] Connection in use: ('127.0.0.1', 8003)
+Apr 20 23:41:22 IARAFIN tik[220934]: [2026-04-20 23:41:22 +0600] [220934] [ERROR] connection to ('127.0.0.1', 8003) failed: [Errno 98] Address already in use
+Apr 20 23:41:23 IARAFIN tik[220934]: [2026-04-20 23:41:23 +0600] [220934] [ERROR] Connection in use: ('127.0.0.1', 8003)
+Apr 20 23:41:23 IARAFIN tik[220934]: [2026-04-20 23:41:23 +0600] [220934] [ERROR] connection to ('127.0.0.1', 8003) failed: [Errno 98] Address already in use
+Apr 20 23:41:24 IARAFIN tik[220934]: [2026-04-20 23:41:24 +0600] [220934] [ERROR] Connection in use: ('127.0.0.1', 8003)
+Apr 20 23:41:24 IARAFIN tik[220934]: [2026-04-20 23:41:24 +0600] [220934] [ERROR] connection to ('127.0.0.1', 8003) failed: [Errno 98] Address already in use
+Apr 20 23:41:25 IARAFIN tik[220934]: [2026-04-20 23:41:25 +0600] [220934] [ERROR] Connection in use: ('127.0.0.1', 8003)
+Apr 20 23:41:25 IARAFIN tik[220934]: [2026-04-20 23:41:25 +0600] [220934] [ERROR] connection to ('127.0.0.1', 8003) failed: [Errno 98] Address already in use
+Apr 20 23:41:26 IARAFIN tik[220934]: [2026-04-20 23:41:26 +0600] [220934] [ERROR] Can't connect to ('127.0.0.1', 8003)
+Apr 20 23:41:26 IARAFIN systemd[1]: tik.service: Main process exited, code=exited, status=1/FAILURE
+Apr 20 23:41:26 IARAFIN systemd[1]: tik.service: Failed with result 'exit-code'.
+Apr 20 23:41:31 IARAFIN systemd[1]: tik.service: Scheduled restart job, restart counter is at 182.
+Apr 20 23:41:31 IARAFIN systemd[1]: Stopped tik Downloader (Flask + Gunicorn gevent).
+Apr 20 23:41:31 IARAFIN systemd[1]: Started tik Downloader (Flask + Gunicorn gevent).
+Apr 20 23:41:31 IARAFIN tik[220967]: ⚠️  redis package not installed — caching DISABLED. Install with: pip install redis
+Apr 20 23:41:31 IARAFIN tik[220967]: [2026-04-20 23:41:31] INFO - ✅ curl-cffi detected — browser TLS impersonation ENABLED
+Apr 20 23:41:31 IARAFIN tik[220967]: [2026-04-20 23:41:31 +0600] [220967] [INFO] Starting gunicorn 23.0.0
+Apr 20 23:41:31 IARAFIN tik[220967]: [2026-04-20 23:41:31 +0600] [220967] [ERROR] Connection in use: ('127.0.0.1', 8003)
+Apr 20 23:41:31 IARAFIN tik[220967]: [2026-04-20 23:41:31 +0600] [220967] [ERROR] connection to ('127.0.0.1', 8003) failed: [Errno 98] Address already in use
+Apr 20 23:41:32 IARAFIN tik[220967]: [2026-04-20 23:41:32 +0600] [220967] [ERROR] Connection in use: ('127.0.0.1', 8003)
+Apr 20 23:41:32 IARAFIN tik[220967]: [2026-04-20 23:41:32 +0600] [220967] [ERROR] connection to ('127.0.0.1', 8003) failed: [Errno 98] Address already in use
+Apr 20 23:41:33 IARAFIN tik[220967]: [2026-04-20 23:41:33 +0600] [220967] [ERROR] Connection in use: ('127.0.0.1', 8003)
+Apr 20 23:41:33 IARAFIN tik[220967]: [2026-04-20 23:41:33 +0600] [220967] [ERROR] connection to ('127.0.0.1', 8003) failed: [Errno 98] Address already in use
+Apr 20 23:41:34 IARAFIN tik[220967]: [2026-04-20 23:41:34 +0600] [220967] [ERROR] Connection in use: ('127.0.0.1', 8003)
+Apr 20 23:41:34 IARAFIN tik[220967]: [2026-04-20 23:41:34 +0600] [220967] [ERROR] connection to ('127.0.0.1', 8003) failed: [Errno 98] Address already in use
+Apr 20 23:41:35 IARAFIN tik[220967]: [2026-04-20 23:41:35 +0600] [220967] [ERROR] Connection in use: ('127.0.0.1', 8003)
+Apr 20 23:41:35 IARAFIN tik[220967]: [2026-04-20 23:41:35 +0600] [220967] [ERROR] connection to ('127.0.0.1', 8003) failed: [Errno 98] Address already in use
+Apr 20 23:41:37 IARAFIN tik[220967]: [2026-04-20 23:41:37 +0600] [220967] [ERROR] Can't connect to ('127.0.0.1', 8003)
+Apr 20 23:41:37 IARAFIN systemd[1]: tik.service: Main process exited, code=exited, status=1/FAILURE
+Apr 20 23:41:37 IARAFIN systemd[1]: tik.service: Failed with result 'exit-code'.

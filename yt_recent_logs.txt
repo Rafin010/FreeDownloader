@@ -1,0 +1,40 @@
+Apr 21 01:42:38 IARAFIN yt[249130]: Deprecated Feature: Support for Python version 3.9 has been deprecated. Please update to Python 3.10 or above
+Apr 21 01:42:38 IARAFIN yt[249130]: [2026-04-21 01:42:38] WARNING - YT attempt 12 failed:  — backing off 16.7s before next...
+Apr 21 01:42:38 IARAFIN yt[249130]: [2026-04-21 01:42:38] INFO - 🔄 All yt-dlp strategies exhausted — trying Invidious/Piped API fallback...
+Apr 21 01:42:38 IARAFIN yt[249130]: [2026-04-21 01:42:38] INFO - 🔄 Trying Invidious fallback: https://vid.puffyan.us
+Apr 21 01:42:38 IARAFIN yt[249130]: [2026-04-21 01:42:38] WARNING - Invidious instance https://vid.puffyan.us failed: maximum recursion depth exceeded
+Apr 21 01:42:38 IARAFIN yt[249130]: [2026-04-21 01:42:38] INFO - 🔄 Trying Invidious fallback: https://inv.nadeko.net
+Apr 21 01:42:38 IARAFIN yt[249130]: [2026-04-21 01:42:38] WARNING - Invidious instance https://inv.nadeko.net failed: maximum recursion depth exceeded
+Apr 21 01:42:38 IARAFIN yt[249130]: [2026-04-21 01:42:38] INFO - 🔄 Trying Invidious fallback: https://invidious.nerdvpn.de
+Apr 21 01:42:39 IARAFIN yt[249130]: [2026-04-21 01:42:39] WARNING - Invidious instance https://invidious.nerdvpn.de failed: maximum recursion depth exceeded
+Apr 21 01:42:39 IARAFIN yt[249130]: [2026-04-21 01:42:39] INFO - 🔄 Trying Invidious fallback: https://invidious.privacyredirect.com
+Apr 21 01:42:39 IARAFIN yt[249130]: [2026-04-21 01:42:39] WARNING - Invidious instance https://invidious.privacyredirect.com failed: maximum recursion depth exceeded
+Apr 21 01:42:39 IARAFIN yt[249130]: [2026-04-21 01:42:39] INFO - 🔄 Trying Invidious fallback: https://iv.ggtyler.dev
+Apr 21 01:42:39 IARAFIN yt[249130]: [2026-04-21 01:42:39] WARNING - Invidious instance https://iv.ggtyler.dev failed: maximum recursion depth exceeded
+Apr 21 01:42:39 IARAFIN yt[249130]: [2026-04-21 01:42:39] INFO - 🔄 Trying Piped fallback: https://pipedapi.kavin.rocks
+Apr 21 01:42:39 IARAFIN yt[249130]: [2026-04-21 01:42:39] WARNING - Piped instance https://pipedapi.kavin.rocks failed: maximum recursion depth exceeded
+Apr 21 01:42:39 IARAFIN yt[249130]: [2026-04-21 01:42:39] INFO - 🔄 Trying Piped fallback: https://pipedapi.r4fo.com
+Apr 21 01:42:39 IARAFIN yt[249130]: [2026-04-21 01:42:39] WARNING - Piped instance https://pipedapi.r4fo.com failed: HTTPSConnectionPool(host='pipedapi.r4fo.com', port=443): Max retries exceeded wi
+Apr 21 01:42:39 IARAFIN yt[249130]: [2026-04-21 01:42:39] INFO - 🔄 Trying Piped fallback: https://pipedapi.adminforge.de
+Apr 21 01:42:39 IARAFIN yt[249130]: [2026-04-21 01:42:39] WARNING - Piped instance https://pipedapi.adminforge.de failed: maximum recursion depth exceeded
+Apr 21 01:42:39 IARAFIN yt[249130]: [2026-04-21 01:42:39] ERROR - ❌ ALL Invidious/Piped fallback instances failed for video: dQw4w9WgXcQ
+Apr 21 01:42:39 IARAFIN yt[249130]: [2026-04-21 01:42:39] ERROR - ❌ ALL 12 YouTube strategies + API fallbacks exhausted for: https://www.youtube.com/watch?v=dQw4w9WgXcQ
+Apr 21 01:42:39 IARAFIN yt[249130]: [2026-04-21 01:42:39] ERROR -    Last error:
+Apr 21 01:42:39 IARAFIN yt[249130]: [2026-04-21 01:42:39] ERROR -    yt-dlp version: 2025.10.14 | curl-cffi: True | auth cookies: True | PO token: False
+Apr 21 01:42:39 IARAFIN yt[249130]: Traceback (most recent call last):
+Apr 21 01:42:39 IARAFIN yt[249130]:   File "/root/FreeDownloader/yt_d/app.py", line 640, in get_info
+Apr 21 01:42:39 IARAFIN yt[249130]:     info_dict, strategy_idx = extract_with_retry(video_url)
+Apr 21 01:42:39 IARAFIN yt[249130]:   File "/root/FreeDownloader/yt_d/app.py", line 425, in extract_with_retry
+Apr 21 01:42:39 IARAFIN yt[249130]:     raise last_error
+Apr 21 01:42:39 IARAFIN yt[249130]:   File "/root/FreeDownloader/yt_d/app.py", line 389, in extract_with_retry
+Apr 21 01:42:39 IARAFIN yt[249130]:     with yt_dlp.YoutubeDL(opts) as ydl:
+Apr 21 01:42:39 IARAFIN yt[249130]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/yt_dlp/YoutubeDL.py", line 742, in __init__
+Apr 21 01:42:39 IARAFIN yt[249130]:     if not self._impersonate_target_available(impersonate_target):
+Apr 21 01:42:39 IARAFIN yt[249130]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/yt_dlp/YoutubeDL.py", line 4139, in _impersonate_target_available
+Apr 21 01:42:39 IARAFIN yt[249130]:     return any(
+Apr 21 01:42:39 IARAFIN yt[249130]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/yt_dlp/YoutubeDL.py", line 4140, in <genexpr>
+Apr 21 01:42:39 IARAFIN yt[249130]:     rh.is_supported_target(target)
+Apr 21 01:42:39 IARAFIN yt[249130]:   File "/root/FreeDownloader/venv/lib/python3.9/site-packages/yt_dlp/networking/impersonate.py", line 119, in is_supported_target
+Apr 21 01:42:39 IARAFIN yt[249130]:     assert isinstance(target, ImpersonateTarget)
+Apr 21 01:42:39 IARAFIN yt[249130]: AssertionError
+Apr 21 01:42:39 IARAFIN yt[249130]: 127.0.0.1 - - [21/Apr/2026:01:42:39 +0600] "POST /api/get_info HTTP/1.1" 500 78 "-" "curl/7.68.0" 127426916

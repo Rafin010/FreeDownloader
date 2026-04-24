@@ -1,0 +1,51 @@
+-- Logs begin at Fri 2026-04-10 23:34:02 +06, end at Tue 2026-04-21 01:22:50 +06. --
+Apr 21 01:22:25 IARAFIN systemd[1]: tik.service: Scheduled restart job, restart counter is at 546.
+Apr 21 01:22:25 IARAFIN systemd[1]: Stopped tik Downloader (Flask + Gunicorn gevent).
+Apr 21 01:22:25 IARAFIN systemd[1]: Started tik Downloader (Flask + Gunicorn gevent).
+Apr 21 01:22:26 IARAFIN tik[243720]: ⚠️  redis package not installed — caching DISABLED. Install with: pip install redis
+Apr 21 01:22:26 IARAFIN tik[243720]: [2026-04-21 01:22:26] INFO - ✅ curl-cffi detected — browser TLS impersonation ENABLED
+Apr 21 01:22:26 IARAFIN tik[243720]: [2026-04-21 01:22:26 +0600] [243720] [INFO] Starting gunicorn 23.0.0
+Apr 21 01:22:26 IARAFIN tik[243720]: [2026-04-21 01:22:26 +0600] [243720] [ERROR] Connection in use: ('127.0.0.1', 8003)
+Apr 21 01:22:26 IARAFIN tik[243720]: [2026-04-21 01:22:26 +0600] [243720] [ERROR] connection to ('127.0.0.1', 8003) failed: [Errno 98] Address already in use
+Apr 21 01:22:27 IARAFIN tik[243720]: [2026-04-21 01:22:27 +0600] [243720] [ERROR] Connection in use: ('127.0.0.1', 8003)
+Apr 21 01:22:27 IARAFIN tik[243720]: [2026-04-21 01:22:27 +0600] [243720] [ERROR] connection to ('127.0.0.1', 8003) failed: [Errno 98] Address already in use
+Apr 21 01:22:28 IARAFIN tik[243720]: [2026-04-21 01:22:28 +0600] [243720] [ERROR] Connection in use: ('127.0.0.1', 8003)
+Apr 21 01:22:28 IARAFIN tik[243720]: [2026-04-21 01:22:28 +0600] [243720] [ERROR] connection to ('127.0.0.1', 8003) failed: [Errno 98] Address already in use
+Apr 21 01:22:29 IARAFIN tik[243720]: [2026-04-21 01:22:29 +0600] [243720] [ERROR] Connection in use: ('127.0.0.1', 8003)
+Apr 21 01:22:29 IARAFIN tik[243720]: [2026-04-21 01:22:29 +0600] [243720] [ERROR] connection to ('127.0.0.1', 8003) failed: [Errno 98] Address already in use
+Apr 21 01:22:30 IARAFIN tik[243720]: [2026-04-21 01:22:30 +0600] [243720] [ERROR] Connection in use: ('127.0.0.1', 8003)
+Apr 21 01:22:30 IARAFIN tik[243720]: [2026-04-21 01:22:30 +0600] [243720] [ERROR] connection to ('127.0.0.1', 8003) failed: [Errno 98] Address already in use
+Apr 21 01:22:31 IARAFIN tik[243720]: [2026-04-21 01:22:31 +0600] [243720] [ERROR] Can't connect to ('127.0.0.1', 8003)
+Apr 21 01:22:31 IARAFIN systemd[1]: tik.service: Main process exited, code=exited, status=1/FAILURE
+Apr 21 01:22:31 IARAFIN systemd[1]: tik.service: Failed with result 'exit-code'.
+Apr 21 01:22:36 IARAFIN systemd[1]: tik.service: Scheduled restart job, restart counter is at 547.
+Apr 21 01:22:36 IARAFIN systemd[1]: Stopped tik Downloader (Flask + Gunicorn gevent).
+Apr 21 01:22:36 IARAFIN systemd[1]: Started tik Downloader (Flask + Gunicorn gevent).
+Apr 21 01:22:37 IARAFIN tik[243736]: ⚠️  redis package not installed — caching DISABLED. Install with: pip install redis
+Apr 21 01:22:37 IARAFIN tik[243736]: [2026-04-21 01:22:37] INFO - ✅ curl-cffi detected — browser TLS impersonation ENABLED
+Apr 21 01:22:37 IARAFIN tik[243736]: [2026-04-21 01:22:37 +0600] [243736] [INFO] Starting gunicorn 23.0.0
+Apr 21 01:22:37 IARAFIN tik[243736]: [2026-04-21 01:22:37 +0600] [243736] [ERROR] Connection in use: ('127.0.0.1', 8003)
+Apr 21 01:22:37 IARAFIN tik[243736]: [2026-04-21 01:22:37 +0600] [243736] [ERROR] connection to ('127.0.0.1', 8003) failed: [Errno 98] Address already in use
+Apr 21 01:22:38 IARAFIN tik[243736]: [2026-04-21 01:22:38 +0600] [243736] [ERROR] Connection in use: ('127.0.0.1', 8003)
+Apr 21 01:22:38 IARAFIN tik[243736]: [2026-04-21 01:22:38 +0600] [243736] [ERROR] connection to ('127.0.0.1', 8003) failed: [Errno 98] Address already in use
+Apr 21 01:22:39 IARAFIN tik[243736]: [2026-04-21 01:22:39 +0600] [243736] [ERROR] Connection in use: ('127.0.0.1', 8003)
+Apr 21 01:22:39 IARAFIN tik[243736]: [2026-04-21 01:22:39 +0600] [243736] [ERROR] connection to ('127.0.0.1', 8003) failed: [Errno 98] Address already in use
+Apr 21 01:22:40 IARAFIN tik[243736]: [2026-04-21 01:22:40 +0600] [243736] [ERROR] Connection in use: ('127.0.0.1', 8003)
+Apr 21 01:22:40 IARAFIN tik[243736]: [2026-04-21 01:22:40 +0600] [243736] [ERROR] connection to ('127.0.0.1', 8003) failed: [Errno 98] Address already in use
+Apr 21 01:22:41 IARAFIN tik[243736]: [2026-04-21 01:22:41 +0600] [243736] [ERROR] Connection in use: ('127.0.0.1', 8003)
+Apr 21 01:22:41 IARAFIN tik[243736]: [2026-04-21 01:22:41 +0600] [243736] [ERROR] connection to ('127.0.0.1', 8003) failed: [Errno 98] Address already in use
+Apr 21 01:22:42 IARAFIN tik[243736]: [2026-04-21 01:22:42 +0600] [243736] [ERROR] Can't connect to ('127.0.0.1', 8003)
+Apr 21 01:22:42 IARAFIN systemd[1]: tik.service: Main process exited, code=exited, status=1/FAILURE
+Apr 21 01:22:42 IARAFIN systemd[1]: tik.service: Failed with result 'exit-code'.
+Apr 21 01:22:47 IARAFIN systemd[1]: tik.service: Scheduled restart job, restart counter is at 548.
+Apr 21 01:22:47 IARAFIN systemd[1]: Stopped tik Downloader (Flask + Gunicorn gevent).
+Apr 21 01:22:47 IARAFIN systemd[1]: Started tik Downloader (Flask + Gunicorn gevent).
+Apr 21 01:22:47 IARAFIN tik[243749]: ⚠️  redis package not installed — caching DISABLED. Install with: pip install redis
+Apr 21 01:22:47 IARAFIN tik[243749]: [2026-04-21 01:22:47] INFO - ✅ curl-cffi detected — browser TLS impersonation ENABLED
+Apr 21 01:22:47 IARAFIN tik[243749]: [2026-04-21 01:22:47 +0600] [243749] [INFO] Starting gunicorn 23.0.0
+Apr 21 01:22:47 IARAFIN tik[243749]: [2026-04-21 01:22:47 +0600] [243749] [ERROR] Connection in use: ('127.0.0.1', 8003)
+Apr 21 01:22:47 IARAFIN tik[243749]: [2026-04-21 01:22:47 +0600] [243749] [ERROR] connection to ('127.0.0.1', 8003) failed: [Errno 98] Address already in use
+Apr 21 01:22:48 IARAFIN tik[243749]: [2026-04-21 01:22:48 +0600] [243749] [ERROR] Connection in use: ('127.0.0.1', 8003)
+Apr 21 01:22:48 IARAFIN tik[243749]: [2026-04-21 01:22:48 +0600] [243749] [ERROR] connection to ('127.0.0.1', 8003) failed: [Errno 98] Address already in use
+Apr 21 01:22:49 IARAFIN tik[243749]: [2026-04-21 01:22:49 +0600] [243749] [ERROR] Connection in use: ('127.0.0.1', 8003)
+Apr 21 01:22:49 IARAFIN tik[243749]: [2026-04-21 01:22:49 +0600] [243749] [ERROR] connection to ('127.0.0.1', 8003) failed: [Errno 98] Address already in use

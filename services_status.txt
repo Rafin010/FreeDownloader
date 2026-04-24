@@ -1,0 +1,77 @@
+● yt.service - yt Downloader (Flask + Gunicorn gevent)
+     Loaded: loaded (/etc/systemd/system/yt.service; enabled; vendor preset: enabled)
+     Active: active (running) since Mon 2026-04-20 23:44:34 +06; 36min ago
+   Main PID: 221871 (gunicorn)
+      Tasks: 6 (limit: 4538)
+     Memory: 124.2M
+     CGroup: /system.slice/yt.service
+             ├─221871 /root/FreeDownloader/venv/bin/python3.9 /root/FreeDownloader/venv/bin/gunicorn -c /root/FreeDownloader/infra/gunicorn.conf.py -b 127.0.0.1:8001 app:app
+             ├─221894 /root/FreeDownloader/venv/bin/python3.9 /root/FreeDownloader/venv/bin/gunicorn -c /root/FreeDownloader/infra/gunicorn.conf.py -b 127.0.0.1:8001 app:app
+             ├─221897 /root/FreeDownloader/venv/bin/python3.9 /root/FreeDownloader/venv/bin/gunicorn -c /root/FreeDownloader/infra/gunicorn.conf.py -b 127.0.0.1:8001 app:app
+             ├─221899 /root/FreeDownloader/venv/bin/python3.9 /root/FreeDownloader/venv/bin/gunicorn -c /root/FreeDownloader/infra/gunicorn.conf.py -b 127.0.0.1:8001 app:app
+             └─221902 /root/FreeDownloader/venv/bin/python3.9 /root/FreeDownloader/venv/bin/gunicorn -c /root/FreeDownloader/infra/gunicorn.conf.py -b 127.0.0.1:8001 app:app
+
+Apr 20 23:44:36 IARAFIN yt[221902]: [2026-04-20 23:44:36 +0600] [221902] [INFO] Worker spawned (pid: 221902)
+Apr 20 23:44:38 IARAFIN yt[221894]: /root/FreeDownloader/venv/lib/python3.9/site-packages/gunicorn/workers/ggevent.py:38: MonkeyPatchWarning: Monkey-patching ssl after ssl has already been imported may lead to errors, including RecursionError on Python 3.6. It may also silently lead to incorrect behaviour on Python 3.7. Please monkey-patch earlier. See https://github.com/gevent/gevent/issues/1016. Modules that had direct imports (NOT patched): ['urllib3.util (/root/FreeDownloader/venv/lib/python3.9/site-packages/urllib3/util/__init__.py)', 'urllib3.util.ssl_ (/root/FreeDownloader/venv/lib/python3.9/site-packages/urllib3/util/ssl_.py)'].
+Apr 20 23:44:38 IARAFIN yt[221894]:   monkey.patch_all()
+Apr 20 23:44:38 IARAFIN yt[221899]: /root/FreeDownloader/venv/lib/python3.9/site-packages/gunicorn/workers/ggevent.py:38: MonkeyPatchWarning: Monkey-patching ssl after ssl has already been imported may lead to errors, including RecursionError on Python 3.6. It may also silently lead to incorrect behaviour on Python 3.7. Please monkey-patch earlier. See https://github.com/gevent/gevent/issues/1016. Modules that had direct imports (NOT patched): ['urllib3.util (/root/FreeDownloader/venv/lib/python3.9/site-packages/urllib3/util/__init__.py)', 'urllib3.util.ssl_ (/root/FreeDownloader/venv/lib/python3.9/site-packages/urllib3/util/ssl_.py)'].
+Apr 20 23:44:38 IARAFIN yt[221899]:   monkey.patch_all()
+Apr 20 23:44:38 IARAFIN yt[221897]: /root/FreeDownloader/venv/lib/python3.9/site-packages/gunicorn/workers/ggevent.py:38: MonkeyPatchWarning: Monkey-patching ssl after ssl has already been imported may lead to errors, including RecursionError on Python 3.6. It may also silently lead to incorrect behaviour on Python 3.7. Please monkey-patch earlier. See https://github.com/gevent/gevent/issues/1016. Modules that had direct imports (NOT patched): ['urllib3.util (/root/FreeDownloader/venv/lib/python3.9/site-packages/urllib3/util/__init__.py)', 'urllib3.util.ssl_ (/root/FreeDownloader/venv/lib/python3.9/site-packages/urllib3/util/ssl_.py)'].
+Apr 20 23:44:38 IARAFIN yt[221897]:   monkey.patch_all()
+Apr 20 23:44:38 IARAFIN yt[221902]: /root/FreeDownloader/venv/lib/python3.9/site-packages/gunicorn/workers/ggevent.py:38: MonkeyPatchWarning: Monkey-patching ssl after ssl has already been imported may lead to errors, including RecursionError on Python 3.6. It may also silently lead to incorrect behaviour on Python 3.7. Please monkey-patch earlier. See https://github.com/gevent/gevent/issues/1016. Modules that had direct imports (NOT patched): ['urllib3.util (/root/FreeDownloader/venv/lib/python3.9/site-packages/urllib3/util/__init__.py)', 'urllib3.util.ssl_ (/root/FreeDownloader/venv/lib/python3.9/site-packages/urllib3/util/ssl_.py)'].
+Apr 20 23:44:38 IARAFIN yt[221902]:   monkey.patch_all()
+Apr 20 23:47:59 IARAFIN yt[221899]: 127.0.0.1 - - [20/Apr/2026:23:47:59 +0600] "GET / HTTP/1.0" 200 49591 "-" "Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.3 Mobile/15E148 Safari/604.1" 19149
+
+● fb.service - fb Downloader (Flask + Gunicorn gevent)
+     Loaded: loaded (/etc/systemd/system/fb.service; enabled; vendor preset: enabled)
+     Active: active (running) since Mon 2026-04-20 23:44:34 +06; 36min ago
+   Main PID: 221872 (gunicorn)
+      Tasks: 6 (limit: 4538)
+     Memory: 127.2M
+     CGroup: /system.slice/fb.service
+             ├─221872 /root/FreeDownloader/venv/bin/python3.9 /root/FreeDownloader/venv/bin/gunicorn -c /root/FreeDownloader/infra/gunicorn.conf.py -b 127.0.0.1:8002 app:app
+             ├─221887 /root/FreeDownloader/venv/bin/python3.9 /root/FreeDownloader/venv/bin/gunicorn -c /root/FreeDownloader/infra/gunicorn.conf.py -b 127.0.0.1:8002 app:app
+             ├─221888 /root/FreeDownloader/venv/bin/python3.9 /root/FreeDownloader/venv/bin/gunicorn -c /root/FreeDownloader/infra/gunicorn.conf.py -b 127.0.0.1:8002 app:app
+             ├─221892 /root/FreeDownloader/venv/bin/python3.9 /root/FreeDownloader/venv/bin/gunicorn -c /root/FreeDownloader/infra/gunicorn.conf.py -b 127.0.0.1:8002 app:app
+             └─221898 /root/FreeDownloader/venv/bin/python3.9 /root/FreeDownloader/venv/bin/gunicorn -c /root/FreeDownloader/infra/gunicorn.conf.py -b 127.0.0.1:8002 app:app
+
+Apr 21 00:17:07 IARAFIN fb[221898]: 127.0.0.1 - - [21/Apr/2026:00:17:07 +0600] "GET / HTTP/1.0" 200 42715 "-" "subjs" 2950
+Apr 21 00:18:25 IARAFIN fb[221898]: 127.0.0.1 - - [21/Apr/2026:00:18:25 +0600] "GET / HTTP/1.0" 200 42715 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36" 3829
+Apr 21 00:18:34 IARAFIN fb[221892]: 127.0.0.1 - - [21/Apr/2026:00:18:34 +0600] "GET /about.html HTTP/1.0" 404 207 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36" 2195
+Apr 21 00:18:37 IARAFIN fb[221892]: 127.0.0.1 - - [21/Apr/2026:00:18:37 +0600] "GET /privacy.html HTTP/1.0" 404 207 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36" 1039
+Apr 21 00:18:38 IARAFIN fb[221888]: 127.0.0.1 - - [21/Apr/2026:00:18:38 +0600] "GET /terms.html HTTP/1.0" 404 207 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36" 2375
+Apr 21 00:18:39 IARAFIN fb[221898]: 127.0.0.1 - - [21/Apr/2026:00:18:39 +0600] "GET /contact.html HTTP/1.0" 404 207 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36" 1082
+Apr 21 00:18:51 IARAFIN fb[221898]: 127.0.0.1 - - [21/Apr/2026:00:18:51 +0600] "GET /about.html HTTP/1.0" 404 207 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36" 1802
+Apr 21 00:18:52 IARAFIN fb[221898]: 127.0.0.1 - - [21/Apr/2026:00:18:52 +0600] "GET /privacy.html HTTP/1.0" 404 207 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36" 1202
+Apr 21 00:19:38 IARAFIN fb[221892]: 127.0.0.1 - - [21/Apr/2026:00:19:37 +0600] "GET /terms.html HTTP/1.0" 404 207 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36" 2420
+Apr 21 00:19:51 IARAFIN fb[221888]: 127.0.0.1 - - [21/Apr/2026:00:19:51 +0600] "GET /contact.html HTTP/1.0" 404 207 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36" 2188
+
+● insta.service - insta Downloader (Flask + Gunicorn gevent)
+     Loaded: loaded (/etc/systemd/system/insta.service; enabled; vendor preset: enabled)
+     Active: active (running) since Mon 2026-04-20 23:44:34 +06; 36min ago
+   Main PID: 221873 (gunicorn)
+      Tasks: 6 (limit: 4538)
+     Memory: 127.2M
+     CGroup: /system.slice/insta.service
+             ├─221873 /root/FreeDownloader/venv/bin/python3.9 /root/FreeDownloader/venv/bin/gunicorn -c /root/FreeDownloader/infra/gunicorn.conf.py -b 127.0.0.1:8004 app:app
+             ├─221895 /root/FreeDownloader/venv/bin/python3.9 /root/FreeDownloader/venv/bin/gunicorn -c /root/FreeDownloader/infra/gunicorn.conf.py -b 127.0.0.1:8004 app:app
+             ├─221896 /root/FreeDownloader/venv/bin/python3.9 /root/FreeDownloader/venv/bin/gunicorn -c /root/FreeDownloader/infra/gunicorn.conf.py -b 127.0.0.1:8004 app:app
+             ├─221900 /root/FreeDownloader/venv/bin/python3.9 /root/FreeDownloader/venv/bin/gunicorn -c /root/FreeDownloader/infra/gunicorn.conf.py -b 127.0.0.1:8004 app:app
+             └─221901 /root/FreeDownloader/venv/bin/python3.9 /root/FreeDownloader/venv/bin/gunicorn -c /root/FreeDownloader/infra/gunicorn.conf.py -b 127.0.0.1:8004 app:app
+
+Apr 21 00:18:08 IARAFIN insta[221896]: 127.0.0.1 - - [21/Apr/2026:00:18:08 +0600] "GET / HTTP/1.0" 200 39705 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36" 2964
+Apr 21 00:18:21 IARAFIN insta[221900]: 127.0.0.1 - - [21/Apr/2026:00:18:21 +0600] "GET / HTTP/1.0" 200 39705 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36" 5713
+Apr 21 00:18:33 IARAFIN insta[221901]: 127.0.0.1 - - [21/Apr/2026:00:18:33 +0600] "GET / HTTP/1.0" 200 39705 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36" 4277
+Apr 21 00:18:39 IARAFIN insta[221896]: 127.0.0.1 - - [21/Apr/2026:00:18:39 +0600] "GET / HTTP/1.0" 200 39705 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36" 2393
+Apr 21 00:18:52 IARAFIN insta[221900]: 127.0.0.1 - - [21/Apr/2026:00:18:52 +0600] "GET /instagram HTTP/1.0" 404 207 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36" 2030
+Apr 21 00:19:20 IARAFIN insta[221901]: 127.0.0.1 - - [21/Apr/2026:00:19:20 +0600] "GET /about.html HTTP/1.0" 404 207 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36" 3770
+Apr 21 00:19:28 IARAFIN insta[221895]: 127.0.0.1 - - [21/Apr/2026:00:19:28 +0600] "GET /privacy.html HTTP/1.0" 404 207 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36" 3567
+Apr 21 00:20:54 IARAFIN insta[221896]: 127.0.0.1 - - [21/Apr/2026:00:20:54 +0600] "GET /terms.html HTTP/1.0" 404 207 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36" 2553
+Apr 21 00:20:55 IARAFIN insta[221901]: 127.0.0.1 - - [21/Apr/2026:00:20:55 +0600] "GET /contact.html HTTP/1.0" 404 207 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36" 3432
+Apr 21 00:20:58 IARAFIN insta[221896]: 127.0.0.1 - - [21/Apr/2026:00:20:58 +0600] "GET /instagram HTTP/1.0" 404 207 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36" 1118
+
+● tik.service - tik Downloader (Flask + Gunicorn gevent)
+     Loaded: loaded (/etc/systemd/system/tik.service; disabled; vendor preset: enabled)
+     Active: activating (auto-restart) (Result: exit-code) since Tue 2026-04-21 00:21:25 +06; 424ms ago
+    Process: 230281 ExecStart=/root/FreeDownloader/venv/bin/gunicorn -c /root/FreeDownloader/infra/gunicorn.conf.py -b 127.0.0.1:8003 app:app (code=exited, status=1/FAILURE)
+   Main PID: 230281 (code=exited, status=1/FAILURE)

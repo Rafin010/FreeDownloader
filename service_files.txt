@@ -1,0 +1,24 @@
+[Unit]
+Description=tik Downloader (Flask + Gunicorn gevent)
+After=network.target redis-server.service
+
+[Service]
+User=root
+WorkingDirectory=/root/FreeDownloader/tik_d
+Environment="PATH=/root/FreeDownloader/venv/bin"
+Environment="PYTHONPATH=/root/FreeDownloader"
+Environment="REDIS_URL=redis://localhost:6379/0"
+Environment="CELERY_BROKER_URL=redis://localhost:6379/1"
+Environment="CELERY_RESULT_BACKEND=redis://localhost:6379/1"
+ExecStart=/root/FreeDownloader/venv/bin/gunicorn \
+    -c /root/FreeDownloader/infra/gunicorn.conf.py \
+    -b 127.0.0.1:8003 \
+    app:app
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=tik
+
+[Install]
+WantedBy=multi-user.target

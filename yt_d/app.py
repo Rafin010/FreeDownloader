@@ -46,6 +46,12 @@ os.makedirs(DOWNLOAD_DIR, exist_ok=True)
 
 FILE_EXPIRY_TIME = 1800  # 30 minutes
 
+# ── YouTube Data API v3 ───────────────────────────────────────
+# Used for reliable search and trending feed. Get a free key from:
+# https://console.cloud.google.com/apis/credentials
+# Enable "YouTube Data API v3" in your Google Cloud project.
+YOUTUBE_API_KEY = os.environ.get('YOUTUBE_API_KEY', 'AIzaSyDNhA-ILxYK98XO-K4H0mKoWB5Mog46K7o')
+
 
 # ── Check if curl-cffi is available for browser impersonation ──
 _HAS_CURL_CFFI = False
@@ -250,9 +256,12 @@ def _is_unrecoverable_error(error_str):
 # When ALL yt-dlp strategies fail, try public Invidious instances
 # as a zero-dependency backup for metadata extraction.
 INVIDIOUS_INSTANCES = [
-    "https://vid.puffyan.us",
-    "https://inv.nadeko.net",
+    "https://inv.tux.rs",
+    "https://invidious.io.lol",
+    "https://yewtu.be",
     "https://invidious.nerdvpn.de",
+    "https://inv.nadeko.net",
+    "https://vid.puffyan.us",
     "https://invidious.privacyredirect.com",
     "https://iv.ggtyler.dev",
 ]
@@ -374,16 +383,16 @@ def extract_via_invidious_api(video_url):
 
 
 def extract_with_retry(video_url):
-    """Try ALL strategies with jittered exponential backoff.
-    Falls back to Invidious/Piped API if all yt-dlp strategies fail."""
+    """Try strategies with minimal backoff to prevent slow loading times.
+    Falls back to Invidious/Piped API quickly if yt-dlp is blocked."""
     _, num_strategies = build_yt_opts(0)
-    max_attempts = num_strategies * 2  # Double cycle for resilience
+    max_attempts = 3  # Reduced from 12 to 3 to fail fast and fallback to proxy
     last_error = None
 
     for i in range(max_attempts):
         try:
             opts, _ = build_yt_opts(i)
-            strategy_name = f"Strategy {i % num_strategies}" + (" (cycle 2)" if i >= num_strategies else "")
+            strategy_name = f"Strategy {i % num_strategies}"
             logger.info("YT extract attempt %d/%d [%s] for: %s", i + 1, max_attempts, strategy_name, video_url)
 
             with yt_dlp.YoutubeDL(opts) as ydl:
@@ -399,10 +408,8 @@ def extract_with_retry(video_url):
                 logger.error("❌ Unrecoverable error (not retrying): %s", error_str[:150])
                 raise e
 
-            # Jittered exponential backoff: base * 2^attempt + random jitter
-            base_backoff = min(2 * (i + 1), 15)
-            jitter = random.uniform(0, 2)
-            backoff = base_backoff + jitter
+            # Minimal backoff
+            backoff = random.uniform(0.5, 1.5)
             logger.warning("YT attempt %d failed: %s — backing off %.1fs before next...",
                            i + 1, error_str[:120], backoff)
 
@@ -611,81 +618,370 @@ cleanup_thread = threading.Thread(target=cleanup_old_files, daemon=True)
 cleanup_thread.start()
 
 
+# ── YouTube Data API v3 Helpers ────────────────────────────────
+# NOTE: We use urllib instead of requests for YouTube API calls because
+# gevent monkey-patching causes "maximum recursion depth exceeded" with requests.
+import urllib.request
+import urllib.parse
+
+def _yt_api_get(url, params=None):
+    """Make a GET request using urllib (gevent-safe) instead of requests."""
+    if params:
+        url = url + '?' + urllib.parse.urlencode(params)
+    req = urllib.request.Request(url, headers={
+        'User-Agent': 'FreeTube/1.0',
+        'Accept': 'application/json',
+    })
+    with urllib.request.urlopen(req, timeout=15) as resp:
+        return json.loads(resp.read().decode('utf-8'))
+
+
+
+def _parse_iso8601_duration(iso_str):
+    """Convert ISO 8601 duration (PT1H2M3S) to seconds."""
+    if not iso_str:
+        return 0
+    match = re.match(r'PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?', iso_str)
+    if not match:
+        return 0
+    h = int(match.group(1) or 0)
+    m = int(match.group(2) or 0)
+    s = int(match.group(3) or 0)
+    return h * 3600 + m * 60 + s
+
+
+def get_trending_youtube_api(page_token=None):
+    """Fetch trending/popular videos using YouTube Data API v3."""
+    if not YOUTUBE_API_KEY or YOUTUBE_API_KEY == 'YOUR_API_KEY_HERE':
+        return None, None
+    try:
+        url = "https://www.googleapis.com/youtube/v3/videos"
+        params = {
+            'part': 'snippet,contentDetails,statistics',
+            'chart': 'mostPopular',
+            'regionCode': 'US',
+            'maxResults': '24',
+            'key': YOUTUBE_API_KEY
+        }
+        if page_token:
+            params['pageToken'] = page_token
+            
+        data = _yt_api_get(url, params)
+        results = []
+        for item in data.get('items', []):
+            vid_id = item.get('id', '')
+            snippet = item.get('snippet', {})
+            stats = item.get('statistics', {})
+            content = item.get('contentDetails', {})
+            results.append({
+                'id': vid_id,
+                'title': snippet.get('title', ''),
+                'author': snippet.get('channelTitle', ''),
+                'viewCount': int(stats.get('viewCount', 0)),
+                'duration': _parse_iso8601_duration(content.get('duration', '')),
+                'thumbnail': f"https://i.ytimg.com/vi/{vid_id}/hqdefault.jpg"
+            })
+        if results:
+            logger.info("✅ YouTube API trending: %d results", len(results))
+            return results, data.get('nextPageToken')
+    except Exception as e:
+        logger.error("YouTube API trending failed: %s", str(e)[:100])
+    return None, None
+
+
+def search_youtube_api(query, page_token=None):
+    """Search videos using YouTube Data API v3."""
+    if not YOUTUBE_API_KEY or YOUTUBE_API_KEY == 'YOUR_API_KEY_HERE':
+        return None, None
+    try:
+        url = "https://www.googleapis.com/youtube/v3/search"
+        params = {
+            'part': 'snippet',
+            'q': query,
+            'type': 'video',
+            'maxResults': '20',
+            'key': YOUTUBE_API_KEY
+        }
+        if page_token:
+            params['pageToken'] = page_token
+            
+        data = _yt_api_get(url, params)
+        video_ids = []
+        snippets = {}
+        for item in data.get('items', []):
+            vid_id = item.get('id', {}).get('videoId', '')
+            if vid_id:
+                video_ids.append(vid_id)
+                snippets[vid_id] = item.get('snippet', {})
+
+        details = {}
+        if video_ids:
+            det_url = "https://www.googleapis.com/youtube/v3/videos"
+            det_params = {
+                'part': 'contentDetails,statistics',
+                'id': ','.join(video_ids),
+                'key': YOUTUBE_API_KEY
+            }
+            det_data = _yt_api_get(det_url, det_params)
+            for d in det_data.get('items', []):
+                details[d['id']] = d
+
+        results = []
+        for vid_id in video_ids:
+            s = snippets.get(vid_id, {})
+            d = details.get(vid_id, {})
+            stats = d.get('statistics', {})
+            content = d.get('contentDetails', {})
+            results.append({
+                'id': vid_id,
+                'title': s.get('title', ''),
+                'author': s.get('channelTitle', ''),
+                'viewCount': int(stats.get('viewCount', 0)),
+                'duration': _parse_iso8601_duration(content.get('duration', '')),
+                'thumbnail': f"https://i.ytimg.com/vi/{vid_id}/hqdefault.jpg"
+            })
+        if results:
+            logger.info("✅ YouTube API search: %d results for '%s'", len(results), query)
+            return results, data.get('nextPageToken')
+    except Exception as e:
+        logger.error("YouTube API search failed: %s", str(e)[:100])
+    return None, None
+
+
+
+# ── Combined Feed & Search ────────────────────────────────────
+
+def get_trending_feed(page_token=None):
+    """Get trending — YouTube API first, Invidious fallback."""
+    results, next_token = get_trending_youtube_api(page_token)
+    if results:
+        return results, next_token
+    for instance in INVIDIOUS_INSTANCES:
+        try:
+            api_url = f"{instance}/api/v1/trending?type=Video"
+            resp = http_requests.get(api_url, timeout=10, headers={
+                'User-Agent': USER_AGENTS[0], 'Accept': 'application/json'
+            })
+            if resp.status_code == 200:
+                data = resp.json()
+                results = []
+                for item in data:
+                    vid_id = item.get('videoId', '')
+                    results.append({
+                        'id': vid_id,
+                        'title': item.get('title'),
+                        'author': item.get('author'),
+                        'viewCount': item.get('viewCount', 0),
+                        'duration': item.get('lengthSeconds', 0),
+                        'thumbnail': f"https://i.ytimg.com/vi/{vid_id}/hqdefault.jpg"
+                    })
+                if results:
+                    return results, None
+        except Exception:
+            continue
+    return [], None
+
+
+def search_videos(query, page_token=None):
+    """Search — YouTube API first, Invidious/yt-dlp fallback."""
+    results, next_token = search_youtube_api(query, page_token)
+    if results:
+        return results, next_token
+    for instance in INVIDIOUS_INSTANCES:
+        try:
+            api_url = f"{instance}/api/v1/search?q={quote(query)}&type=video&region=US"
+            resp = http_requests.get(api_url, timeout=10, headers={
+                'User-Agent': USER_AGENTS[0], 'Accept': 'application/json',
+            })
+            if resp.status_code == 200:
+                data = resp.json()
+                results = []
+                for item in data:
+                    if item.get('type') == 'video':
+                        vid_id = item.get('videoId', '')
+                        results.append({
+                            'id': vid_id,
+                            'title': item.get('title'),
+                            'author': item.get('author'),
+                            'viewCount': item.get('viewCount', 0),
+                            'duration': item.get('lengthSeconds', 0),
+                            'thumbnail': f"https://i.ytimg.com/vi/{vid_id}/hqdefault.jpg"
+                        })
+                if results:
+                    return results, None
+        except Exception:
+            continue
+    try:
+        opts, _ = build_yt_opts(0)
+        opts['extract_flat'] = True
+        with yt_dlp.YoutubeDL(opts) as ydl:
+            info = ydl.extract_info(f"ytsearch15:{query}", download=False)
+            results = []
+            for entry in info.get('entries', []):
+                vid_id = entry.get('id', '')
+                results.append({
+                    'id': vid_id,
+                    'title': entry.get('title'),
+                    'author': entry.get('uploader'),
+                    'viewCount': entry.get('view_count', 0),
+                    'duration': entry.get('duration', 0),
+                    'thumbnail': f"https://i.ytimg.com/vi/{vid_id}/hqdefault.jpg"
+                })
+            return results, None
+    except Exception as e:
+        logger.error("yt-dlp search failed: %s", e)
+        return [], None
+
+
 # ── Routes ────────────────────────────────────────────────────
 @app.route('/')
 def index():
     return render_template('index.html')
 
 
-@app.route('/api/get_info', methods=['POST'])
-@limiter.limit("30/minute")
-def get_info():
-    data = request.get_json(silent=True) or {}
-    video_url = data.get('url', '').strip()
-
-    if not video_url:
-        return jsonify({"error": "No URL provided!"}), 400
-
-    yt_regex = r'(https?://(?:www\.|m\.|music\.)?(?:youtube\.com|youtu\.be)/.+)'
-    if not re.match(yt_regex, video_url):
-        return jsonify({"error": "Sorry, this downloader only supports YouTube videos and Shorts."}), 400
-
-    # ── Redis Cache Check ─────────────────────────────────────
-    cached = cache_get('yt_info', video_url)
+@app.route('/api/trending')
+@limiter.limit("60/minute")
+def trending_api():
+    """Returns trending videos for the home feed."""
+    page_token = request.args.get('pageToken', '')
+    cache_key = f"feed_{page_token}" if page_token else "feed"
+    
+    cached = cache_get('yt_trending', cache_key)
     if cached:
-        logger.info("🎯 Cache HIT for: %s", video_url[:60])
+        return jsonify(cached)
+
+    results, next_token = get_trending_feed(page_token)
+    if results:
+        data = {"results": results, "nextPageToken": next_token, "ad_slot": True}
+        cache_set('yt_trending', cache_key, data, ttl=1800)  # 30 min cache
+        return jsonify(data)
+    return jsonify({"error": "Failed to fetch trending feed"}), 500
+
+
+@app.route('/api/search')
+@limiter.limit("30/minute")
+def search_api():
+    """Returns search results."""
+    query = request.args.get('q', '').strip()
+    page_token = request.args.get('pageToken', '')
+    if not query:
+        return jsonify({"error": "Query parameter 'q' is required"}), 400
+
+    cache_key = f"{query}_{page_token}" if page_token else query
+    cached = cache_get('yt_search', cache_key)
+    if cached:
+        return jsonify(cached)
+
+    results, next_token = search_videos(query, page_token)
+    if results:
+        data = {"results": results, "nextPageToken": next_token, "ad_slot": True}
+        cache_set('yt_search', cache_key, data, ttl=3600)  # 1 hour cache
+        return jsonify(data)
+    return jsonify({"results": [], "nextPageToken": None, "ad_slot": True})
+
+
+@app.route('/api/video/<video_id>')
+@limiter.limit("30/minute")
+def get_video_details(video_id):
+    """Get metadata and streaming/download links for the player page."""
+    video_url = f"https://www.youtube.com/watch?v={video_id}"
+
+    cached = cache_get('yt_video_details', video_id)
+    if cached:
         return jsonify(cached)
 
     try:
-        info_dict, strategy_idx = extract_with_retry(video_url)
-
-        raw_title = info_dict.get('title')
-        description = info_dict.get('description')
-
-        title = ""
-        if raw_title and not raw_title.startswith("Video by "):
-            title = raw_title
-        elif description and len(description.strip()) > 0:
-            title = " ".join(description.splitlines())[:60] + "..."
-        else:
-            title = "YouTube_Video"
-
-        thumbnail = ""
-        if info_dict.get('thumbnail'):
-            thumbnail = info_dict['thumbnail']
-        elif info_dict.get('thumbnails'):
-            for tb in reversed(info_dict['thumbnails']):
-                if tb.get('url'):
-                    thumbnail = tb['url']
-                    break
-
-        if thumbnail:
-            thumbnail = f"/api/thumb_proxy?url={quote(thumbnail, safe='')}"
+        info_dict, _ = extract_with_retry(video_url)
+        
+        formats = info_dict.get('formats', [])
+        stream_url = None
+        for f in reversed(formats):
+            if f.get('ext') == 'mp4' and f.get('vcodec') != 'none' and f.get('acodec') != 'none':
+                stream_url = f.get('url')
+                break
 
         available_formats = [
             {"resolution": "1080p (Full HD)", "height": 1080},
             {"resolution": "720p (HD)", "height": 720},
             {"resolution": "480p (SD)", "height": 480},
             {"resolution": "360p", "height": 360},
+            {"resolution": "Audio (MP3)", "height": 0, "ext": "mp3"}
         ]
 
         result = {
-            "title": title,
-            "thumbnail": thumbnail,
-            "formats": available_formats
+            "id": video_id,
+            "title": info_dict.get('title', 'YouTube_Video'),
+            "author": info_dict.get('uploader', ''),
+            "description": info_dict.get('description', ''),
+            "thumbnail": f"/api/thumb_proxy?url={quote(info_dict.get('thumbnail', ''), safe='')}",
+            "stream_url": stream_url,
+            "iframe_id": video_id if not stream_url else None,
+            "download_formats": available_formats
         }
 
-        # ── Cache result for 10 minutes ───────────────────────
-        cache_set('yt_info', video_url, result, ttl=600)
-
+        cache_set('yt_video_details', video_id, result, ttl=3600)
         return jsonify(result)
 
     except Exception as e:
-        import traceback
-        traceback.print_exc()
-        error_msg = str(e)
-        user_message = classify_yt_error(error_msg)
-        return jsonify({"error": user_message}), 500
+        logger.error("Details extraction failed for %s, falling back to YouTube API: %s", video_id, e)
+        # Fallback to YouTube API to ensure video is ALWAYS playable via iframe
+        if YOUTUBE_API_KEY and YOUTUBE_API_KEY != 'YOUR_API_KEY_HERE':
+            try:
+                url = "https://www.googleapis.com/youtube/v3/videos"
+                params = {
+                    'part': 'snippet',
+                    'id': video_id,
+                    'key': YOUTUBE_API_KEY
+                }
+                data = _yt_api_get(url, params)
+                items = data.get('items', [])
+                if items:
+                    snippet = items[0].get('snippet', {})
+                    result = {
+                        "id": video_id,
+                        "title": snippet.get('title', 'YouTube Video'),
+                        "author": snippet.get('channelTitle', ''),
+                        "description": snippet.get('description', ''),
+                        "thumbnail": f"https://i.ytimg.com/vi/{video_id}/hqdefault.jpg",
+                        "stream_url": None,
+                        "iframe_id": video_id,
+                        "download_formats": [
+                            {"resolution": "1080p (Full HD)", "height": 1080},
+                            {"resolution": "720p (HD)", "height": 720},
+                            {"resolution": "480p (SD)", "height": 480},
+                            {"resolution": "360p", "height": 360},
+                            {"resolution": "Audio (MP3)", "height": 0, "ext": "mp3"}
+                        ]
+                    }
+                    cache_set('yt_video_details', video_id, result, ttl=3600)
+                    return jsonify(result)
+            except Exception as api_err:
+                logger.error("YouTube API fallback also failed: %s", api_err)
+                
+        return jsonify({"error": classify_yt_error(str(e))}), 500
+
+
+@app.route('/api/ads/config')
+def get_ads_config():
+    """Returns self-managed ad blocks for the frontend to render seamlessly."""
+    return jsonify({
+        "ads": [
+            {
+                "id": "ad_1",
+                "type": "banner",
+                "image_url": "https://via.placeholder.com/728x90.png?text=Manual+Ad+Space",
+                "target_url": "#",
+                "text": "Check out this amazing offer!"
+            },
+            {
+                "id": "ad_2",
+                "type": "sidebar",
+                "image_url": "https://via.placeholder.com/300x250.png?text=Manual+Ad+Space",
+                "target_url": "#",
+                "text": "Premium VPN Service - 50% Off"
+            }
+        ]
+    })
 
 
 # ── SSRF-Safe Thumbnail Proxy ─────────────────────────────────

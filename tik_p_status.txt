@@ -1,0 +1,19 @@
+● tik.service - tik Downloader (Flask + Gunicorn gevent)
+     Loaded: loaded (/etc/systemd/system/tik.service; disabled; vendor preset: enabled)
+     Active: active (running) since Tue 2026-04-21 01:26:28 +06; 3s ago
+   Main PID: 245063 (gunicorn)
+      Tasks: 2 (limit: 4538)
+     Memory: 35.4M
+     CGroup: /system.slice/tik.service
+             └─245063 /root/FreeDownloader/venv/bin/python3.9 /root/FreeDownloader/venv/bin/gunicorn -c /root/FreeDownloader/infra/gunicorn.conf.py -b 127.0.0.1:8003 app:app
+
+Apr 21 01:26:28 IARAFIN systemd[1]: Started tik Downloader (Flask + Gunicorn gevent).
+Apr 21 01:26:29 IARAFIN tik[245063]: ⚠️  redis package not installed — caching DISABLED. Install with: pip install redis
+Apr 21 01:26:29 IARAFIN tik[245063]: [2026-04-21 01:26:29] INFO - ✅ curl-cffi detected — browser TLS impersonation ENABLED
+Apr 21 01:26:29 IARAFIN tik[245063]: [2026-04-21 01:26:29 +0600] [245063] [INFO] Starting gunicorn 23.0.0
+Apr 21 01:26:29 IARAFIN tik[245063]: [2026-04-21 01:26:29 +0600] [245063] [ERROR] Connection in use: ('127.0.0.1', 8003)
+Apr 21 01:26:29 IARAFIN tik[245063]: [2026-04-21 01:26:29 +0600] [245063] [ERROR] connection to ('127.0.0.1', 8003) failed: [Errno 98] Address already in use
+Apr 21 01:26:30 IARAFIN tik[245063]: [2026-04-21 01:26:30 +0600] [245063] [ERROR] Connection in use: ('127.0.0.1', 8003)
+Apr 21 01:26:30 IARAFIN tik[245063]: [2026-04-21 01:26:30 +0600] [245063] [ERROR] connection to ('127.0.0.1', 8003) failed: [Errno 98] Address already in use
+Apr 21 01:26:31 IARAFIN tik[245063]: [2026-04-21 01:26:31 +0600] [245063] [ERROR] Connection in use: ('127.0.0.1', 8003)
+Apr 21 01:26:31 IARAFIN tik[245063]: [2026-04-21 01:26:31 +0600] [245063] [ERROR] connection to ('127.0.0.1', 8003) failed: [Errno 98] Address already in use
