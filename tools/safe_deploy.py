@@ -3,9 +3,14 @@ import shutil
 import subprocess
 import paramiko
 
+# Determine Project Root (parent directory of this script's directory)
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
+
 def run_cmd(cmd):
+    # Run from Project Root to ensure git commands work correctly
     print(f"Running: {cmd}")
-    res = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+    res = subprocess.run(cmd, shell=True, capture_output=True, text=True, cwd=PROJECT_ROOT)
     if res.stdout:
         print(f"stdout: {res.stdout}")
     if res.stderr:
@@ -13,10 +18,10 @@ def run_cmd(cmd):
     return res.returncode
 
 def main():
-    fb_cookie_orig = "fb_downloader/cookies.txt"
-    yt_cookie_orig = "yt_d/cookies.txt"
-    fb_cookie_temp = "temp_fb_cookies.txt"
-    yt_cookie_temp = "temp_yt_cookies.txt"
+    fb_cookie_orig = os.path.join(PROJECT_ROOT, "fb_downloader", "cookies.txt")
+    yt_cookie_orig = os.path.join(PROJECT_ROOT, "yt_d", "cookies.txt")
+    fb_cookie_temp = os.path.join(PROJECT_ROOT, "temp_fb_cookies.txt")
+    yt_cookie_temp = os.path.join(PROJECT_ROOT, "temp_yt_cookies.txt")
 
     # 1. Backup cookies
     print("Backing up cookies...")
@@ -30,8 +35,11 @@ def main():
     run_cmd("git reset --soft origin/main")
     
     # Restore dummy cookies from origin/main to both working tree and index
-    run_cmd(f"git checkout origin/main -- {fb_cookie_orig} {yt_cookie_orig}")
-    run_cmd(f"git add {fb_cookie_orig} {yt_cookie_orig}")
+    # Note: git paths are relative to repo root, and we run run_cmd with cwd=PROJECT_ROOT
+    fb_rel = "fb_downloader/cookies.txt"
+    yt_rel = "yt_d/cookies.txt"
+    run_cmd(f"git checkout origin/main -- {fb_rel} {yt_rel}")
+    run_cmd(f"git add {fb_rel} {yt_rel}")
 
     # Add all other untracked/modified files (the actual frontend/code updates)
     run_cmd("git add .")

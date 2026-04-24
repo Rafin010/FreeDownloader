@@ -1,84 +1,84 @@
 ===== YT SERVICE =====
--- Logs begin at Fri 2026-04-10 23:34:02 +06, end at Fri 2026-04-17 03:21:47 +06. --
-Apr 17 03:16:47 IARAFIN gunicorn[112935]: [2026-04-17 03:16:47 +0600] [112935] [INFO] Handling signal: term
-Apr 17 03:16:47 IARAFIN gunicorn[112935]: [2026-04-17 03:16:47 +0600] [112935] [ERROR] Worker (pid:112964) was sent SIGTERM!
-Apr 17 03:16:47 IARAFIN gunicorn[112935]: [2026-04-17 03:16:47 +0600] [112935] [ERROR] Worker (pid:112965) was sent SIGTERM!
-Apr 17 03:16:47 IARAFIN gunicorn[112935]: [2026-04-17 03:16:47 +0600] [112935] [INFO] Shutting down: Master
-Apr 17 03:16:48 IARAFIN systemd[1]: yt.service: Succeeded.
-Apr 17 03:16:48 IARAFIN systemd[1]: Stopped YouTube Downloader.
-Apr 17 03:16:48 IARAFIN systemd[1]: Started YouTube Downloader.
-Apr 17 03:16:48 IARAFIN gunicorn[113319]: [2026-04-17 03:16:48 +0600] [113319] [INFO] Starting gunicorn 23.0.0
-Apr 17 03:16:48 IARAFIN gunicorn[113319]: [2026-04-17 03:16:48 +0600] [113319] [INFO] Listening at: http://0.0.0.0:8004 (113319)
-Apr 17 03:16:48 IARAFIN gunicorn[113319]: [2026-04-17 03:16:48 +0600] [113319] [INFO] Using worker: sync
-Apr 17 03:16:48 IARAFIN gunicorn[113327]: [2026-04-17 03:16:48 +0600] [113327] [INFO] Booting worker with pid: 113327
-Apr 17 03:16:48 IARAFIN gunicorn[113331]: [2026-04-17 03:16:48 +0600] [113331] [INFO] Booting worker with pid: 113331
-Apr 17 03:16:50 IARAFIN gunicorn[113327]: [2026-04-17 03:16:50] INFO - ✅ curl-cffi detected — browser TLS impersonation ENABLED
-Apr 17 03:16:50 IARAFIN gunicorn[113327]: [2026-04-17 03:16:50] INFO - yt-dlp version: 2025.10.14
-Apr 17 03:16:50 IARAFIN gunicorn[113327]: [2026-04-17 03:16:50] INFO - ✅ cookies.txt contains authenticated session cookies: LOGIN_INFO, SID, SSID
-Apr 17 03:16:50 IARAFIN gunicorn[113331]: [2026-04-17 03:16:50] INFO - ✅ curl-cffi detected — browser TLS impersonation ENABLED
-Apr 17 03:16:50 IARAFIN gunicorn[113331]: [2026-04-17 03:16:50] INFO - yt-dlp version: 2025.10.14
-Apr 17 03:16:50 IARAFIN gunicorn[113327]: [2026-04-17 03:16:50] INFO - ℹ️  No po_token.txt found — PO token not configured. Generate one with: npx playwright install && node po_token_generator.js
-Apr 17 03:16:50 IARAFIN gunicorn[113331]: [2026-04-17 03:16:50] INFO - ✅ cookies.txt contains authenticated session cookies: LOGIN_INFO, SID, SSID
-Apr 17 03:16:50 IARAFIN gunicorn[113331]: [2026-04-17 03:16:50] INFO - ℹ️  No po_token.txt found — PO token not configured. Generate one with: npx playwright install && node po_token_generator.js
+-- Logs begin at Mon 2026-04-20 18:53:48 +06, end at Sat 2026-04-25 02:45:51 +06. --
+Apr 25 02:44:02 IARAFIN yt[1497994]: [2026-04-25 02:44:02 +0600] [1497994] [INFO] Starting gunicorn 23.0.0
+Apr 25 02:44:02 IARAFIN yt[1497994]: [2026-04-25 02:44:02 +0600] [1497994] [INFO] Listening at: http://127.0.0.1:8001 (1497994)
+Apr 25 02:44:02 IARAFIN yt[1497994]: [2026-04-25 02:44:02 +0600] [1497994] [INFO] Using worker: gevent
+Apr 25 02:44:02 IARAFIN yt[1498034]: [2026-04-25 02:44:02 +0600] [1498034] [INFO] Booting worker with pid: 1498034
+Apr 25 02:44:02 IARAFIN yt[1498034]: [2026-04-25 02:44:02 +0600] [1498034] [INFO] Worker spawned (pid: 1498034)
+Apr 25 02:44:02 IARAFIN yt[1498035]: [2026-04-25 02:44:02 +0600] [1498035] [INFO] Booting worker with pid: 1498035
+Apr 25 02:44:02 IARAFIN yt[1498035]: [2026-04-25 02:44:02 +0600] [1498035] [INFO] Worker spawned (pid: 1498035)
+Apr 25 02:44:02 IARAFIN yt[1498036]: [2026-04-25 02:44:02 +0600] [1498036] [INFO] Booting worker with pid: 1498036
+Apr 25 02:44:02 IARAFIN yt[1498036]: [2026-04-25 02:44:02 +0600] [1498036] [INFO] Worker spawned (pid: 1498036)
+Apr 25 02:44:02 IARAFIN yt[1498037]: [2026-04-25 02:44:02 +0600] [1498037] [INFO] Booting worker with pid: 1498037
+Apr 25 02:44:02 IARAFIN yt[1498037]: [2026-04-25 02:44:02 +0600] [1498037] [INFO] Worker spawned (pid: 1498037)
+Apr 25 02:44:15 IARAFIN yt[1498035]: /root/FreeDownloader/venv/lib/python3.9/site-packages/gunicorn/workers/ggevent.py:38: MonkeyPatchWarning: Monkey-patching ssl after ssl has already been imported may lead to errors, including RecursionError on Python 3.6. It may also silently lead to incorrect behaviour on Python 3.7. Please monkey-patch earlier. See https://github.com/gevent/gevent/issues/1016. Modules that had direct imports (NOT patched): ['urllib3.util.ssl_ (/root/FreeDownloader/venv/lib/python3.9/site-packages/urllib3/util/ssl_.py)', 'urllib3.util (/root/FreeDownloader/venv/lib/python3.9/site-packages/urllib3/util/__init__.py)'].
+Apr 25 02:44:15 IARAFIN yt[1498035]:   monkey.patch_all()
+Apr 25 02:44:15 IARAFIN yt[1498037]: /root/FreeDownloader/venv/lib/python3.9/site-packages/gunicorn/workers/ggevent.py:38: MonkeyPatchWarning: Monkey-patching ssl after ssl has already been imported may lead to errors, including RecursionError on Python 3.6. It may also silently lead to incorrect behaviour on Python 3.7. Please monkey-patch earlier. See https://github.com/gevent/gevent/issues/1016. Modules that had direct imports (NOT patched): ['urllib3.util.ssl_ (/root/FreeDownloader/venv/lib/python3.9/site-packages/urllib3/util/ssl_.py)', 'urllib3.util (/root/FreeDownloader/venv/lib/python3.9/site-packages/urllib3/util/__init__.py)'].
+Apr 25 02:44:15 IARAFIN yt[1498037]:   monkey.patch_all()
+Apr 25 02:44:15 IARAFIN yt[1498034]: /root/FreeDownloader/venv/lib/python3.9/site-packages/gunicorn/workers/ggevent.py:38: MonkeyPatchWarning: Monkey-patching ssl after ssl has already been imported may lead to errors, including RecursionError on Python 3.6. It may also silently lead to incorrect behaviour on Python 3.7. Please monkey-patch earlier. See https://github.com/gevent/gevent/issues/1016. Modules that had direct imports (NOT patched): ['urllib3.util.ssl_ (/root/FreeDownloader/venv/lib/python3.9/site-packages/urllib3/util/ssl_.py)', 'urllib3.util (/root/FreeDownloader/venv/lib/python3.9/site-packages/urllib3/util/__init__.py)'].
+Apr 25 02:44:15 IARAFIN yt[1498034]:   monkey.patch_all()
+Apr 25 02:44:15 IARAFIN yt[1498036]: /root/FreeDownloader/venv/lib/python3.9/site-packages/gunicorn/workers/ggevent.py:38: MonkeyPatchWarning: Monkey-patching ssl after ssl has already been imported may lead to errors, including RecursionError on Python 3.6. It may also silently lead to incorrect behaviour on Python 3.7. Please monkey-patch earlier. See https://github.com/gevent/gevent/issues/1016. Modules that had direct imports (NOT patched): ['urllib3.util.ssl_ (/root/FreeDownloader/venv/lib/python3.9/site-packages/urllib3/util/ssl_.py)', 'urllib3.util (/root/FreeDownloader/venv/lib/python3.9/site-packages/urllib3/util/__init__.py)'].
+Apr 25 02:44:15 IARAFIN yt[1498036]:   monkey.patch_all()
+Apr 25 02:44:46 IARAFIN yt[1498035]: 127.0.0.1 - - [25/Apr/2026:02:44:46 +0600] "GET / HTTP/1.1" 200 49924 "-" "curl/7.68.0" 76647
 
 ===== TIKTOK SERVICE =====
--- Logs begin at Fri 2026-04-10 23:34:02 +06, end at Fri 2026-04-17 03:21:47 +06. --
-Apr 14 17:58:46 IARAFIN gunicorn[74414]: [2026-04-14 17:58:46 +0600] [74414] [WARNING] Invalid request from ip=66.132.195.98: Invalid HTTP Version: (2, 0)
-Apr 14 19:19:33 IARAFIN gunicorn[74415]: [2026-04-14 19:19:33 +0600] [74415] [WARNING] Invalid request from ip=66.132.224.84: Invalid HTTP Version: (2, 0)
-Apr 15 15:54:31 IARAFIN gunicorn[74414]: [2026-04-15 15:54:31 +0600] [74414] [WARNING] Invalid request from ip=16.58.56.214: Invalid HTTP request line: 'SSH-2.0-Go'
-Apr 15 19:49:33 IARAFIN gunicorn[74415]: [2026-04-15 19:49:33 +0600] [74415] [WARNING] Invalid request from ip=66.132.195.107: Invalid HTTP Version: (2, 0)
-Apr 15 20:02:57 IARAFIN gunicorn[74414]: [2026-04-15 20:02:57 +0600] [74414] [WARNING] Invalid request from ip=199.45.155.91: Invalid HTTP Version: (2, 0)
-Apr 15 21:34:46 IARAFIN gunicorn[74415]: [2026-04-15 21:34:46] INFO - TikTok strategy 0 for: https://www.tiktok.com/@tiktok/video/7106594312292453675
-Apr 15 21:34:46 IARAFIN gunicorn[74415]: Deprecated Feature: Support for Python version 3.9 has been deprecated. Please update to Python 3.10 or above
-Apr 15 21:34:47 IARAFIN gunicorn[74415]: ERROR: [TikTok] 7106594312292453675: Video not available, status code 0; please report this issue on  https://github.com/yt-dlp/yt-dlp/issues?q= , filling out the appropriate issue template. Confirm you are on the latest version using  yt-dlp -U
-Apr 15 21:34:47 IARAFIN gunicorn[74415]: [2026-04-15 21:34:47] WARNING - TikTok strategy 0 failed: ERROR: [TikTok] 7106594312292453675: Video not available, status code 0; please report this issue on  https://github.com
-Apr 15 21:34:47 IARAFIN gunicorn[74415]: [2026-04-15 21:34:47] INFO - TikTok strategy 1 for: https://www.tiktok.com/@tiktok/video/7106594312292453675
-Apr 15 21:34:47 IARAFIN gunicorn[74415]: Deprecated Feature: Support for Python version 3.9 has been deprecated. Please update to Python 3.10 or above
-Apr 15 21:34:47 IARAFIN gunicorn[74415]: ERROR: [TikTok] 7106594312292453675: Video not available, status code 0; please report this issue on  https://github.com/yt-dlp/yt-dlp/issues?q= , filling out the appropriate issue template. Confirm you are on the latest version using  yt-dlp -U
-Apr 15 21:34:47 IARAFIN gunicorn[74415]: [2026-04-15 21:34:47] WARNING - TikTok strategy 1 failed: ERROR: [TikTok] 7106594312292453675: Video not available, status code 0; please report this issue on  https://github.com
-Apr 15 21:34:47 IARAFIN gunicorn[74415]: [2026-04-15 21:34:47] INFO - TikTok strategy 2 for: https://www.tiktok.com/@tiktok/video/7106594312292453675
-Apr 15 21:34:47 IARAFIN gunicorn[74415]: Deprecated Feature: Support for Python version 3.9 has been deprecated. Please update to Python 3.10 or above
-Apr 15 21:34:48 IARAFIN gunicorn[74415]: [2026-04-15 21:34:48] INFO - ✅ TikTok strategy 2 succeeded!
-Apr 16 13:45:01 IARAFIN gunicorn[74414]: [2026-04-16 13:45:01 +0600] [74414] [WARNING] Invalid request from ip=18.218.118.203: Invalid HTTP request line: 'SSH-2.0-Go'
-Apr 16 14:53:35 IARAFIN gunicorn[74414]: [2026-04-16 14:53:35 +0600] [74414] [WARNING] Invalid request from ip=16.58.56.214: Invalid HTTP request line: 'SSH-2.0-Go'
-Apr 16 21:04:49 IARAFIN gunicorn[74415]: [2026-04-16 21:04:49 +0600] [74415] [WARNING] Invalid request from ip=66.132.195.92: Invalid HTTP Version: (2, 0)
-Apr 16 23:24:39 IARAFIN gunicorn[74414]: [2026-04-16 23:24:39 +0600] [74414] [WARNING] Invalid request from ip=167.94.146.54: Invalid HTTP Version: (2, 0)
+-- Logs begin at Mon 2026-04-20 18:53:48 +06, end at Sat 2026-04-25 02:45:51 +06. --
+Apr 21 01:34:19 IARAFIN systemd[1]: tiktok.service: Scheduled restart job, restart counter is at 35.
+Apr 21 01:34:19 IARAFIN systemd[1]: Stopped TikTok Downloader.
+Apr 21 01:34:19 IARAFIN systemd[1]: Started TikTok Downloader.
+Apr 21 01:34:19 IARAFIN gunicorn[247608]: [2026-04-21 01:34:19 +0600] [247608] [INFO] Starting gunicorn 23.0.0
+Apr 21 01:34:19 IARAFIN gunicorn[247608]: [2026-04-21 01:34:19 +0600] [247608] [INFO] Listening at: http://0.0.0.0:8003 (247608)
+Apr 21 01:34:19 IARAFIN gunicorn[247608]: [2026-04-21 01:34:19 +0600] [247608] [INFO] Using worker: sync
+Apr 21 01:34:19 IARAFIN gunicorn[247609]: [2026-04-21 01:34:19 +0600] [247609] [INFO] Booting worker with pid: 247609
+Apr 21 01:34:19 IARAFIN gunicorn[247610]: [2026-04-21 01:34:19 +0600] [247610] [INFO] Booting worker with pid: 247610
+Apr 21 01:34:19 IARAFIN gunicorn[247609]: ⚠️  redis package not installed — caching DISABLED. Install with: pip install redis
+Apr 21 01:34:19 IARAFIN gunicorn[247609]: [2026-04-21 01:34:19] INFO - ✅ curl-cffi detected — browser TLS impersonation ENABLED
+Apr 21 01:34:19 IARAFIN gunicorn[247610]: ⚠️  redis package not installed — caching DISABLED. Install with: pip install redis
+Apr 21 01:34:19 IARAFIN gunicorn[247610]: [2026-04-21 01:34:19] INFO - ✅ curl-cffi detected — browser TLS impersonation ENABLED
+Apr 21 01:34:26 IARAFIN systemd[1]: Stopping TikTok Downloader...
+Apr 21 01:34:26 IARAFIN gunicorn[247608]: [2026-04-21 01:34:26 +0600] [247608] [INFO] Handling signal: term
+Apr 21 01:34:26 IARAFIN gunicorn[247609]: [2026-04-21 01:34:26 +0600] [247609] [INFO] Worker exiting (pid: 247609)
+Apr 21 01:34:26 IARAFIN gunicorn[247610]: [2026-04-21 01:34:26 +0600] [247610] [INFO] Worker exiting (pid: 247610)
+Apr 21 01:34:26 IARAFIN gunicorn[247608]: [2026-04-21 01:34:26 +0600] [247608] [ERROR] Worker (pid:247609) was sent SIGTERM!
+Apr 21 01:34:26 IARAFIN gunicorn[247608]: [2026-04-21 01:34:26 +0600] [247608] [INFO] Shutting down: Master
+Apr 21 01:34:26 IARAFIN systemd[1]: tiktok.service: Succeeded.
+Apr 21 01:34:26 IARAFIN systemd[1]: Stopped TikTok Downloader.
 
 ===== P_D SERVICE =====
--- Logs begin at Fri 2026-04-10 23:34:02 +06, end at Fri 2026-04-17 03:21:47 +06. --
-Apr 17 03:07:02 IARAFIN gunicorn[112963]: [2026-04-17 03:07:02 +0600] [112963] [INFO] Starting gunicorn 23.0.0
-Apr 17 03:07:02 IARAFIN gunicorn[112963]: [2026-04-17 03:07:02 +0600] [112963] [INFO] Listening at: http://0.0.0.0:8009 (112963)
-Apr 17 03:07:02 IARAFIN gunicorn[112963]: [2026-04-17 03:07:02 +0600] [112963] [INFO] Using worker: sync
-Apr 17 03:07:02 IARAFIN gunicorn[112976]: [2026-04-17 03:07:02 +0600] [112976] [INFO] Booting worker with pid: 112976
-Apr 17 03:07:02 IARAFIN gunicorn[112977]: [2026-04-17 03:07:02 +0600] [112977] [INFO] Booting worker with pid: 112977
-Apr 17 03:16:47 IARAFIN systemd[1]: Stopping P_D Downloader...
-Apr 17 03:16:47 IARAFIN gunicorn[112977]: [2026-04-17 03:16:47 +0600] [112977] [INFO] Worker exiting (pid: 112977)
-Apr 17 03:16:47 IARAFIN gunicorn[112976]: [2026-04-17 03:16:47 +0600] [112976] [INFO] Worker exiting (pid: 112976)
-Apr 17 03:16:47 IARAFIN gunicorn[112963]: [2026-04-17 03:16:47 +0600] [112963] [INFO] Handling signal: term
-Apr 17 03:16:47 IARAFIN gunicorn[112963]: [2026-04-17 03:16:47 +0600] [112963] [ERROR] Worker (pid:112976) was sent SIGTERM!
-Apr 17 03:16:47 IARAFIN gunicorn[112963]: [2026-04-17 03:16:47 +0600] [112963] [ERROR] Worker (pid:112977) was sent SIGTERM!
-Apr 17 03:16:47 IARAFIN gunicorn[112963]: [2026-04-17 03:16:47 +0600] [112963] [INFO] Shutting down: Master
-Apr 17 03:16:48 IARAFIN systemd[1]: p_d.service: Succeeded.
-Apr 17 03:16:48 IARAFIN systemd[1]: Stopped P_D Downloader.
-Apr 17 03:16:48 IARAFIN systemd[1]: Started P_D Downloader.
-Apr 17 03:16:48 IARAFIN gunicorn[113322]: [2026-04-17 03:16:48 +0600] [113322] [INFO] Starting gunicorn 23.0.0
-Apr 17 03:16:48 IARAFIN gunicorn[113322]: [2026-04-17 03:16:48 +0600] [113322] [INFO] Listening at: http://0.0.0.0:8009 (113322)
-Apr 17 03:16:48 IARAFIN gunicorn[113322]: [2026-04-17 03:16:48 +0600] [113322] [INFO] Using worker: sync
-Apr 17 03:16:48 IARAFIN gunicorn[113329]: [2026-04-17 03:16:48 +0600] [113329] [INFO] Booting worker with pid: 113329
-Apr 17 03:16:48 IARAFIN gunicorn[113335]: [2026-04-17 03:16:48 +0600] [113335] [INFO] Booting worker with pid: 113335
+-- Logs begin at Mon 2026-04-20 18:53:48 +06, end at Sat 2026-04-25 02:45:51 +06. --
+Apr 25 02:45:45 IARAFIN p_d[1498739]: [2026-04-25 02:45:45] INFO - ✅ curl-cffi detected — browser TLS impersonation ENABLED
+Apr 25 02:45:45 IARAFIN p_d[1498739]: [2026-04-25 02:45:45 +0600] [1498739] [INFO] Starting gunicorn 23.0.0
+Apr 25 02:45:45 IARAFIN p_d[1498739]: [2026-04-25 02:45:45 +0600] [1498739] [INFO] Listening at: http://127.0.0.1:8005 (1498739)
+Apr 25 02:45:45 IARAFIN p_d[1498739]: [2026-04-25 02:45:45 +0600] [1498739] [INFO] Using worker: gevent
+Apr 25 02:45:45 IARAFIN p_d[1498742]: [2026-04-25 02:45:45 +0600] [1498742] [INFO] Booting worker with pid: 1498742
+Apr 25 02:45:45 IARAFIN p_d[1498742]: [2026-04-25 02:45:45 +0600] [1498742] [INFO] Worker spawned (pid: 1498742)
+Apr 25 02:45:45 IARAFIN p_d[1498745]: [2026-04-25 02:45:45 +0600] [1498745] [INFO] Booting worker with pid: 1498745
+Apr 25 02:45:45 IARAFIN p_d[1498745]: [2026-04-25 02:45:45 +0600] [1498745] [INFO] Worker spawned (pid: 1498745)
+Apr 25 02:45:45 IARAFIN p_d[1498746]: [2026-04-25 02:45:45 +0600] [1498746] [INFO] Booting worker with pid: 1498746
+Apr 25 02:45:45 IARAFIN p_d[1498746]: [2026-04-25 02:45:45 +0600] [1498746] [INFO] Worker spawned (pid: 1498746)
+Apr 25 02:45:45 IARAFIN p_d[1498747]: [2026-04-25 02:45:45 +0600] [1498747] [INFO] Booting worker with pid: 1498747
+Apr 25 02:45:45 IARAFIN p_d[1498747]: [2026-04-25 02:45:45 +0600] [1498747] [INFO] Worker spawned (pid: 1498747)
+Apr 25 02:45:45 IARAFIN p_d[1498742]: /root/FreeDownloader/venv/lib/python3.9/site-packages/gunicorn/workers/ggevent.py:38: MonkeyPatchWarning: Monkey-patching ssl after ssl has already been imported may lead to errors, including RecursionError on Python 3.6. It may also silently lead to incorrect behaviour on Python 3.7. Please monkey-patch earlier. See https://github.com/gevent/gevent/issues/1016. Modules that had direct imports (NOT patched): ['urllib3.util (/root/FreeDownloader/venv/lib/python3.9/site-packages/urllib3/util/__init__.py)', 'urllib3.util.ssl_ (/root/FreeDownloader/venv/lib/python3.9/site-packages/urllib3/util/ssl_.py)'].
+Apr 25 02:45:45 IARAFIN p_d[1498742]:   monkey.patch_all()
+Apr 25 02:45:46 IARAFIN p_d[1498746]: /root/FreeDownloader/venv/lib/python3.9/site-packages/gunicorn/workers/ggevent.py:38: MonkeyPatchWarning: Monkey-patching ssl after ssl has already been imported may lead to errors, including RecursionError on Python 3.6. It may also silently lead to incorrect behaviour on Python 3.7. Please monkey-patch earlier. See https://github.com/gevent/gevent/issues/1016. Modules that had direct imports (NOT patched): ['urllib3.util (/root/FreeDownloader/venv/lib/python3.9/site-packages/urllib3/util/__init__.py)', 'urllib3.util.ssl_ (/root/FreeDownloader/venv/lib/python3.9/site-packages/urllib3/util/ssl_.py)'].
+Apr 25 02:45:46 IARAFIN p_d[1498746]:   monkey.patch_all()
+Apr 25 02:45:46 IARAFIN p_d[1498745]: /root/FreeDownloader/venv/lib/python3.9/site-packages/gunicorn/workers/ggevent.py:38: MonkeyPatchWarning: Monkey-patching ssl after ssl has already been imported may lead to errors, including RecursionError on Python 3.6. It may also silently lead to incorrect behaviour on Python 3.7. Please monkey-patch earlier. See https://github.com/gevent/gevent/issues/1016. Modules that had direct imports (NOT patched): ['urllib3.util (/root/FreeDownloader/venv/lib/python3.9/site-packages/urllib3/util/__init__.py)', 'urllib3.util.ssl_ (/root/FreeDownloader/venv/lib/python3.9/site-packages/urllib3/util/ssl_.py)'].
+Apr 25 02:45:46 IARAFIN p_d[1498745]:   monkey.patch_all()
+Apr 25 02:45:46 IARAFIN p_d[1498747]: /root/FreeDownloader/venv/lib/python3.9/site-packages/gunicorn/workers/ggevent.py:38: MonkeyPatchWarning: Monkey-patching ssl after ssl has already been imported may lead to errors, including RecursionError on Python 3.6. It may also silently lead to incorrect behaviour on Python 3.7. Please monkey-patch earlier. See https://github.com/gevent/gevent/issues/1016. Modules that had direct imports (NOT patched): ['urllib3.util (/root/FreeDownloader/venv/lib/python3.9/site-packages/urllib3/util/__init__.py)', 'urllib3.util.ssl_ (/root/FreeDownloader/venv/lib/python3.9/site-packages/urllib3/util/ssl_.py)'].
+Apr 25 02:45:46 IARAFIN p_d[1498747]:   monkey.patch_all()
 
 ===== PORT CHECK =====
-LISTEN    0         2048               0.0.0.0:8000             0.0.0.0:*        users:(("gunicorn",pid=113339,fd=5),("gunicorn",pid=113338,fd=5),("gunicorn",pid=113325,fd=5))
-LISTEN    0         2048               0.0.0.0:8001             0.0.0.0:*        users:(("gunicorn",pid=113334,fd=5),("gunicorn",pid=113333,fd=5),("gunicorn",pid=113320,fd=5))
-LISTEN    0         2048               0.0.0.0:8002             0.0.0.0:*        users:(("gunicorn",pid=113328,fd=5),("gunicorn",pid=113326,fd=5),("gunicorn",pid=113315,fd=5))
-LISTEN    0         2048               0.0.0.0:8003             0.0.0.0:*        users:(("gunicorn",pid=74415,fd=5),("gunicorn",pid=74414,fd=5),("gunicorn",pid=74410,fd=5))
-LISTEN    0         2048               0.0.0.0:8004             0.0.0.0:*        users:(("gunicorn",pid=113331,fd=5),("gunicorn",pid=113327,fd=5),("gunicorn",pid=113319,fd=5))
-LISTEN    0         2048               0.0.0.0:8008             0.0.0.0:*        users:(("gunicorn",pid=113332,fd=5),("gunicorn",pid=113330,fd=5),("gunicorn",pid=113323,fd=5))
-LISTEN    0         2048               0.0.0.0:8009             0.0.0.0:*        users:(("gunicorn",pid=113335,fd=5),("gunicorn",pid=113329,fd=5),("gunicorn",pid=113322,fd=5))
+LISTEN    0         2048               0.0.0.0:8000             0.0.0.0:*        users:(("gunicorn",pid=1498030,fd=5),("gunicorn",pid=1498029,fd=5),("gunicorn",pid=1498026,fd=5))
+LISTEN    0         2048             127.0.0.1:8001             0.0.0.0:*        users:(("gunicorn",pid=1498037,fd=5),("gunicorn",pid=1498036,fd=5),("gunicorn",pid=1498035,fd=5),("gunicorn",pid=1498034,fd=5),("gunicorn",pid=1497994,fd=5))
+LISTEN    0         2048             127.0.0.1:8002             0.0.0.0:*        users:(("gunicorn",pid=1498090,fd=5),("gunicorn",pid=1498089,fd=5),("gunicorn",pid=1498088,fd=5),("gunicorn",pid=1498087,fd=5),("gunicorn",pid=1498079,fd=5))
+LISTEN    0         2048             127.0.0.1:8003             0.0.0.0:*        users:(("gunicorn",pid=249125,fd=5),("gunicorn",pid=249122,fd=5),("gunicorn",pid=249119,fd=5),("gunicorn",pid=249118,fd=5),("gunicorn",pid=249104,fd=5))
+LISTEN    0         2048             127.0.0.1:8004             0.0.0.0:*        users:(("gunicorn",pid=1498070,fd=5),("gunicorn",pid=1498069,fd=5),("gunicorn",pid=1498068,fd=5),("gunicorn",pid=1498067,fd=5),("gunicorn",pid=1498064,fd=5))
+LISTEN    0         2048             127.0.0.1:8005             0.0.0.0:*        users:(("gunicorn",pid=1498747,fd=5),("gunicorn",pid=1498746,fd=5),("gunicorn",pid=1498745,fd=5),("gunicorn",pid=1498742,fd=5),("gunicorn",pid=1498739,fd=5))
+LISTEN    0         2048               0.0.0.0:8008             0.0.0.0:*        users:(("gunicorn",pid=1497606,fd=5),("gunicorn",pid=1497584,fd=5),("gunicorn",pid=1497542,fd=5))
 
 ===== CURL TESTS =====
 YT(8004): 200
 TikTok(8003): 200
-P_D(8009): 200
+P_D(8009): 000
 FB(8001): 200
 Insta(8002): 200
