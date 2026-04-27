@@ -1,346 +1,1048 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FreeDownloader - YouTube Video Downloader HD</title>
-    <meta name="description" content="Download YouTube videos in HD, 1080p, 4K quality. Free, fast, no watermark.">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://youtube.freedownloader.top/">
-    <meta property="og:title" content="FreeDownloader - YouTube Video Downloader">
-    <meta property="og:description" content="Download YouTube videos instantly in HD quality.">
-    <meta property="og:image" content="/static/logo.png">
-    <link rel="icon" href="/static/logo.png" type="image/png">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-    <!-- SEO Schema -->
-    <script type="application/ld+json">
-    {"@context":"https://schema.org","@type":"WebSite","url":"https://youtube.freedownloader.top/","potentialAction":{"@type":"SearchAction","target":"https://youtube.freedownloader.top/?q={search_term_string}","query-input":"required name=search_term_string"}}
+    <title>FreeDownloader - Video Streaming & Downloader</title>
+    <meta name="description" content="Watch, discover, and download high-quality videos instantly with FreeDownloader.">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://freedownloader.top/">
+    <meta property="og:title" content="FreeDownloader - Video Streaming & Downloader">
+    <meta property="og:description" content="Watch, discover, and download high-quality videos instantly.">
+    <meta property="og:image" content="/static/logo.png">
+
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:title" content="FreeDownloader">
+    <meta property="twitter:description" content="Watch, discover, and download high-quality videos instantly.">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="/static/logo.png" type="image/png">
+
+    <script id="seo-schema" type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "url": "https://freedownloader.top/",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://freedownloader.top/?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
     </script>
+
+    <!-- FAQPage Structured Data -->
     <script type="application/ld+json">
-    {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How to Download YouTube Videos Online?","acceptedAnswer":{"@type":"Answer","text":"Just copy the video link, paste it into our tool, select your preferred quality, and hit download."}},{"@type":"Question","name":"Can I Download YouTube Shorts in HD?","acceptedAnswer":{"@type":"Answer","text":"Yes! Paste the Shorts link and save it in HD quality without any watermark."}},{"@type":"Question","name":"What is the Best YouTube Video Downloader?","acceptedAnswer":{"@type":"Answer","text":"Free Downloader is 100% free, requires no app installation, and supports HD, 1080p, 4K downloads without watermarks."}}]}
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [{
+        "@type": "Question",
+        "name": "How to Download YouTube Videos Online?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "You can download YouTube videos easily. Just copy the video link from YouTube, paste it into our YouTube Video Downloader tool, select your preferred quality (like 1080p HD or 4K), and hit download."
+        }
+      },{
+        "@type": "Question",
+        "name": "Can I Download YouTube Shorts in HD?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes! Our tool works perfectly as a YouTube Shorts Downloader. Paste the Shorts link, and you can save it directly to your device in HD quality without any watermark."
+        }
+      },{
+        "@type": "Question",
+        "name": "Why YouTube Videos Cannot Be Downloaded Sometimes?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Sometimes YouTube videos cannot be downloaded if the video is age-restricted, set to private, the link is broken, or the video has been removed by the creator. Ensure the video is public and the URL is correct."
+        }
+      },{
+        "@type": "Question",
+        "name": "What is the Best YouTube Video Downloader?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Free Downloader is considered one of the best YouTube video downloader tools because it is 100% free, requires no app installation, and supports HD, 1080p, 4K, and Shorts video downloads without any watermarks."
+        }
+      }]
+    }
     </script>
 
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
-                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    fontFamily: {
+                        sans: ['Roboto', 'Arial', 'sans-serif'],
+                    },
                     colors: {
-                        vm: {
-                            orange: '#FF6D2E',
-                            orangeHover: '#E85A1E',
-                            dark: '#1A1A2E',
-                            darker: '#16162A',
-                            card: '#1E1E35',
-                            cardHover: '#252545',
-                            border: '#2A2A4A',
-                            text: '#E8E8F0',
-                            textSec: '#9090B0',
-                            green: '#2ECC71',
-                            blue: '#3498DB',
+                        yt: {
+                            bg: 'transparent',
+                            header: 'rgba(15, 5, 10, 0.55)',
+                            hover: 'rgba(255, 20, 60, 0.12)',
+                            border: 'rgba(255, 100, 120, 0.15)',
+                            searchBg: 'rgba(0, 0, 0, 0.4)',
+                            text: '#fdfdfd',
+                            textSec: '#ffb3c1',
+                            red: '#e6193c',
+                            blue: '#4db8ff',
+                            buttonBg: 'rgba(20, 0, 5, 0.4)'
                         }
                     }
                 }
             }
         }
     </script>
+
     <style>
-        body { font-family: 'Inter', sans-serif; background: #0F0F1A; color: #E8E8F0; }
-        .vm-gradient { background: linear-gradient(135deg, #FF6D2E 0%, #FF3D00 100%); }
-        .vm-glow { box-shadow: 0 0 30px rgba(255,109,46,0.15); }
-        .vm-glow-strong { box-shadow: 0 4px 25px rgba(255,109,46,0.3); }
-        .spinner { border:3px solid rgba(255,109,46,0.2); border-left-color:#FF6D2E; border-radius:50%; width:40px; height:40px; animation:spin .8s linear infinite; }
-        @keyframes spin { to { transform:rotate(360deg); } }
-        @keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
-        .fade-up { animation: fadeUp .4s ease-out forwards; }
-        .format-card:hover { transform: translateY(-2px); }
-        ::-webkit-scrollbar { width:6px; } ::-webkit-scrollbar-track { background:transparent; } ::-webkit-scrollbar-thumb { background:#333; border-radius:3px; }
-        .tab-active { background: linear-gradient(135deg, #FF6D2E, #FF3D00); color: white; }
-        .tab-inactive { background: #1E1E35; color: #9090B0; }
-        .pulse-border { animation: pulseBorder 2s ease-in-out infinite; }
-        @keyframes pulseBorder { 0%,100% { border-color: rgba(255,109,46,0.3); } 50% { border-color: rgba(255,109,46,0.7); } }
+        body {
+            background: radial-gradient(circle at 50% 0%, #30000a 0%, #110003 40%, #050000 100%);
+            background-attachment: fixed;
+            color: #f1f1f1;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #717171;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a0a0a0;
+        }
+
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* 7. Custom CSS for expanding description */
+        .desc-expanded {
+            display: block !important;
+            -webkit-line-clamp: unset !important;
+        }
+
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            background: #000;
+        }
+
+        .video-wrapper video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Skeleton Animation */
+        .shimmer {
+            background: linear-gradient(90deg, #303030 25%, #404040 50%, #303030 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: -200% 0;
+            }
+
+            100% {
+                background-position: 200% 0;
+            }
+        }
     </style>
 </head>
-<body class="min-h-screen flex flex-col">
 
-<!-- Header -->
-<header class="sticky top-0 z-50 bg-[#0F0F1A]/95 backdrop-blur-xl border-b border-vm-border">
-    <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-        <a href="/" class="flex items-center gap-2.5 group">
-            <div class="w-9 h-9 vm-gradient rounded-xl flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
-                <i class="fa-solid fa-play text-white text-sm ml-0.5"></i>
-            </div>
-            <div>
-                <span class="text-xl font-extrabold text-white tracking-tight">Free<span class="text-vm-orange">Downloader</span></span>
-                <span class="hidden sm:block text-[10px] text-vm-textSec -mt-1 font-medium tracking-wider uppercase">YouTube Video Downloader</span>
-            </div>
-        </a>
-        <nav class="hidden md:flex items-center gap-6 text-sm font-semibold text-vm-textSec">
-            <a href="https://freedownloader.top" class="hover:text-vm-orange transition">Home</a>
-            <a href="https://facebook.freedownloader.top" class="hover:text-vm-orange transition">Facebook</a>
-            <a href="https://instagram.freedownloader.top" class="hover:text-vm-orange transition">Instagram</a>
-            <a href="https://tiktok.freedownloader.top" class="hover:text-vm-orange transition">TikTok</a>
-        </nav>
-    </div>
-</header>
+<body class="font-sans text-sm pb-16 md:pb-0 flex flex-col h-screen overflow-hidden">
 
-<!-- Hero -->
-<section class="py-12 md:py-20 px-4 text-center">
-    <div class="max-w-3xl mx-auto">
-        <h1 class="text-3xl sm:text-4xl md:text-5xl font-black text-white mb-4 leading-tight">
-            Download <span class="text-vm-orange">YouTube</span> Videos
-        </h1>
-        <p class="text-vm-textSec text-base md:text-lg mb-10 max-w-xl mx-auto">Paste a YouTube link to download videos in HD, Full HD, 4K or extract audio as MP3 — completely free.</p>
-
-        <!-- URL Input -->
-        <div class="bg-vm-card border-2 border-vm-border rounded-2xl p-2 flex flex-col sm:flex-row gap-2 max-w-2xl mx-auto vm-glow focus-within:border-vm-orange transition-colors" id="url-box">
-            <div class="flex-1 flex items-center bg-vm-darker rounded-xl px-4 gap-3">
-                <i class="fa-brands fa-youtube text-vm-orange text-xl"></i>
-                <input type="text" id="video-url" class="flex-1 bg-transparent py-4 outline-none text-white placeholder-vm-textSec text-base font-medium" placeholder="Paste YouTube link here...">
-                <button onclick="pasteClip()" class="text-vm-textSec hover:text-vm-orange transition p-1" title="Paste"><i class="fa-solid fa-paste"></i></button>
-            </div>
-            <button onclick="fetchVideo()" id="fetch-btn" class="vm-gradient hover:opacity-90 text-white font-bold py-4 px-8 rounded-xl transition-all flex items-center justify-center gap-2 text-base shadow-lg whitespace-nowrap">
-                <i class="fa-solid fa-download"></i> <span>Download</span>
+    <header
+        class="flex justify-between items-center px-3 sm:px-4 h-14 bg-yt-header backdrop-blur-lg border-b border-yt-border fixed w-full top-0 z-50 gap-3 transition-colors">
+        <div class="flex items-center gap-4">
+            <button class="text-yt-text text-xl sm:hidden" aria-label="Menu">
+                <i class="fa-solid fa-bars"></i>
             </button>
+            <a href="/" id="nav-logo" class="flex items-center gap-2 cursor-pointer shrink-0 group" title="Home">
+                <img src="/static/logo.png" class="h-7 sm:h-9 object-contain group-hover:scale-105 transition-transform"
+                    alt="FreeDownloader">
+                <span
+                    class="text-lg sm:text-xl font-bold tracking-tight hidden md:block text-white drop-shadow-md">FreeDownloader</span>
+            </a>
         </div>
 
-        <!-- Error -->
-        <div id="error-box" class="hidden mt-6 bg-red-500/10 border border-red-500/30 text-red-400 px-5 py-3 rounded-xl text-sm font-medium max-w-2xl mx-auto fade-up">
-            <i class="fa-solid fa-circle-exclamation mr-2"></i><span id="error-msg"></span>
+        <div class="flex-1 max-w-[720px] flex items-center justify-end sm:justify-center">
+            <form id="desktop-search-form" class="flex flex-1 w-full max-w-full sm:max-w-2xl flex-row shadow-lg">
+                <div
+                    class="flex-1 flex items-center border border-yt-border bg-yt-searchBg backdrop-blur-md rounded-l-full px-3 sm:px-4 overflow-hidden focus-within:border-yt-red focus-within:bg-black/50 transition-colors">
+                    <i class="fa-solid fa-search text-yt-textSec mr-2 text-[14px] sm:text-[16px]"></i>
+                    <input type="text" id="desktop-search-input" placeholder="Search videos or paste link"
+                        class="w-full bg-transparent border-none py-1.5 sm:py-2 text-yt-text text-[14px] sm:text-[16px] focus:outline-none placeholder-gray-400"
+                        aria-label="Search">
+                </div>
+                <button type="submit" aria-label="Submit Search"
+                    class="border border-l-0 border-yt-border bg-white/5 hover:bg-yt-red/80 hover:border-yt-red/80 hover:text-white backdrop-blur-md px-4 sm:px-5 rounded-r-full flex items-center justify-center transition-all text-yt-textSec shadow-inner">
+                    <span class="hidden sm:inline font-medium tracking-wide">Search</span>
+                    <i class="fa-solid fa-search sm:hidden text-[14px]"></i>
+                </button>
+            </form>
         </div>
-    </div>
-</section>
+    </header>
 
-<!-- Loader -->
-<div id="loader" class="hidden flex flex-col items-center py-16">
-    <div class="spinner mb-4"></div>
-    <p id="loader-text" class="text-vm-textSec font-semibold text-sm">Fetching video data...</p>
-</div>
-
-<!-- Result Panel -->
-<section id="result-panel" class="hidden max-w-4xl mx-auto px-4 pb-16">
-    <div class="bg-vm-card border border-vm-border rounded-3xl overflow-hidden vm-glow fade-up">
-        <!-- Video Info -->
-        <div class="flex flex-col md:flex-row gap-5 p-5 md:p-6 bg-vm-darker/50">
-            <div class="relative w-full md:w-[280px] aspect-video rounded-2xl overflow-hidden shrink-0 bg-black shadow-xl">
-                <img id="res-thumb" src="" class="w-full h-full object-cover" alt="Thumbnail">
-                <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
-                <span id="res-duration" class="absolute bottom-2 right-2 bg-black/80 text-white text-xs font-bold px-2 py-0.5 rounded-md">0:00</span>
+    <div class="flex flex-1 pt-14 h-full overflow-hidden">
+        <aside
+            class="w-[72px] hidden sm:flex flex-col items-center py-2 shrink-0 bg-yt-header/40 backdrop-blur-sm border-r border-yt-border h-full overflow-y-auto"
+            id="mini-sidebar">
+            <a href="#"
+                class="w-full py-4 flex flex-col items-center hover:bg-yt-hover rounded-xl text-yt-text gap-1 transition-colors"
+                onclick="showHomeView()">
+                <i class="fa-solid fa-house mb-1 text-lg"></i>
+                <span class="text-[10px] font-medium tracking-wide">Home</span>
+            </a>
+            <a href="#"
+                class="w-full py-4 flex flex-col items-center hover:bg-yt-hover rounded-xl text-yt-text gap-1 transition-colors">
+                <i class="fa-solid fa-fire mb-1 text-xl"></i>
+                <span class="text-[10px] font-medium tracking-wide">Trending</span>
+            </a>
+            <a href="#"
+                class="w-full py-4 flex flex-col items-center hover:bg-yt-hover rounded-xl text-yt-text gap-1 transition-colors">
+                <i class="fa-solid fa-folder-open mb-1 text-lg"></i>
+                <span class="text-[10px] font-medium tracking-wide">Library</span>
+            </a>
+            <a href="#"
+                class="w-full py-4 flex flex-col items-center hover:bg-yt-hover rounded-xl text-yt-text gap-1 transition-colors">
+                <i class="fa-solid fa-clock-rotate-left mb-1 text-lg"></i>
+                <span class="text-[10px] font-medium tracking-wide">History</span>
+            </a>
+            <div class="mt-auto w-full">
+                <a href="#"
+                    class="w-full py-4 flex flex-col items-center hover:bg-yt-hover rounded-xl text-yt-text gap-1 transition-colors">
+                    <i class="fa-solid fa-gear mb-1 text-lg"></i>
+                    <span class="text-[10px] font-medium tracking-wide">Settings</span>
+                </a>
             </div>
-            <div class="flex flex-col justify-center flex-1 min-w-0 py-1">
-                <h2 id="res-title" class="text-lg md:text-xl font-bold text-white line-clamp-2 mb-3 leading-snug"></h2>
-                <div class="flex flex-wrap items-center gap-3 text-sm text-vm-textSec font-medium">
-                    <span class="flex items-center gap-1.5"><i class="fa-solid fa-circle-user text-vm-orange"></i> <span id="res-channel">—</span></span>
-                    <span class="flex items-center gap-1.5"><i class="fa-solid fa-eye"></i> <span id="res-views">—</span> views</span>
+        </aside>
+
+        <main class="flex-1 overflow-y-auto bg-yt-bg relative" id="main-scroll-area">
+
+            <div id="view-home" class="w-full max-w-[2200px] mx-auto pb-8">
+
+                <div id="feed-header" class="px-4 pt-4 pb-2 hidden text-xl font-bold">Search Results</div>
+
+                <div id="ad-container-top" class="w-full hidden px-4 py-2 my-2 overflow-hidden flex justify-center">
+                </div>
+
+                <div id="video-grid"
+                    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-x-4 gap-y-10 px-4 pt-4">
+                </div>
+            </div>
+
+            <div id="view-player"
+                class="hidden w-full max-w-[1700px] mx-auto px-0 sm:px-6 py-6 flex flex-col lg:flex-row gap-6">
+
+                <div class="flex-1 w-full min-w-0" id="player-container-main">
+                    <div class="video-wrapper bg-black sm:rounded-xl overflow-hidden shadow-lg group relative">
+                        <video id="html5-player" controls preload="metadata" class="w-full h-full outline-none"
+                            poster=""></video>
+
+                        <div class="absolute top-4 right-4 hidden group-hover:flex gap-2 z-20">
+                            <button onclick="togglePiP()"
+                                class="bg-black/60 hover:bg-yt-red text-white p-2 rounded backdrop-blur-sm transition"
+                                title="Picture-in-Picture (P)">
+                                <i class="fa-solid fa-clone"></i>
+                            </button>
+                            <button onclick="toggleTheatre()"
+                                class="bg-black/60 hover:bg-yt-red text-white p-2 rounded backdrop-blur-sm transition hidden lg:block"
+                                title="Theatre Mode (T)">
+                                <i class="fa-solid fa-tv"></i>
+                            </button>
+                        </div>
+
+                        <div id="player-loader"
+                            class="absolute inset-0 bg-black/90 flex flex-col items-center justify-center z-10">
+                            <div class="w-full h-full shimmer opacity-20"></div>
+                        </div>
+                    </div>
+
+                    <div class="mt-3 px-4 sm:px-0">
+                        <h1 id="player-title" class="text-xl font-bold text-yt-text mb-2 break-words">
+                            <div class="h-6 w-3/4 shimmer rounded"></div>
+                        </h1>
+
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-2">
+                            <div class="flex items-center gap-3">
+                                <div id="author-avatar"
+                                    class="w-10 h-10 rounded-full shimmer shrink-0 overflow-hidden bg-gray-700 flex items-center justify-center">
+                                    <i class="fa-solid fa-user text-gray-300 hidden" id="author-icon"></i>
+                                </div>
+                                <div class="flex flex-col mr-2 w-32">
+                                    <span id="player-author" class="font-bold text-yt-text text-[15px]">
+                                        <div class="h-4 w-full shimmer rounded mb-1"></div>
+                                    </span>
+                                    <span class="text-xs text-yt-textSec" id="player-author-sub">
+                                        <div class="h-3 w-2/3 shimmer rounded"></div>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div
+                                class="flex items-center gap-2 overflow-x-auto w-full sm:w-auto pb-2 sm:pb-0 no-scrollbar">
+                                <button
+                                    class="bg-yt-buttonBg hover:bg-yt-hover px-4 h-9 rounded-full font-medium flex items-center gap-2 shrink-0 transition-colors">
+                                    <i class="fa-solid fa-share"></i> Share
+                                </button>
+                                <button onclick="openDownloadModal()"
+                                    class="bg-yt-red hover:bg-[#cc0000] text-white px-6 h-9 rounded-full font-bold flex items-center gap-2 shrink-0 shadow-lg transition-transform hover:scale-105 ml-1">
+                                    <i class="fa-solid fa-download animate-bounce"></i> Download
+                                </button>
+                            </div>
+                        </div>
+
+                        <div onclick="toggleDescription()"
+                            class="bg-yt-buttonBg/40 backdrop-blur-md hover:bg-yt-hover/60 border border-white/5 transition-colors rounded-xl p-3 mt-4 text-sm cursor-pointer mb-6 shadow-lg">
+                            <div class="font-semibold mb-1 flex justify-between">
+                                <span id="player-views">
+                                    <div class="h-4 w-20 shimmer rounded inline-block"></div>
+                                </span>
+                                <span id="desc-toggle-text" class="text-xs text-yt-textSec">Show More</span>
+                            </div>
+                            <div id="player-description" class="text-yt-text whitespace-pre-wrap line-clamp-2">
+                                <div class="h-3 w-full shimmer rounded mb-1"></div>
+                                <div class="h-3 w-5/6 shimmer rounded"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="w-full lg:w-[400px] shrink-0 px-4 sm:px-0" id="related-sidebar">
+                    <div id="ad-container-sidebar"
+                        class="mb-4 w-full h-[250px] bg-yt-buttonBg rounded-xl flex items-center justify-center text-yt-textSec text-xs border border-yt-border overflow-hidden">
+                        <span class="opacity-50">Advertisement Space</span>
+                    </div>
+                    <div class="font-bold text-lg mb-3">Related Videos</div>
+                    <div id="related-videos-container" class="flex flex-col gap-3 pb-20">
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <nav
+        class="sm:hidden fixed bottom-0 w-full h-14 bg-yt-header/90 backdrop-blur-lg border-t border-yt-border flex justify-around items-center z-50 shadow-[0_-5px_15px_rgba(0,0,0,0.3)]">
+        <a href="#" class="flex flex-col items-center text-yt-text p-1 hover:text-yt-red transition-colors"
+            onclick="showHomeView()">
+            <i class="fa-solid fa-house mb-1 text-lg"></i>
+            <span class="text-[10px] font-medium">Home</span>
+        </a>
+        <a href="#" class="flex flex-col items-center text-yt-textSec hover:text-yt-red p-1 transition-colors">
+            <i class="fa-solid fa-fire mb-1 text-xl"></i>
+            <span class="text-[10px] font-medium">Trending</span>
+        </a>
+        <a href="#" class="flex flex-col items-center text-yt-textSec hover:text-yt-red p-1 transition-colors">
+            <i class="fa-solid fa-folder-open mb-1 text-lg"></i>
+            <span class="text-[10px] font-medium">Library</span>
+        </a>
+    </nav>
+
+    <div id="download-modal"
+        class="hidden fixed inset-0 z-[100] flex items-end sm:items-center justify-center sm:p-4 bg-black/80 backdrop-blur-sm">
+        <div class="absolute inset-0" onclick="closeDownloadModal()"></div>
+
+        <div class="relative w-full sm:max-w-md bg-[#111] border border-white/10 sm:rounded-2xl rounded-t-2xl shadow-[0_0_30px_rgba(229,9,20,0.2)] overflow-hidden transform translate-y-full transition-transform duration-300"
+            id="download-modal-content">
+
+            <div class="px-5 py-4 border-b border-yt-border/50 flex justify-between items-center bg-[#1a1a1a]">
+                <h3 class="text-lg font-bold text-white flex items-center gap-2 drop-shadow-md">
+                    <i class="fa-solid fa-download text-yt-red"></i> Download Options
+                </h3>
+                <button onclick="closeDownloadModal()" aria-label="Close"
+                    class="text-yt-textSec hover:text-yt-red w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <div class="p-0 max-h-[75vh] overflow-y-auto">
+                <div id="download-formats-list" class="flex flex-col bg-[#111]">
+                </div>
+
+                <div id="dl-progress-box" class="hidden p-8 text-center bg-[#111]">
+                    <div class="relative w-20 h-20 mx-auto mb-4">
+                        <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                            <circle cx="50" cy="50" r="45" fill="none" stroke="#303030" stroke-width="8"></circle>
+                            <circle id="dl-circle-bar" cx="50" cy="50" r="45" fill="none" stroke="#4db8ff"
+                                stroke-width="8" stroke-dasharray="283" stroke-dashoffset="283"
+                                class="transition-all duration-300"></circle>
+                        </svg>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <span id="dl-percent-text" class="text-xl font-bold text-white">0%</span>
+                        </div>
+                    </div>
+                    <p id="dl-stage" class="font-bold text-white mb-2 text-lg">Initializing...</p>
+                    <p class="text-sm text-yt-textSec mb-6">Processing file on server. Please wait.</p>
+                    <button onclick="cancelDownload()"
+                        class="text-xs text-yt-red border border-yt-red px-4 py-1.5 rounded-full hover:bg-yt-red hover:text-white transition-colors">Cancel</button>
                 </div>
             </div>
         </div>
-
-        <!-- Format Tabs -->
-        <div class="p-5 md:p-6 pt-4">
-            <h3 class="font-extrabold text-white mb-4 flex items-center gap-2 text-lg">
-                <i class="fa-solid fa-cloud-arrow-down text-vm-orange"></i> Select Format
-            </h3>
-            <div class="flex gap-2 mb-5 overflow-x-auto pb-1" id="format-tabs">
-                <button onclick="switchTab('va')" id="tab-va" class="tab-active px-5 py-2.5 rounded-xl font-bold text-sm transition-all whitespace-nowrap">
-                    <i class="fa-solid fa-film mr-1.5"></i>Video + Audio
-                </button>
-                <button onclick="switchTab('vo')" id="tab-vo" class="tab-inactive px-5 py-2.5 rounded-xl font-bold text-sm transition-all whitespace-nowrap hover:bg-vm-cardHover">
-                    <i class="fa-solid fa-video mr-1.5"></i>Video Only
-                </button>
-                <button onclick="switchTab('ao')" id="tab-ao" class="tab-inactive px-5 py-2.5 rounded-xl font-bold text-sm transition-all whitespace-nowrap hover:bg-vm-cardHover">
-                    <i class="fa-solid fa-music mr-1.5"></i>Audio Only
-                </button>
-            </div>
-            <div id="format-list" class="space-y-2 max-h-[400px] overflow-y-auto pr-1"></div>
-        </div>
     </div>
-</section>
 
-<!-- Download Modal -->
-<div id="dl-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/70 backdrop-blur-md">
-    <div class="bg-vm-card border border-vm-border rounded-3xl w-full max-w-sm p-8 text-center shadow-2xl transform scale-95 opacity-0 transition-all duration-300" id="dl-content">
-        <div class="w-16 h-16 vm-gradient rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg">
-            <i class="fa-solid fa-arrow-down text-white text-2xl"></i>
-        </div>
-        <h3 class="text-xl font-extrabold text-white mb-1">Downloading</h3>
-        <p class="text-xs text-vm-textSec mb-6 truncate px-4" id="dl-title">video.mp4</p>
-        <div class="relative w-28 h-28 mx-auto mb-5">
-            <svg class="w-full h-full -rotate-90 drop-shadow-lg" viewBox="0 0 100 100">
-                <circle cx="50" cy="50" r="42" fill="none" stroke="#1E1E35" stroke-width="7"></circle>
-                <circle id="dl-ring" cx="50" cy="50" r="42" fill="none" stroke="#FF6D2E" stroke-width="7" stroke-linecap="round" stroke-dasharray="264" stroke-dashoffset="264" class="transition-all duration-300"></circle>
-            </svg>
-            <span id="dl-pct" class="absolute inset-0 flex items-center justify-center text-2xl font-black text-white">0%</span>
-        </div>
-        <p id="dl-stage" class="text-vm-textSec font-semibold text-sm mb-6 bg-vm-darker py-2 px-4 rounded-lg inline-block">Connecting...</p><br>
-        <button onclick="closeDlModal()" class="mt-2 text-vm-textSec hover:text-white text-sm font-semibold transition">Cancel</button>
-    </div>
-</div>
+    <script>
+        const state = {
+            view: 'home',
+            currentMode: 'trending',
+            currentVideoId: null,
+            videoDataCache: {},
+            lastQuery: '',
+            trendingCache: [],
+            nextPageToken: null,
+            isLoadingMore: false,
+            isTheatreMode: false
+        };
 
-<!-- Features -->
-<section class="max-w-5xl mx-auto px-4 py-16">
-    <h2 class="text-2xl font-extrabold text-white text-center mb-10">Why Choose <span class="text-vm-orange">FreeDownloader</span>?</h2>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="bg-vm-card border border-vm-border rounded-2xl p-5 text-center hover:border-vm-orange/30 transition-colors">
-            <div class="w-12 h-12 vm-gradient rounded-xl flex items-center justify-center mx-auto mb-3"><i class="fa-solid fa-bolt text-white text-xl"></i></div>
-            <h3 class="font-bold text-white mb-1">Ultra Fast</h3>
-            <p class="text-vm-textSec text-xs">Server-side processing for blazing downloads.</p>
-        </div>
-        <div class="bg-vm-card border border-vm-border rounded-2xl p-5 text-center hover:border-vm-orange/30 transition-colors">
-            <div class="w-12 h-12 vm-gradient rounded-xl flex items-center justify-center mx-auto mb-3"><i class="fa-solid fa-shield-halved text-white text-xl"></i></div>
-            <h3 class="font-bold text-white mb-1">100% Safe</h3>
-            <p class="text-vm-textSec text-xs">No malware, no ads, no registration.</p>
-        </div>
-        <div class="bg-vm-card border border-vm-border rounded-2xl p-5 text-center hover:border-vm-orange/30 transition-colors">
-            <div class="w-12 h-12 vm-gradient rounded-xl flex items-center justify-center mx-auto mb-3"><i class="fa-solid fa-4k text-white text-xl"></i></div>
-            <h3 class="font-bold text-white mb-1">4K Quality</h3>
-            <p class="text-vm-textSec text-xs">Download in 360p, 720p, 1080p or 4K.</p>
-        </div>
-        <div class="bg-vm-card border border-vm-border rounded-2xl p-5 text-center hover:border-vm-orange/30 transition-colors">
-            <div class="w-12 h-12 vm-gradient rounded-xl flex items-center justify-center mx-auto mb-3"><i class="fa-solid fa-music text-white text-xl"></i></div>
-            <h3 class="font-bold text-white mb-1">MP3 Extract</h3>
-            <p class="text-vm-textSec text-xs">Extract high-quality audio from any video.</p>
-        </div>
-    </div>
-</section>
+        const els = {
+            viewHome: document.getElementById('view-home'),
+            viewPlayer: document.getElementById('view-player'),
+            videoGrid: document.getElementById('video-grid'),
+            feedHeader: document.getElementById('feed-header'),
+            relatedContainer: document.getElementById('related-videos-container'),
 
-<!-- Footer -->
-<footer class="border-t border-vm-border py-8 mt-auto">
-    <div class="max-w-5xl mx-auto px-4 text-center text-vm-textSec text-xs">
-        <p>&copy; 2026 FreeDownloader. All rights reserved.</p>
-    </div>
-</footer>
+            playerHtml5: document.getElementById('html5-player'),
+            playerLoader: document.getElementById('player-loader'),
+            playerTitle: document.getElementById('player-title'),
+            playerAuthor: document.getElementById('player-author'),
+            playerAuthorSub: document.getElementById('player-author-sub'),
+            playerDesc: document.getElementById('player-description'),
+            playerViews: document.getElementById('player-views'),
+            authorIcon: document.getElementById('author-icon'),
+            authorAvatar: document.getElementById('author-avatar'),
 
-<script>
-let pollTimer=null, dlTimer=null, videoInfo=null, currentTab='va';
+            desktopSearch: document.getElementById('desktop-search-form'),
 
-function fmtDur(s){if(!s)return'0:00';const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=Math.floor(s%60);return h?`${h}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`:`${m}:${String(sec).padStart(2,'0')}`;}
+            dlModal: document.getElementById('download-modal'),
+            dlModalContent: document.getElementById('download-modal-content'),
+            dlFormatsList: document.getElementById('download-formats-list'),
+            dlProgressBox: document.getElementById('dl-progress-box')
+        };
 
-async function pasteClip(){try{const t=await navigator.clipboard.readText();if(t){document.getElementById('video-url').value=t;fetchVideo();}}catch(e){}}
+        let pollTimer = null;
 
-function showErr(m){const b=document.getElementById('error-box');b.classList.remove('hidden');document.getElementById('error-msg').innerText=m;document.getElementById('loader').classList.add('hidden');}
-function hideErr(){document.getElementById('error-box').classList.add('hidden');}
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchAdsConfig();
+            loadTrendingFeed();
+            setupEventListeners();
+            setupInfiniteScroll();
 
-async function fetchVideo(){
-    const url=document.getElementById('video-url').value.trim();
-    if(!url){showErr('Please enter a YouTube URL.');return;}
-    hideErr();
-    document.getElementById('result-panel').classList.add('hidden');
-    document.getElementById('loader').classList.remove('hidden');
-    document.getElementById('loader-text').innerText='Connecting to server...';
-    try{
-        const r=await fetch('/api/extract_async',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url})});
-        const d=await r.json();
-        if(!r.ok||d.error)throw new Error(d.error||'Server error');
-        pollExtract(d.task_id);
-    }catch(e){showErr(e.message);}
-}
+            window.addEventListener('popstate', (e) => {
+                if (e.state && e.state.view === 'player') showPlayerView(e.state.id, false);
+                else showHomeView(false);
+            });
+        });
 
-function pollExtract(tid){
-    if(pollTimer)clearInterval(pollTimer);
-    pollTimer=setInterval(async()=>{
-        try{
-            const r=await fetch('/api/task_status/'+tid);
-            const d=await r.json();
-            document.getElementById('loader-text').innerText=d.stage_text||'Extracting video info...';
-            if(d.stage==='ready'&&d.result){clearInterval(pollTimer);showResult(d.result);}
-            else if(d.stage==='error'){clearInterval(pollTimer);showErr(d.error||'Extraction failed');}
-        }catch(e){clearInterval(pollTimer);showErr('Connection lost.');}
-    },1200);
-}
-
-function showResult(info){
-    document.getElementById('loader').classList.add('hidden');
-    videoInfo=info;
-    document.getElementById('res-thumb').src=info.thumbnail||'';
-    document.getElementById('res-duration').innerText=fmtDur(info.duration);
-    document.getElementById('res-title').innerText=info.title||'Video';
-    document.getElementById('res-channel').innerText=info.uploader||'Unknown';
-    document.getElementById('res-views').innerText=(info.view_count||0).toLocaleString();
-    const p=document.getElementById('result-panel');
-    p.classList.remove('hidden');
-    switchTab('va');
-    p.scrollIntoView({behavior:'smooth',block:'start'});
-}
-
-function switchTab(t){
-    currentTab=t;
-    ['va','vo','ao'].forEach(id=>{
-        document.getElementById('tab-'+id).className=id===t?'tab-active px-5 py-2.5 rounded-xl font-bold text-sm transition-all whitespace-nowrap':'tab-inactive px-5 py-2.5 rounded-xl font-bold text-sm transition-all whitespace-nowrap hover:bg-vm-cardHover';
-    });
-    const list=document.getElementById('format-list');
-    list.innerHTML='';
-    const fmts=t==='va'?(videoInfo.formats.video_audio||[]):t==='vo'?(videoInfo.formats.video_no_audio||[]):(videoInfo.formats.audio_only||[]);
-    if(!fmts.length){list.innerHTML='<div class="text-center py-10 text-vm-textSec"><i class="fa-solid fa-ghost text-3xl mb-2 block opacity-40"></i>No formats available</div>';return;}
-    fmts.forEach(f=>{
-        const isAudio=t==='ao';
-        const qual=isAudio?f.abr+'kbps':f.height+'p';
-        const icon=isAudio?'fa-headphones':'fa-film';
-        const iconClr=isAudio?'text-blue-400':'text-vm-orange';
-        const bgClr=isAudio?'bg-blue-500/10':'bg-vm-orange/10';
-        const el=document.createElement('div');
-        el.className='format-card flex items-center justify-between p-4 bg-vm-darker border border-vm-border rounded-2xl hover:border-vm-orange/40 transition-all cursor-pointer group';
-        el.onclick=()=>startDl(f.height||f.abr,isAudio);
-        el.innerHTML=`
-            <div class="flex items-center gap-4">
-                <div class="w-11 h-11 rounded-xl ${bgClr} flex items-center justify-center ${iconClr} text-lg group-hover:scale-110 transition-transform"><i class="fa-solid ${icon}"></i></div>
-                <div>
-                    <div class="font-bold text-white text-base flex items-center gap-2">${qual} <span class="bg-vm-card text-vm-textSec text-[10px] px-1.5 py-0.5 rounded font-bold uppercase border border-vm-border">${f.ext||'mp4'}</span></div>
-                    <div class="text-xs text-vm-textSec mt-0.5"><i class="fa-solid fa-hard-drive mr-1 opacity-50"></i>${f.size_str||'Unknown'}</div>
+        // 1. Skeleton Loaders
+        function generateGridSkeletons(count = 10) {
+            return Array(count).fill(`
+                <div class="flex flex-col group animate-pulse cursor-wait">
+                    <div class="w-full aspect-video bg-[#222] rounded-xl mb-3 shadow"></div>
+                    <div class="flex gap-3 pr-2">
+                        <div class="w-9 h-9 rounded-full bg-[#222] shrink-0"></div>
+                        <div class="flex flex-col flex-1 gap-2 mt-1">
+                            <div class="h-4 bg-[#222] rounded w-full"></div>
+                            <div class="h-3 bg-[#222] rounded w-2/3"></div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="w-10 h-10 rounded-full bg-vm-card border border-vm-border flex items-center justify-center text-vm-textSec group-hover:vm-gradient group-hover:text-white group-hover:border-transparent transition-all group-hover:shadow-lg">
-                <i class="fa-solid fa-arrow-down"></i>
-            </div>`;
-        list.appendChild(el);
-    });
-}
+            `).join('');
+        }
 
-async function startDl(height,isAudio){
-    const url=document.getElementById('video-url').value.trim();
-    const title=videoInfo.title;
-    document.getElementById('dl-title').innerText=title.length>35?title.substring(0,35)+'...':title;
-    const modal=document.getElementById('dl-modal'),content=document.getElementById('dl-content');
-    modal.classList.remove('hidden');
-    setTimeout(()=>{content.classList.remove('scale-95','opacity-0');content.classList.add('scale-100','opacity-100');},10);
-    updateDl(2,'Queueing task...');
-    try{
-        const res=await fetch('/api/download_async',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url,res:isAudio?'0':String(height),title})});
-        const d=await res.json();
-        if(!res.ok||d.error)throw new Error(d.error);
-        pollDl(d.task_id);
-    }catch(e){updateDl(0,'Error: '+e.message);setTimeout(closeDlModal,3000);}
-}
+        function generateRelatedSkeletons(count = 5) {
+            return Array(count).fill(`
+                <div class="flex gap-2 group animate-pulse">
+                    <div class="w-[168px] h-[94px] rounded-lg bg-[#222] shrink-0"></div>
+                    <div class="flex flex-col flex-1 py-1 gap-2">
+                        <div class="h-3 bg-[#222] rounded w-full"></div>
+                        <div class="h-3 bg-[#222] rounded w-4/5"></div>
+                        <div class="h-2 bg-[#222] rounded w-1/2 mt-2"></div>
+                    </div>
+                </div>
+            `).join('');
+        }
 
-function pollDl(tid){
-    if(dlTimer)clearInterval(dlTimer);
-    dlTimer=setInterval(async()=>{
-        try{
-            const r=await fetch('/api/task_status/'+tid);const d=await r.json();
-            updateDl(d.percent||10,d.stage_text||'Processing...');
-            if(d.stage==='ready'){clearInterval(dlTimer);document.getElementById('dl-ring').style.stroke='#2ECC71';updateDl(100,'Ready!');setTimeout(()=>{closeDlModal();window.location.href='/api/download_file/'+tid;},1000);}
-            else if(d.stage==='error'){clearInterval(dlTimer);updateDl(0,d.error||'Failed');setTimeout(closeDlModal,3000);}
-        }catch(e){}
-    },1500);
-}
+        function setupInfiniteScroll() {
+            const observer = new IntersectionObserver((entries) => {
+                if (entries[0].isIntersecting && !state.isLoadingMore && state.nextPageToken) {
+                    loadMoreVideos();
+                }
+            }, { rootMargin: "100px" });
 
-function updateDl(pct,txt){
-    document.getElementById('dl-pct').innerText=Math.round(pct)+'%';
-    document.getElementById('dl-stage').innerText=txt;
-    document.getElementById('dl-ring').style.strokeDashoffset=264-(264*pct)/100;
-}
+            const sentinel = document.createElement('div');
+            sentinel.id = 'scroll-sentinel';
+            sentinel.className = 'w-full h-10 col-span-full';
+            document.getElementById('view-home').appendChild(sentinel);
+            observer.observe(sentinel);
+        }
 
-function closeDlModal(){
-    const c=document.getElementById('dl-content');
-    c.classList.remove('scale-100','opacity-100');c.classList.add('scale-95','opacity-0');
-    setTimeout(()=>{document.getElementById('dl-modal').classList.add('hidden');if(dlTimer)clearInterval(dlTimer);document.getElementById('dl-ring').style.stroke='#FF6D2E';},300);
-}
+        // 7. Keyboard Shortcuts & Player Controls
+        function setupEventListeners() {
+            if (els.desktopSearch) {
+                els.desktopSearch.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    handleSearch(document.getElementById('desktop-search-input').value);
+                });
+            }
 
-// Enter key
-document.getElementById('video-url').addEventListener('keydown',e=>{if(e.key==='Enter')fetchVideo();});
-</script>
+            document.addEventListener('keydown', (e) => {
+                if (state.view !== 'player') return;
+                // Don't trigger if typing in an input
+                if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') return;
+
+                const vid = els.playerHtml5;
+                if (!vid) return;
+
+                switch (e.key) {
+                    case ' ':
+                        e.preventDefault();
+                        vid.paused ? vid.play() : vid.pause();
+                        break;
+                    case 'f':
+                    case 'F':
+                        e.preventDefault();
+                        if (document.fullscreenElement) {
+                            document.exitFullscreen();
+                        } else {
+                            vid.requestFullscreen?.() || vid.webkitRequestFullscreen?.();
+                        }
+                        break;
+                    case 'ArrowRight':
+                        e.preventDefault();
+                        vid.currentTime += 5;
+                        break;
+                    case 'ArrowLeft':
+                        e.preventDefault();
+                        vid.currentTime -= 5;
+                        break;
+                    case 'p':
+                    case 'P':
+                        togglePiP();
+                        break;
+                    case 't':
+                    case 'T':
+                        toggleTheatre();
+                        break;
+                }
+            });
+        }
+
+        function toggleDescription() {
+            const desc = els.playerDesc;
+            const toggleText = document.getElementById('desc-toggle-text');
+            desc.classList.toggle('desc-expanded');
+            toggleText.innerText = desc.classList.contains('desc-expanded') ? 'Show Less' : 'Show More';
+        }
+
+        async function togglePiP() {
+            try {
+                if (document.pictureInPictureElement) {
+                    await document.exitPictureInPicture();
+                } else if (document.pictureInPictureEnabled && els.playerHtml5.readyState !== 0) {
+                    await els.playerHtml5.requestPictureInPicture();
+                }
+            } catch (err) {
+                console.error("PiP failed", err);
+            }
+        }
+
+        function toggleTheatre() {
+            state.isTheatreMode = !state.isTheatreMode;
+            const mainContainer = document.getElementById('player-container-main');
+            const sidebar = document.getElementById('related-sidebar');
+
+            if (state.isTheatreMode) {
+                mainContainer.classList.remove('flex-1');
+                mainContainer.classList.add('w-full');
+                document.getElementById('view-player').classList.remove('lg:flex-row');
+                document.getElementById('view-player').classList.add('flex-col');
+                sidebar.classList.remove('lg:w-[400px]');
+                sidebar.classList.add('w-full', 'max-w-[1200px]', 'mx-auto');
+            } else {
+                mainContainer.classList.add('flex-1');
+                mainContainer.classList.remove('w-full');
+                document.getElementById('view-player').classList.add('lg:flex-row');
+                document.getElementById('view-player').classList.remove('flex-col');
+                sidebar.classList.add('lg:w-[400px]');
+                sidebar.classList.remove('w-full', 'max-w-[1200px]', 'mx-auto');
+            }
+        }
+
+        // 5. Technical SEO Dynamic Injection
+        function updateSEO(title, description, image, urlId) {
+            const fullTitle = `${title} - FreeDownloader`;
+            document.title = fullTitle;
+
+            const metaTitle = document.querySelector('meta[property="og:title"]');
+            if (metaTitle) metaTitle.content = fullTitle;
+
+            const metaDesc = document.querySelector('meta[property="og:description"]');
+            if (metaDesc) metaDesc.content = description.substring(0, 150) + '...';
+
+            const metaImage = document.querySelector('meta[property="og:image"]');
+            if (metaImage && image) metaImage.content = image;
+
+            // JSON-LD Update
+            const schemaScript = document.getElementById('seo-schema');
+            if (schemaScript) {
+                const schemaData = {
+                    "@context": "https://schema.org",
+                    "@type": "VideoObject",
+                    "name": title,
+                    "description": description,
+                    "thumbnailUrl": [image],
+                    "uploadDate": new Date().toISOString(),
+                    "embedUrl": `https://freedownloader.top/?v=${urlId}`
+                };
+                schemaScript.textContent = JSON.stringify(schemaData);
+            }
+        }
+
+        function resetPlayerUI() {
+            els.playerLoader.classList.remove('hidden');
+            els.authorAvatar.classList.add('shimmer');
+            els.authorIcon.classList.add('hidden');
+            els.playerTitle.innerHTML = '<div class="h-6 w-3/4 shimmer rounded"></div>';
+            els.playerAuthor.innerHTML = '<div class="h-4 w-full shimmer rounded mb-1"></div>';
+            els.playerAuthorSub.innerHTML = '<div class="h-3 w-2/3 shimmer rounded"></div>';
+            els.playerViews.innerHTML = '<div class="h-4 w-20 shimmer rounded inline-block"></div>';
+            els.playerDesc.innerHTML = '<div class="h-3 w-full shimmer rounded mb-1"></div><div class="h-3 w-5/6 shimmer rounded"></div>';
+            els.playerHtml5.src = '';
+            els.playerHtml5.poster = '';
+            els.relatedContainer.innerHTML = generateRelatedSkeletons();
+        }
+
+        function extractID(urlOrID) {
+            const regex = /(?:v=|\/)([0-9A-Za-z_-]{11}).*/;
+            const match = urlOrID.match(regex);
+            return match ? match[1] : urlOrID;
+        }
+
+        function formatDuration(seconds) {
+            if (!seconds) return '';
+            const h = Math.floor(seconds / 3600);
+            const m = Math.floor((seconds % 3600) / 60);
+            const s = seconds % 60;
+            return h > 0 ? `${h}:${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}` : `${m}:${s < 10 ? '0' : ''}${s}`;
+        }
+
+        function formatViews(views) {
+            if (!views) return '';
+            if (views >= 1000000) return (views / 1000000).toFixed(1).replace('.0', '') + 'M views';
+            if (views >= 1000) return (views / 1000).toFixed(1).replace('.0', '') + 'K views';
+            return views + ' views';
+        }
+
+        function showHomeView(pushHistory = true) {
+            state.view = 'home';
+            els.viewPlayer.classList.add('hidden');
+            els.viewHome.classList.remove('hidden');
+
+            els.playerHtml5.pause();
+            els.playerHtml5.src = "";
+            document.title = "FreeDownloader - Video Streaming & Downloader";
+
+            if (pushHistory) history.pushState({ view: 'home' }, 'Home', '/');
+            document.getElementById('main-scroll-area').scrollTo({ top: 0 });
+        }
+
+        function showPlayerView(videoInfo, pushHistory = true) {
+            state.view = 'player';
+            state.currentVideoId = typeof videoInfo === 'string' ? extractID(videoInfo) : videoInfo.id;
+
+            els.viewHome.classList.add('hidden');
+            els.viewPlayer.classList.remove('hidden');
+
+            resetPlayerUI();
+
+            if (typeof videoInfo === 'object') {
+                updateSEO(videoInfo.title, videoInfo.title, videoInfo.thumbnail, state.currentVideoId);
+                els.playerHtml5.poster = videoInfo.thumbnail || '';
+            }
+
+            if (pushHistory) history.pushState({ view: 'player', id: state.currentVideoId }, 'Video', `/?v=${state.currentVideoId}`);
+            document.getElementById('main-scroll-area').scrollTo({ top: 0 });
+
+            fetchVideoDetails(state.currentVideoId);
+            renderRelatedVideos();
+        }
+
+        async function fetchAdsConfig() {
+            try {
+                const res = await fetch('/api/ads/config');
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.ads && data.ads.length > 0) {
+                        const topAd = data.ads.find(a => a.type === 'banner');
+                        if (topAd) {
+                            const c = document.getElementById('ad-container-top');
+                            c.innerHTML = `<a href="${topAd.target_url}" target="_blank" class="block w-full max-w-[728px] border border-yt-border bg-[#111] overflow-hidden"><img src="${topAd.image_url}" class="w-full h-auto object-cover" alt="Sponsored Ad"></a>`;
+                            c.classList.remove('hidden');
+                        }
+                    }
+                }
+            } catch (e) { console.warn("Adblocker or network error."); }
+        }
+
+        async function loadTrendingFeed() {
+            state.currentMode = 'trending';
+            state.nextPageToken = null;
+            els.videoGrid.innerHTML = generateGridSkeletons(15);
+            els.feedHeader.classList.add('hidden');
+
+            try {
+                const res = await fetch('/api/trending');
+                if (!res.ok) throw new Error("Network response was not ok");
+                const data = await res.json();
+                state.nextPageToken = data.nextPageToken || null;
+                state.trendingCache = data.results || [];
+                renderVideoGrid(state.trendingCache);
+            } catch (err) {
+                els.videoGrid.innerHTML = '<div class="col-span-full flex flex-col items-center justify-center py-20 text-yt-textSec"><i class="fa-solid fa-satellite-dish text-4xl mb-4 text-yt-border"></i><p>Unable to connect to server. Please check your network.</p></div>';
+            }
+        }
+
+        async function loadMoreVideos() {
+            if (!state.nextPageToken) return;
+            state.isLoadingMore = true;
+
+            els.videoGrid.insertAdjacentHTML('beforeend', generateGridSkeletons(5));
+
+            try {
+                let url = state.currentMode === 'trending' ? `/api/trending?pageToken=${state.nextPageToken}` : `/api/search?q=${encodeURIComponent(state.lastQuery)}&pageToken=${state.nextPageToken}`;
+                const res = await fetch(url);
+                const data = await res.json();
+
+                // Remove the skeletons we just appended
+                const skeletons = els.videoGrid.querySelectorAll('.animate-pulse');
+                skeletons.forEach(s => s.remove());
+
+                state.nextPageToken = data.nextPageToken || null;
+                if (data.results) renderVideoGrid(data.results, true);
+            } catch (e) {
+                const skeletons = els.videoGrid.querySelectorAll('.animate-pulse');
+                skeletons.forEach(s => s.remove());
+                console.error("Pagination failed:", e);
+            }
+            state.isLoadingMore = false;
+        }
+
+        async function handleSearch(query) {
+            query = query.trim();
+            if (!query) return;
+
+            if (query.includes('youtube.com/') || query.includes('youtu.be/')) {
+                showPlayerView(extractID(query));
+                return;
+            }
+
+            state.currentMode = 'search';
+            state.lastQuery = query;
+            state.nextPageToken = null;
+
+            els.viewHome.classList.remove('hidden');
+            els.viewPlayer.classList.add('hidden');
+            els.videoGrid.innerHTML = generateGridSkeletons(10);
+            els.feedHeader.innerText = `Results for "${query}"`;
+            els.feedHeader.classList.remove('hidden');
+
+            try {
+                const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+                const data = await res.json();
+                state.nextPageToken = data.nextPageToken || null;
+
+                if (data.results && data.results.length > 0) {
+                    renderVideoGrid(data.results);
+                } else {
+                    els.videoGrid.innerHTML = '<div class="col-span-full text-center py-20"><i class="fa-solid fa-magnifying-glass text-3xl mb-3 text-yt-textSec"></i><p class="text-yt-textSec text-lg">No videos found. Try different keywords.</p></div>';
+                }
+            } catch (err) {
+                els.videoGrid.innerHTML = '<p class="text-yt-red col-span-full text-center py-20">Search failed due to a network error. Please try again.</p>';
+            }
+        }
+
+        async function fetchVideoDetails(videoId) {
+            try {
+                const res = await fetch(`/api/video/${videoId}`);
+                const data = await res.json();
+
+                if (!res.ok || data.error) {
+                    els.playerLoader.innerHTML = `<div class="text-yt-red mb-2"><i class="fa-solid fa-triangle-exclamation text-3xl"></i></div><span class="text-sm font-medium bg-black/80 px-4 py-2 rounded">${data.error || 'Video Unavailable'}</span>`;
+                    els.playerLoader.classList.remove('shimmer');
+                    return;
+                }
+
+                state.videoDataCache[videoId] = data;
+                updateSEO(data.title, data.description || data.title, data.thumbnail, videoId);
+
+                // Populate UI removing skeletons
+                els.playerTitle.innerText = data.title;
+                els.playerAuthor.innerText = data.author || 'Video Creator';
+                els.playerAuthorSub.innerText = 'FreeDownloader Creator';
+                els.playerViews.innerText = formatViews(data.viewCount);
+                els.playerDesc.innerText = data.description || 'No description available for this video.';
+                els.authorAvatar.classList.remove('shimmer');
+                els.authorIcon.classList.remove('hidden');
+
+                const wrapper = document.querySelector('.video-wrapper');
+
+                if (data.iframe_id) {
+                    els.playerLoader.classList.add('hidden');
+                    wrapper.innerHTML = `<iframe class="w-full h-full outline-none" src="https://www.youtube.com/embed/${data.iframe_id}?autoplay=1&rel=0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+                } else if (data.stream_url) {
+                    els.playerLoader.classList.add('hidden');
+                    // Keep the overlays intact by just updating the video tag
+                    const vidTag = document.getElementById('html5-player');
+                    vidTag.src = data.stream_url;
+                    vidTag.poster = data.thumbnail;
+                } else {
+                    els.playerLoader.innerHTML = `<div class="bg-black/80 p-4 rounded flex flex-col items-center"><i class="fa-solid fa-video-slash text-yt-textSec mb-2 text-2xl"></i><span class="text-sm">Stream unavailable. Please Download.</span></div>`;
+                    els.playerLoader.classList.remove('shimmer');
+                }
+
+                renderDownloadOptions(data.download_formats, data.id);
+            } catch (e) {
+                els.playerLoader.innerHTML = `<span class="text-yt-red bg-black/80 px-4 py-2 rounded">Network Error. Please refresh.</span>`;
+                els.playerLoader.classList.remove('shimmer');
+            }
+        }
+
+        // 4. Download Module with Estimated Size
+        function renderDownloadOptions(formats, videoId) {
+            const list = document.getElementById('download-formats-list');
+            if (!list) return;
+            list.innerHTML = '';
+
+            if (!formats || !formats.length) {
+                list.innerHTML = '<div class="p-8 text-center text-yt-textSec"><i class="fa-solid fa-ghost mb-3 text-2xl"></i><br>No download formats found.</div>';
+                return;
+            }
+
+            let vids = formats.filter(q => q.height > 0).sort((a, b) => b.height - a.height);
+            let auds = formats.filter(q => q.height === 0);
+
+            function createRow(q, icon, typeText) {
+                const btn = document.createElement('button');
+                // Calculate Mock Estimated Size based on height/quality if API doesn't provide it
+                const estSize = q.filesize ? (q.filesize / 1024 / 1024).toFixed(1) + ' MB' : (q.height ? Math.round(q.height * 0.08) + ' MB' : '12 MB');
+
+                btn.className = `w-full flex justify-between items-center px-5 py-3.5 border-b border-white/5 hover:bg-[#222] transition-colors text-left group`;
+                btn.innerHTML = `
+                    <div class="flex items-center gap-4">
+                        <i class="fa-solid ${icon} text-xl w-6 text-center text-yt-textSec group-hover:text-yt-red transition-colors"></i>
+                        <div>
+                            <div class="font-bold text-white text-base">${q.resolution}</div>
+                            <div class="text-[11px] text-yt-textSec mt-0.5">${q.ext ? q.ext.toUpperCase() : 'MP4'} • ${typeText}</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <span class="text-xs font-mono text-gray-400 bg-black/50 px-2 py-1 rounded">${estSize}</span>
+                        <div class="w-8 h-8 rounded-full bg-yt-red/20 group-hover:bg-yt-red flex items-center justify-center text-yt-red group-hover:text-white transition-all shrink-0">
+                            <i class="fa-solid fa-arrow-down text-sm"></i>
+                        </div>
+                    </div>
+                `;
+                btn.onclick = () => triggerNativeDownload(q.height, document.getElementById('player-title').innerText);
+                return btn;
+            }
+
+            if (vids.length) {
+                const head = document.createElement('div');
+                head.className = "px-5 py-2 text-[10px] font-bold text-yt-textSec uppercase tracking-wider bg-black/40 backdrop-blur";
+                head.innerText = "Video Selection";
+                list.appendChild(head);
+                vids.forEach(q => list.appendChild(createRow(q, 'fa-video', 'Video + Audio')));
+            }
+
+            if (auds.length) {
+                const head = document.createElement('div');
+                head.className = "px-5 py-2 text-[10px] font-bold text-yt-textSec uppercase tracking-wider bg-black/40 backdrop-blur";
+                head.innerText = "Audio Selection";
+                list.appendChild(head);
+                auds.forEach(q => list.appendChild(createRow(q, 'fa-music', 'Audio Only')));
+            }
+        }
+
+        function renderVideoGrid(videos, append = false) {
+            if (!append) els.videoGrid.innerHTML = '';
+            if (!videos.length && !append) return;
+
+            videos.forEach(v => {
+                const dur = formatDuration(v.duration);
+                const durHTML = dur ? `<span class="absolute bottom-1 right-1 bg-black/90 text-white text-[12px] font-medium px-1.5 py-0.5 rounded">${dur}</span>` : '';
+
+                const card = document.createElement('div');
+                card.className = "flex flex-col cursor-pointer group";
+                card.onclick = () => showPlayerView(v);
+
+                card.innerHTML = `
+                    <div class="relative w-full aspect-video bg-[#111] rounded-xl overflow-hidden mb-3 border border-white/5 shadow-lg group-hover:shadow-[0_0_15px_rgba(255,20,60,0.2)] transition-all">
+                        <img src="${v.thumbnail}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" alt="${v.title}" loading="lazy">
+                        ${durHTML}
+                    </div>
+                    <div class="flex gap-3 pr-2">
+                        <div class="w-9 h-9 rounded-full bg-yt-hover/50 shrink-0 flex items-center justify-center text-yt-textSec border border-white/5">
+                            <i class="fa-solid fa-user text-sm"></i>
+                        </div>
+                        <div class="flex flex-col overflow-hidden">
+                            <h3 class="text-yt-text font-medium text-[15px] leading-snug line-clamp-2 mb-1">${v.title}</h3>
+                            <div class="text-yt-textSec text-[13px] flex flex-col">
+                                <span class="hover:text-yt-text transition-colors">${v.author}</span>
+                                <span>${formatViews(v.viewCount)}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                els.videoGrid.appendChild(card);
+            });
+        }
+
+        function renderRelatedVideos() {
+            els.relatedContainer.innerHTML = '';
+            let videos = state.trendingCache.slice(0, 15);
+            if (!videos.length) {
+                els.relatedContainer.innerHTML = '<div class="text-yt-textSec text-sm">No related videos available.</div>';
+                return;
+            }
+
+            videos.forEach(v => {
+                const dur = formatDuration(v.duration);
+                const durHTML = dur ? `<span class="absolute bottom-1 right-1 bg-black/90 text-white text-[10px] font-medium px-1 rounded">${dur}</span>` : '';
+
+                const card = document.createElement('div');
+                card.className = 'flex gap-2 cursor-pointer group';
+                card.onclick = () => showPlayerView(v);
+
+                card.innerHTML = `
+                    <div class="relative w-[168px] h-[94px] rounded-lg overflow-hidden shrink-0 bg-[#111] border border-white/5">
+                        <img src="${v.thumbnail}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200" loading="lazy">
+                        ${durHTML}
+                    </div>
+                    <div class="flex flex-col py-0.5 pr-2 w-full">
+                        <h3 class="font-medium text-yt-text text-sm leading-tight line-clamp-2 mb-1" title="${v.title}">${v.title}</h3>
+                        <p class="text-[11px] text-yt-textSec hover:text-yt-text transition-colors">${v.author || 'Video Creator'}</p>
+                        <p class="text-[11px] text-yt-textSec">${formatViews(v.viewCount)}</p>
+                    </div>
+                `;
+                els.relatedContainer.appendChild(card);
+            });
+        }
+
+        function openDownloadModal() {
+            const data = state.videoDataCache[state.currentVideoId];
+            if (!data || !data.download_formats) {
+                alert("Please wait for video details to fully load.");
+                return;
+            }
+
+            els.dlProgressBox.classList.add('hidden');
+            els.dlFormatsList.classList.remove('hidden');
+            els.dlModal.classList.remove('hidden');
+            setTimeout(() => els.dlModalContent.classList.remove('translate-y-full'), 10);
+        }
+
+        function closeDownloadModal() {
+            els.dlModalContent.classList.add('translate-y-full');
+            setTimeout(() => {
+                els.dlModal.classList.add('hidden');
+                cancelDownload();
+            }, 300);
+        }
+
+        function cancelDownload() {
+            if (pollTimer) clearInterval(pollTimer);
+            els.dlProgressBox.classList.add('hidden');
+            els.dlFormatsList.classList.remove('hidden');
+        }
+
+        function updateProgressUI(percent, stageText) {
+            const circle = document.getElementById('dl-circle-bar');
+            const pctText = document.getElementById('dl-percent-text');
+            const offset = 283 - (283 * percent) / 100;
+            circle.style.strokeDashoffset = offset;
+            pctText.innerText = Math.round(percent) + '%';
+            document.getElementById('dl-stage').innerText = stageText;
+        }
+
+        async function triggerNativeDownload(resHeight, title) {
+            els.dlFormatsList.classList.add('hidden');
+            els.dlProgressBox.classList.remove('hidden');
+            updateProgressUI(5, 'Connecting to server...');
+
+            const videoUrl = `https://www.youtube.com/watch?v=${state.currentVideoId}`;
+
+            try {
+                const res = await fetch('/api/download_async', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url: videoUrl, res: resHeight, title: title })
+                });
+
+                const data = await res.json();
+                if (!res.ok || data.error) throw new Error("Fallback to Sync");
+
+                pollTimer = setInterval(async () => {
+                    try {
+                        const sRes = await fetch(`/api/task_status/${data.task_id}`);
+                        const sData = await sRes.json();
+
+                        const stageMap = { queued: 'In Queue', extracting: 'Extracting Format', downloading: 'Downloading Media...', merging: 'Finalizing File', ready: 'Ready!' };
+                        updateProgressUI(sData.percent || 10, stageMap[sData.stage] || sData.stage);
+
+                        if (sData.stage === 'ready') {
+                            clearInterval(pollTimer);
+                            document.getElementById('dl-circle-bar').style.stroke = '#22c55e'; // Green
+                            setTimeout(() => {
+                                closeDownloadModal();
+                                window.location.href = `/api/download_file/${data.task_id}`;
+                            }, 1000);
+                        } else if (sData.stage === 'error') {
+                            throw new Error(sData.error);
+                        }
+                    } catch (e) {
+                        clearInterval(pollTimer);
+                        document.getElementById('dl-stage').innerText = 'Error processing file.';
+                        document.getElementById('dl-circle-bar').style.stroke = '#ef4444'; // Red
+                    }
+                }, 1500);
+
+            } catch (err) {
+                // Fallback Sync Route if Async fails
+                clearInterval(pollTimer);
+                updateProgressUI(100, 'Starting Direct Stream...');
+                setTimeout(() => {
+                    closeDownloadModal();
+                    window.location.href = `/api/download?url=${encodeURIComponent(videoUrl)}&res=${resHeight}&title=${encodeURIComponent(title)}`;
+                }, 1000);
+            }
+        }
+    </script>
 </body>
+
 </html>
