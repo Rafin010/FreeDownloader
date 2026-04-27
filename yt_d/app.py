@@ -1111,6 +1111,32 @@ def download_video():
         return jsonify({"error": user_message}), 500
 
 # ── Async Download Routes (Celery-powered) ───────────────────
+@app.route('/api/extract_async', methods=['POST'])
+@limiter.limit("20/minute")
+def extract_async():
+    """Submit an extraction task to Celery. Returns task_id for polling."""
+    data = request.get_json(silent=True) or {}
+    video_url = data.get('url', '').strip()
+
+    if not video_url:
+        return jsonify({"error": "URL Missing"}), 400
+
+    yt_regex = r'(https?://(?:www\.|m\.|music\.)?(?:youtube\.com|youtu\.be|youtube\.com/shorts)/.+)'
+    if not re.match(yt_regex, video_url):
+        return jsonify({"error": "Invalid YouTube URL"}), 400
+
+    # Command injection validation happens automatically by yt-dlp 
+    # but we also sanitize via regex above.
+
+    try:
+        from tasks import celery_extract_yt
+        task = celery_extract_yt.delay(video_url)
+        logger.info("📋 Queued extract task: %s for %s", task.id, video_url[:60])
+        return jsonify({"task_id": task.id, "status": "queued"})
+    except Exception as e:
+        logger.error("Failed to queue extract task: %s", str(e)[:120])
+        return jsonify({"error": "Task queue unavailable. Please try again."}), 503
+
 @app.route('/api/download_async', methods=['POST'])
 @limiter.limit("10/minute")
 def download_async():

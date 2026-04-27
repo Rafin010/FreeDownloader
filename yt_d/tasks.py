@@ -75,6 +75,9 @@ def celery_extract_yt(self, video_url):
         # Build response (same logic as get_info route)
         raw_title = info_dict.get('title')
         description = info_dict.get('description')
+        duration = info_dict.get('duration', 0)
+        view_count = info_dict.get('view_count', 0)
+        uploader = info_dict.get('uploader', 'Unknown Channel')
 
         title = ""
         if raw_title and not raw_title.startswith("Video by "):
@@ -93,17 +96,66 @@ def celery_extract_yt(self, video_url):
                     thumbnail = tb['url']
                     break
 
-        available_formats = [
-            {"resolution": "1080p (Full HD)", "height": 1080},
-            {"resolution": "720p (HD)", "height": 720},
-            {"resolution": "480p (SD)", "height": 480},
-            {"resolution": "360p", "height": 360},
-        ]
+        formats = info_dict.get('formats', [])
+        
+        video_audio = {}
+        video_no_audio = {}
+        audio_only = {}
+
+        def format_size(size_bytes):
+            if not size_bytes:
+                return "Unknown"
+            if size_bytes < 1024 * 1024:
+                return f"{size_bytes / 1024:.1f} KB"
+            return f"{size_bytes / (1024 * 1024):.1f} MB"
+
+        for f in formats:
+            vcodec = f.get('vcodec')
+            acodec = f.get('acodec')
+            height = f.get('height')
+            ext = f.get('ext')
+            size = f.get('filesize') or f.get('filesize_approx') or 0
+            
+            # Formats object
+            fmt_obj = {
+                'format_id': f.get('format_id'),
+                'ext': ext,
+                'height': height,
+                'size_bytes': size,
+                'size_str': format_size(size)
+            }
+
+            if vcodec != 'none' and acodec != 'none':
+                # Video + Audio
+                if height and (height not in video_audio or video_audio[height]['size_bytes'] < size):
+                    video_audio[height] = fmt_obj
+            elif vcodec != 'none' and acodec == 'none':
+                # Video No Audio
+                if height and (height not in video_no_audio or video_no_audio[height]['size_bytes'] < size):
+                    video_no_audio[height] = fmt_obj
+            elif vcodec == 'none' and acodec != 'none':
+                # Audio Only
+                abr = f.get('abr') or 0
+                if abr and (abr not in audio_only or audio_only[abr]['size_bytes'] < size):
+                    fmt_obj['abr'] = abr
+                    audio_only[abr] = fmt_obj
+
+        # Sort and format output arrays
+        va_list = sorted(video_audio.values(), key=lambda x: x['height'], reverse=True)
+        vn_list = sorted(video_no_audio.values(), key=lambda x: x['height'], reverse=True)
+        ao_list = sorted(audio_only.values(), key=lambda x: x.get('abr', 0), reverse=True)
 
         result = {
             "title": title,
             "thumbnail": thumbnail,
-            "formats": available_formats,
+            "duration": duration,
+            "view_count": view_count,
+            "uploader": uploader,
+            "formats": {
+                "video_audio": va_list,
+                "video_no_audio": vn_list,
+                "audio_only": ao_list
+            }
         }
 
         # Cache for 10 minutes

@@ -16,8 +16,8 @@ def full_deploy():
 # 1. Pull latest code
 cd /root/FreeDownloader && git fetch origin && git reset --hard origin/main
 
-# 2. Update yt-dlp to latest version (CRITICAL for anti-bot bypass)
-/root/FreeDownloader/venv/bin/pip install --upgrade yt-dlp
+# 2. Update dependencies (including Celery and yt-dlp)
+/root/FreeDownloader/venv/bin/pip install --upgrade yt-dlp celery[redis]
 
 # 3. Create YouTube systemd service if it doesn't exist
 cat << 'EOF' > /etc/systemd/system/yt.service
@@ -30,6 +30,102 @@ User=root
 WorkingDirectory=/root/FreeDownloader/yt_d
 ExecStart=/root/FreeDownloader/venv/bin/gunicorn app:app -b 0.0.0.0:8004 --timeout 300 --workers 2
 Restart=always
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# --- Celery Workers ---
+cat << 'EOF' > /etc/systemd/system/celery-yt.service
+[Unit]
+Description=Celery Worker for yt (yt_d)
+After=network.target redis-server.service
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/root/FreeDownloader/yt_d
+Environment="PATH=/root/FreeDownloader/venv/bin"
+Environment="PYTHONPATH=/root/FreeDownloader"
+ExecStart=/root/FreeDownloader/venv/bin/celery -A tasks worker --concurrency=16 --pool=prefork -Q yt_d_queue --loglevel=info
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+cat << 'EOF' > /etc/systemd/system/celery-fb.service
+[Unit]
+Description=Celery Worker for fb (fb_downloader)
+After=network.target redis-server.service
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/root/FreeDownloader/fb_downloader
+Environment="PATH=/root/FreeDownloader/venv/bin"
+Environment="PYTHONPATH=/root/FreeDownloader"
+ExecStart=/root/FreeDownloader/venv/bin/celery -A tasks worker --concurrency=8 --pool=prefork -Q fb_downloader_queue --loglevel=info
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+cat << 'EOF' > /etc/systemd/system/celery-insta.service
+[Unit]
+Description=Celery Worker for insta (insta_d)
+After=network.target redis-server.service
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/root/FreeDownloader/insta_d
+Environment="PATH=/root/FreeDownloader/venv/bin"
+Environment="PYTHONPATH=/root/FreeDownloader"
+ExecStart=/root/FreeDownloader/venv/bin/celery -A tasks worker --concurrency=8 --pool=prefork -Q insta_d_queue --loglevel=info
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+cat << 'EOF' > /etc/systemd/system/celery-tik.service
+[Unit]
+Description=Celery Worker for tik (tik_d)
+After=network.target redis-server.service
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/root/FreeDownloader/tik_d
+Environment="PATH=/root/FreeDownloader/venv/bin"
+Environment="PYTHONPATH=/root/FreeDownloader"
+ExecStart=/root/FreeDownloader/venv/bin/celery -A tasks worker --concurrency=8 --pool=prefork -Q tik_d_queue --loglevel=info
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+cat << 'EOF' > /etc/systemd/system/celery-p_d.service
+[Unit]
+Description=Celery Worker for p_d (p_d)
+After=network.target redis-server.service
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/root/FreeDownloader/p_d
+Environment="PATH=/root/FreeDownloader/venv/bin"
+Environment="PYTHONPATH=/root/FreeDownloader"
+ExecStart=/root/FreeDownloader/venv/bin/celery -A tasks worker --concurrency=4 --pool=prefork -Q p_d_queue --loglevel=info
+Restart=always
+RestartSec=5
 
 [Install]
 WantedBy=multi-user.target
@@ -129,16 +225,18 @@ EOF
 # 5. Reload systemd and restart all services
 systemctl daemon-reload
 pkill gunicorn || true
+pkill celery || true
 sleep 2
-systemctl enable yt.service
-systemctl restart freedownloader.service fb.service insta.service tiktok.service yt.service free_d.service p_d.service
+systemctl enable yt.service celery-yt.service celery-fb.service celery-insta.service celery-tik.service celery-p_d.service
+systemctl restart freedownloader.service fb.service insta.service tiktok.service yt.service free_d.service p_d.service celery-yt.service celery-fb.service celery-insta.service celery-tik.service celery-p_d.service
 sleep 2
 
 # 6. Check status
-systemctl is-active freedownloader.service fb.service insta.service tiktok.service yt.service free_d.service p_d.service
+systemctl is-active freedownloader.service fb.service insta.service tiktok.service yt.service free_d.service p_d.service celery-yt.service celery-fb.service celery-insta.service celery-tik.service celery-p_d.service
 
-# 7. Confirm yt-dlp version
+# 7. Confirm versions
 /root/FreeDownloader/venv/bin/yt-dlp --version
+/root/FreeDownloader/venv/bin/celery --version
 """
         
         print("Deploying to VPS...")

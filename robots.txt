@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /login
+Disallow: /logout
+Disallow: /health
+Disallow: /uploads/
+
+Sitemap: https://freedownloader.top/sitemap.xml
