@@ -103,13 +103,20 @@
 
     <style>
         body {
-            background: radial-gradient(circle at 50% 0%, #30000a 0%, #110003 40%, #050000 100%);
-            background-attachment: fixed;
+            background-color: #0f0f0f;
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(255, 20, 60, 0.04), transparent 30%),
+                radial-gradient(circle at 85% 30%, rgba(77, 184, 255, 0.04), transparent 30%);
+            background-size: 200% 200%;
+            animation: ambientBg 15s ease-in-out infinite alternate;
             color: #f1f1f1;
-            margin: 0;
-            padding: 0;
+            margin: 0; padding: 0;
             overflow-x: hidden;
         }
+
+        /* Broken thumbnail fallback */
+        img.thumb-img { background: #222; }
+        img.thumb-img[src=""], img.thumb-img:not([src]) { visibility: hidden; }
 
         ::-webkit-scrollbar {
             width: 8px;
@@ -249,7 +256,8 @@
 
                 <div id="feed-header" class="px-4 pt-4 pb-2 hidden text-xl font-bold">Search Results</div>
 
-                <div id="ad-container-top" class="w-full hidden px-4 py-2 my-2 overflow-hidden flex justify-center">
+                <div id="ad-container-top" class="w-full hidden px-4 py-2 my-2 overflow-hidden flex justify-center"></div>
+                <!-- Ad removed: broken placeholder images -->
                 </div>
 
                 <div id="video-grid"
@@ -335,10 +343,7 @@
                 </div>
 
                 <div class="w-full lg:w-[400px] shrink-0 px-4 sm:px-0" id="related-sidebar">
-                    <div id="ad-container-sidebar"
-                        class="mb-4 w-full h-[250px] bg-yt-buttonBg rounded-xl flex items-center justify-center text-yt-textSec text-xs border border-yt-border overflow-hidden">
-                        <span class="opacity-50">Advertisement Space</span>
-                    </div>
+                    <!-- Sidebar ad placeholder removed for cleaner look -->
                     <div class="font-bold text-lg mb-3">Related Videos</div>
                     <div id="related-videos-container" class="flex flex-col gap-3 pb-20">
                     </div>
@@ -694,20 +699,7 @@
         }
 
         async function fetchAdsConfig() {
-            try {
-                const res = await fetch('/api/ads/config');
-                if (res.ok) {
-                    const data = await res.json();
-                    if (data.ads && data.ads.length > 0) {
-                        const topAd = data.ads.find(a => a.type === 'banner');
-                        if (topAd) {
-                            const c = document.getElementById('ad-container-top');
-                            c.innerHTML = `<a href="${topAd.target_url}" target="_blank" class="block w-full max-w-[728px] border border-yt-border bg-[#111] overflow-hidden"><img src="${topAd.image_url}" class="w-full h-auto object-cover" alt="Sponsored Ad"></a>`;
-                            c.classList.remove('hidden');
-                        }
-                    }
-                }
-            } catch (e) { console.warn("Adblocker or network error."); }
+            // Ads disabled - no placeholder images to avoid broken UI
         }
 
         async function loadTrendingFeed() {
@@ -901,19 +893,22 @@
                 card.className = "flex flex-col cursor-pointer group";
                 card.onclick = () => showPlayerView(v);
 
+                const thumbUrl = v.thumbnail || `https://i.ytimg.com/vi/${v.id}/hqdefault.jpg`;
+                const fallbackThumb = `https://i.ytimg.com/vi/${v.id}/mqdefault.jpg`;
                 card.innerHTML = `
-                    <div class="relative w-full aspect-video bg-[#111] rounded-xl overflow-hidden mb-3 border border-white/5 shadow-lg group-hover:shadow-[0_0_15px_rgba(255,20,60,0.2)] transition-all">
-                        <img src="${v.thumbnail}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" alt="${v.title}" loading="lazy">
+                    <div class="relative w-full aspect-video bg-[#181818] rounded-xl overflow-hidden mb-3 border border-white/5 shadow-lg group-hover:shadow-[0_0_20px_rgba(255,20,60,0.15)] transition-all duration-300">
+                        <img src="${thumbUrl}" onerror="this.onerror=null;this.src='${fallbackThumb}'" class="thumb-img w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" alt="${v.title}" loading="lazy">
                         ${durHTML}
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     </div>
                     <div class="flex gap-3 pr-2">
-                        <div class="w-9 h-9 rounded-full bg-yt-hover/50 shrink-0 flex items-center justify-center text-yt-textSec border border-white/5">
+                        <div class="w-9 h-9 rounded-full bg-gradient-to-br from-red-500/20 to-blue-500/20 shrink-0 flex items-center justify-center text-yt-textSec border border-white/5">
                             <i class="fa-solid fa-user text-sm"></i>
                         </div>
                         <div class="flex flex-col overflow-hidden">
-                            <h3 class="text-yt-text font-medium text-[15px] leading-snug line-clamp-2 mb-1">${v.title}</h3>
+                            <h3 class="text-yt-text font-medium text-[15px] leading-snug line-clamp-2 mb-1 group-hover:text-white transition-colors">${v.title}</h3>
                             <div class="text-yt-textSec text-[13px] flex flex-col">
-                                <span class="hover:text-yt-text transition-colors">${v.author}</span>
+                                <span class="hover:text-yt-text transition-colors">${v.author || 'Unknown'}</span>
                                 <span>${formatViews(v.viewCount)}</span>
                             </div>
                         </div>
@@ -939,14 +934,16 @@
                 card.className = 'flex gap-2 cursor-pointer group';
                 card.onclick = () => showPlayerView(v);
 
+                const rThumb = v.thumbnail || `https://i.ytimg.com/vi/${v.id}/hqdefault.jpg`;
+                const rFallback = `https://i.ytimg.com/vi/${v.id}/mqdefault.jpg`;
                 card.innerHTML = `
-                    <div class="relative w-[168px] h-[94px] rounded-lg overflow-hidden shrink-0 bg-[#111] border border-white/5">
-                        <img src="${v.thumbnail}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200" loading="lazy">
+                    <div class="relative w-[168px] h-[94px] rounded-lg overflow-hidden shrink-0 bg-[#181818] border border-white/5">
+                        <img src="${rThumb}" onerror="this.onerror=null;this.src='${rFallback}'" class="thumb-img w-full h-full object-cover group-hover:scale-105 transition-transform duration-200" loading="lazy">
                         ${durHTML}
                     </div>
                     <div class="flex flex-col py-0.5 pr-2 w-full">
                         <h3 class="font-medium text-yt-text text-sm leading-tight line-clamp-2 mb-1" title="${v.title}">${v.title}</h3>
-                        <p class="text-[11px] text-yt-textSec hover:text-yt-text transition-colors">${v.author || 'Video Creator'}</p>
+                        <p class="text-[11px] text-yt-textSec hover:text-yt-text transition-colors">${v.author || 'Unknown'}</p>
                         <p class="text-[11px] text-yt-textSec">${formatViews(v.viewCount)}</p>
                     </div>
                 `;
@@ -1012,8 +1009,8 @@
                         const sRes = await fetch(`/api/task_status/${data.task_id}`);
                         const sData = await sRes.json();
 
-                        const stageMap = { queued: 'In Queue', extracting: 'Extracting Format', downloading: 'Downloading Media...', merging: 'Finalizing File', ready: 'Ready!' };
-                        updateProgressUI(sData.percent || 10, stageMap[sData.stage] || sData.stage);
+                        const stageMap = { queued: 'In Queue...', extracting: 'Extracting Format...', downloading: 'Downloading Media...', merging: 'Finalizing File...', ready: 'Ready!' };
+                        updateProgressUI(sData.percent || 10, sData.stage_text || stageMap[sData.stage] || sData.stage || 'Processing...');
 
                         if (sData.stage === 'ready') {
                             clearInterval(pollTimer);
