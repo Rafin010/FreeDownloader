@@ -18,6 +18,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from infra.redis_client import get_limiter_storage_uri, cache_get, cache_set
 from infra.progress import get_progress
+from infra.api_extractors import extract_video, download_video_stream
 
 app = Flask(__name__)
 limiter = Limiter(
@@ -285,18 +286,40 @@ def _is_unrecoverable_fb_error(error_str):
 
 def extract_with_retry(video_url):
     """Multi-pass extraction with escalating fallback strategies:
-    Pass 1: Original URL with all UA rotations and strategies
-    Pass 2: Resolved/normalized URL (if different)
+    Pass 0 (NEW): Multi-API extraction (Cobalt, scraping, social APIs) — SnagSave-style
+    Pass 1: yt-dlp with UA rotations and strategies
+    Pass 2: Resolved/normalized URL
     Pass 3: Mobile site URL variant
-    Pass 4: Embedded player URL (lightest auth requirements)
+    Pass 4: Embedded player URL
     Each pass rotates through User-Agents with jittered exponential backoff."""
     last_error = None
     num_ua = len(USER_AGENTS)
     num_strategies = len(FB_STRATEGIES)
 
-    # ── Pass 1: Original URL with strategy rotation ───────────
+    # ── Pass 0 (NEW): Multi-API Extraction ── SnagSave-style ──
+    logger.info("🚀 Pass 0: Trying API extraction (Cobalt/scraping) for: %s", video_url[:80])
+    try:
+        api_result = extract_video(video_url, platform='facebook', quality='1080')
+        if api_result and api_result.get('download_url'):
+            logger.info("✅ API extraction succeeded via %s", api_result.get('source', 'api'))
+            # Build yt-dlp compatible info dict from API result
+            info = {
+                'title': api_result.get('title', 'Facebook_Video'),
+                'description': api_result.get('title', ''),
+                'thumbnail': api_result.get('thumbnail', ''),
+                'thumbnails': [{'url': api_result.get('thumbnail', '')}] if api_result.get('thumbnail') else [],
+                'formats': [],
+                '_api_download_url': api_result.get('download_url'),
+                '_api_download_urls': api_result.get('download_urls', {}),
+                '_api_source': api_result.get('source', 'api'),
+            }
+            return info, -1  # -1 signals API fallback
+    except Exception as api_err:
+        logger.warning("API extraction failed: %s — falling back to yt-dlp", str(api_err)[:100])
+
+    # ── Pass 1: Original URL with strategy rotation (yt-dlp) ──
     for s in range(num_strategies):
-        for i in range(num_ua):
+        for i in range(min(2, num_ua)):  # Reduced attempts for speed
             try:
                 strategy_name = FB_STRATEGIES[s]['name']
                 logger.info("FB attempt UA=%d Strategy=%s for: %s",
@@ -316,14 +339,11 @@ def extract_with_retry(video_url):
                     logger.error("❌ Unrecoverable FB error: %s", error_str[:150])
                     raise e
 
-                # Jittered exponential backoff
-                base_backoff = min(2 * (i + 1), 8)
-                jitter = random.uniform(0, 1.5)
-                backoff = base_backoff + jitter
+                backoff = min(2 * (i + 1), 6) + random.uniform(0, 1)
                 logger.warning("FB attempt failed (UA=%d, %s): %s — backing off %.1fs...",
                                i + 1, strategy_name, error_str[:100], backoff)
 
-                if not (s == num_strategies - 1 and i == num_ua - 1):
+                if not (s == num_strategies - 1 and i == min(2, num_ua) - 1):
                     time.sleep(backoff)
                 continue
 
@@ -331,7 +351,7 @@ def extract_with_retry(video_url):
     resolved_url = normalize_fb_url(video_url)
     if resolved_url != video_url:
         logger.info("🔄 Pass 2: Retrying with resolved URL: %s", resolved_url[:80])
-        for i in range(min(3, num_ua)):
+        for i in range(min(2, num_ua)):
             try:
                 opts = get_ydl_opts_for_attempt(i, 0)
                 with yt_dlp.YoutubeDL(opts) as ydl:
@@ -343,56 +363,44 @@ def extract_with_retry(video_url):
                 last_error = e
                 if _is_unrecoverable_fb_error(str(e)):
                     raise e
-                backoff = min(2 * (i + 1), 8) + random.uniform(0, 1)
+                backoff = min(2 * (i + 1), 6) + random.uniform(0, 1)
                 logger.warning("FB resolved-URL attempt %d failed: %s — backing off %.1fs...",
                                i + 1, str(e)[:100], backoff)
-                if i < 2:
+                if i < 1:
                     time.sleep(backoff)
                 continue
 
     # ── Pass 3: Mobile Site URL ───────────────────────────────
     mobile_url = build_mobile_url(resolved_url or video_url)
     logger.info("🔄 Pass 3: Trying mobile site URL: %s", mobile_url[:80])
-    for i in range(min(2, num_ua)):
-        try:
-            opts = get_ydl_opts_for_attempt(i, 0)
-            # Override UA to mobile for mobile site
-            opts['http_headers']['User-Agent'] = USER_AGENTS[4]  # iPhone UA
-            with yt_dlp.YoutubeDL(opts) as ydl:
-                info = ydl.extract_info(mobile_url, download=False)
-                logger.info("✅ FB mobile-site attempt %d succeeded!", i + 1)
-                return info, i
-
-        except Exception as e:
-            last_error = e
-            if _is_unrecoverable_fb_error(str(e)):
-                raise e
-            backoff = 3 + random.uniform(0, 2)
-            logger.warning("FB mobile-site attempt %d failed: %s", i + 1, str(e)[:100])
-            if i < 1:
-                time.sleep(backoff)
-            continue
+    try:
+        opts = get_ydl_opts_for_attempt(0, 0)
+        opts['http_headers']['User-Agent'] = USER_AGENTS[4]  # iPhone UA
+        with yt_dlp.YoutubeDL(opts) as ydl:
+            info = ydl.extract_info(mobile_url, download=False)
+            logger.info("✅ FB mobile-site succeeded!")
+            return info, 0
+    except Exception as e:
+        last_error = e
+        if _is_unrecoverable_fb_error(str(e)):
+            raise e
+        logger.warning("FB mobile-site failed: %s", str(e)[:100])
 
     # ── Pass 4: Embedded Player URL ───────────────────────────
     embed_url = build_embed_url(resolved_url or video_url)
     if embed_url:
         logger.info("🔄 Pass 4: Trying embed URL: %s", embed_url)
-        for i in range(min(2, num_ua)):
-            try:
-                opts = get_ydl_opts_for_attempt(i, 0)
-                with yt_dlp.YoutubeDL(opts) as ydl:
-                    info = ydl.extract_info(embed_url, download=False)
-                    logger.info("✅ FB embed-URL attempt %d succeeded!", i + 1)
-                    return info, i
-
-            except Exception as e:
-                last_error = e
-                if _is_unrecoverable_fb_error(str(e)):
-                    raise e
-                logger.warning("FB embed-URL attempt %d failed: %s", i + 1, str(e)[:100])
-                if i < 1:
-                    time.sleep(2 + random.uniform(0, 1))
-                continue
+        try:
+            opts = get_ydl_opts_for_attempt(0, 0)
+            with yt_dlp.YoutubeDL(opts) as ydl:
+                info = ydl.extract_info(embed_url, download=False)
+                logger.info("✅ FB embed-URL succeeded!")
+                return info, 0
+        except Exception as e:
+            last_error = e
+            if _is_unrecoverable_fb_error(str(e)):
+                raise e
+            logger.warning("FB embed-URL failed: %s", str(e)[:100])
 
     logger.error("❌ ALL Facebook extraction strategies exhausted for: %s", video_url)
     logger.error("   Last error: %s", str(last_error))
@@ -673,7 +681,29 @@ def download_video():
     try:
         logger.info("⬇️  Downloading FB: %s at %sp", video_url, res_height)
 
-        download_with_retry(video_url, filepath, res_height)
+        download_success = False
+
+        # ── NEW: Try API-based download first (SnagSave-style) ──
+        try:
+            api_result = extract_video(video_url, platform='facebook', quality=res_height)
+            if api_result and api_result.get('download_url'):
+                logger.info("⬇️  Downloading via API: %s", api_result.get('source', 'api'))
+                download_success = download_video_stream(
+                    api_result['download_url'], filepath
+                )
+                if download_success:
+                    logger.info("✅ API download succeeded!")
+        except Exception as api_err:
+            logger.warning("API download failed: %s — falling back to yt-dlp", str(api_err)[:100])
+
+        # ── Fallback: yt-dlp download ──
+        if not download_success:
+            try:
+                download_with_retry(video_url, filepath, res_height)
+                download_success = True
+            except Exception as dl_err:
+                logger.error("yt-dlp download also failed: %s", str(dl_err)[:100])
+                raise dl_err
 
         delete_file_delayed(filepath, delay=1800)
         logger.info("✅ Download complete: %s", unique_filename)

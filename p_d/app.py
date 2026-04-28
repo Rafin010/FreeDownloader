@@ -17,6 +17,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from infra.redis_client import get_limiter_storage_uri, cache_get, cache_set
 from infra.progress import get_progress
+from infra.api_extractors import extract_video, download_video_stream
 
 app = Flask(__name__)
 limiter = Limiter(
@@ -112,10 +113,32 @@ def build_opts(strategy_idx=0, referer_url=""):
 
 
 def extract_with_retry(video_url):
-    """Try extraction with rotating User-Agents and jittered exponential backoff."""
+    """Try API extraction first (SnagSave-style), then yt-dlp with rotating UAs."""
     last_error = None
     num_attempts = len(USER_AGENTS)
+    platform = get_platform_name(video_url)
 
+    # ── Pass 0 (NEW): Multi-API Extraction ── SnagSave-style ──
+    logger.info("🚀 Pass 0: Trying API extraction (Cobalt) for %s: %s", platform, video_url[:60])
+    try:
+        # Cobalt works well for many adult sites too
+        api_result = extract_video(video_url, platform='auto', quality='1080')
+        if api_result and api_result.get('download_url'):
+            logger.info("✅ API extraction succeeded via %s", api_result.get('source', 'api'))
+            info = {
+                'title': api_result.get('title', f'{platform}_Video'),
+                'description': api_result.get('title', ''),
+                'thumbnail': api_result.get('thumbnail', ''),
+                'thumbnails': [{'url': api_result.get('thumbnail', '')}] if api_result.get('thumbnail') else [],
+                'formats': [],
+                '_api_download_url': api_result.get('download_url'),
+                '_api_source': api_result.get('source', 'api'),
+            }
+            return info, -1
+    except Exception as api_err:
+        logger.warning("API extraction failed: %s — falling back to yt-dlp", str(api_err)[:100])
+
+    # ── Pass 1: yt-dlp with rotating User-Agents ──
     for i in range(num_attempts):
         try:
             opts = build_opts(i, video_url)
@@ -130,10 +153,7 @@ def extract_with_retry(video_url):
             if 'is not a valid url' in error_str:
                 raise e
 
-            # Jittered exponential backoff
-            base_backoff = min(2 * (i + 1), 10)
-            jitter = random.uniform(0, 1.5)
-            backoff = base_backoff + jitter
+            backoff = min(2 * (i + 1), 8) + random.uniform(0, 1)
             logger.warning("P_D attempt %d failed: %s — backing off %.1fs...",
                            i + 1, str(e)[:120], backoff)
 
@@ -398,7 +418,24 @@ def download_video():
     try:
         logger.info("⬇️  Downloading %s: %s at %s", platform, video_url, res_height)
 
-        download_with_retry(video_url, filepath, format_string)
+        download_success = False
+
+        # ── NEW: Try API-based download first (SnagSave-style) ──
+        try:
+            api_result = extract_video(video_url, platform='auto', quality=res_height)
+            if api_result and api_result.get('download_url'):
+                logger.info("⬇️  P_D downloading via API: %s", api_result.get('source', 'api'))
+                download_success = download_video_stream(
+                    api_result['download_url'], filepath
+                )
+                if download_success:
+                    logger.info("✅ P_D API download succeeded!")
+        except Exception as api_err:
+            logger.warning("P_D API download failed: %s — falling back to yt-dlp", str(api_err)[:100])
+
+        # ── Fallback: yt-dlp download ──
+        if not download_success:
+            download_with_retry(video_url, filepath, format_string)
 
         delete_file_delayed(filepath, delay=1800)
         logger.info("✅ Download complete: %s", unique_filename)

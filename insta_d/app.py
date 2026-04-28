@@ -17,6 +17,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from infra.redis_client import get_limiter_storage_uri, cache_get, cache_set
 from infra.progress import get_progress
+from infra.api_extractors import extract_video, download_video_stream
 
 app = Flask(__name__)
 limiter = Limiter(
@@ -112,10 +113,30 @@ def _is_unrecoverable_ig_error(error_str):
 
 
 def extract_with_retry(video_url):
-    """Try extracting video info with rotating User-Agents and jittered backoff."""
+    """Try API extraction first (SnagSave-style), then yt-dlp with rotating UAs."""
     last_error = None
     num_attempts = len(USER_AGENTS)
 
+    # ── Pass 0 (NEW): Multi-API Extraction ── SnagSave-style ──
+    logger.info("🚀 Pass 0: Trying API extraction (Cobalt) for IG: %s", video_url[:60])
+    try:
+        api_result = extract_video(video_url, platform='instagram', quality='1080')
+        if api_result and api_result.get('download_url'):
+            logger.info("✅ API extraction succeeded via %s", api_result.get('source', 'api'))
+            info = {
+                'title': api_result.get('title', 'Instagram_Video'),
+                'description': api_result.get('title', ''),
+                'thumbnail': api_result.get('thumbnail', ''),
+                'thumbnails': [{'url': api_result.get('thumbnail', '')}] if api_result.get('thumbnail') else [],
+                'formats': [],
+                '_api_download_url': api_result.get('download_url'),
+                '_api_source': api_result.get('source', 'api'),
+            }
+            return info, -1
+    except Exception as api_err:
+        logger.warning("API extraction failed: %s — falling back to yt-dlp", str(api_err)[:100])
+
+    # ── Pass 1: yt-dlp with rotating User-Agents ──
     for i in range(num_attempts):
         try:
             logger.info("IG attempt %d/%d for: %s", i + 1, num_attempts, video_url)
@@ -132,10 +153,7 @@ def extract_with_retry(video_url):
                 logger.error("❌ Unrecoverable IG error: %s", error_str[:150])
                 raise e
 
-            # Jittered exponential backoff
-            base_backoff = min(2 * (i + 1), 10)
-            jitter = random.uniform(0, 1.5)
-            backoff = base_backoff + jitter
+            backoff = min(2 * (i + 1), 8) + random.uniform(0, 1)
             logger.warning("IG attempt %d failed: %s — backing off %.1fs...",
                            i + 1, error_str[:120], backoff)
 
@@ -389,7 +407,25 @@ def download_video():
 
     try:
         logger.info("⬇️  Downloading IG: %s at %sp", video_url, res_height)
-        download_with_retry(video_url, filepath, res_height)
+
+        download_success = False
+
+        # ── NEW: Try API-based download first (SnagSave-style) ──
+        try:
+            api_result = extract_video(video_url, platform='instagram', quality=res_height)
+            if api_result and api_result.get('download_url'):
+                logger.info("⬇️  IG downloading via API: %s", api_result.get('source', 'api'))
+                download_success = download_video_stream(
+                    api_result['download_url'], filepath
+                )
+                if download_success:
+                    logger.info("✅ IG API download succeeded!")
+        except Exception as api_err:
+            logger.warning("IG API download failed: %s — falling back to yt-dlp", str(api_err)[:100])
+
+        # ── Fallback: yt-dlp download ──
+        if not download_success:
+            download_with_retry(video_url, filepath, res_height)
 
         # Magic bytes validation — ensure the file is actually a video
         VALID_MAGIC_BYTES = [

@@ -20,6 +20,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from infra.redis_client import get_limiter_storage_uri, cache_get, cache_set, is_redis_available
 from infra.progress import get_progress
 from infra.proxy_pool import get_proxy, mark_bad as mark_proxy_bad
+from infra.api_extractors import extract_video, download_video_stream
 
 app = Flask(__name__)
 limiter = Limiter(
@@ -383,12 +384,34 @@ def extract_via_invidious_api(video_url):
 
 
 def extract_with_retry(video_url):
-    """Try strategies with minimal backoff to prevent slow loading times.
-    Falls back to Invidious/Piped API quickly if yt-dlp is blocked."""
+    """Try API extraction first (SnagSave-style), then yt-dlp strategies,
+    then Invidious/Piped API as final fallback."""
     _, num_strategies = build_yt_opts(0)
-    max_attempts = 3  # Reduced from 12 to 3 to fail fast and fallback to proxy
+    max_attempts = 3
     last_error = None
 
+    # ── Pass 0 (NEW): Multi-API Extraction ── SnagSave-style ──
+    logger.info("🚀 Pass 0: Trying API extraction (Cobalt) for: %s", video_url[:60])
+    try:
+        api_result = extract_video(video_url, platform='youtube', quality='1080')
+        if api_result and api_result.get('download_url'):
+            logger.info("✅ API extraction succeeded via %s", api_result.get('source', 'api'))
+            info = {
+                'id': extract_video_id(video_url) or 'unknown',
+                'title': api_result.get('title', 'YouTube_Video'),
+                'description': '',
+                'thumbnail': api_result.get('thumbnail', ''),
+                'thumbnails': [{'url': api_result.get('thumbnail', '')}] if api_result.get('thumbnail') else [],
+                'uploader': api_result.get('author', ''),
+                'formats': [],
+                '_api_download_url': api_result.get('download_url'),
+                '_api_source': api_result.get('source', 'api'),
+            }
+            return info, -1
+    except Exception as api_err:
+        logger.warning("API extraction failed: %s — falling back to yt-dlp", str(api_err)[:100])
+
+    # ── Pass 1: yt-dlp with strategy rotation ─────────────────
     for i in range(max_attempts):
         try:
             opts, _ = build_yt_opts(i)
@@ -408,7 +431,6 @@ def extract_with_retry(video_url):
                 logger.error("❌ Unrecoverable error (not retrying): %s", error_str[:150])
                 raise e
 
-            # Minimal backoff
             backoff = random.uniform(0.5, 1.5)
             logger.warning("YT attempt %d failed: %s — backing off %.1fs before next...",
                            i + 1, error_str[:120], backoff)
@@ -417,14 +439,13 @@ def extract_with_retry(video_url):
                 time.sleep(backoff)
             continue
 
-    # ── Invidious/Piped API Fallback ──────────────────────────
+    # ── Pass 2: Invidious/Piped API Fallback ──────────────────
     logger.info("🔄 All yt-dlp strategies exhausted — trying Invidious/Piped API fallback...")
     api_info = extract_via_invidious_api(video_url)
     if api_info:
         logger.info("✅ Fallback API extraction succeeded!")
-        return api_info, -1  # -1 signals fallback
+        return api_info, -1
 
-    # All attempts exhausted — log detailed diagnostic info
     logger.error("❌ ALL %d YouTube strategies + API fallbacks exhausted for: %s", max_attempts, video_url)
     logger.error("   Last error: %s", str(last_error))
     logger.error("   yt-dlp version: %s | curl-cffi: %s | auth cookies: %s | PO token: %s",
@@ -1064,17 +1085,33 @@ def download_video():
     try:
         logger.info("⬇️  Downloading: %s at %sp", video_url, res_height)
 
-        # First try standard yt-dlp download with retry
+        download_success = False
+
+        # ── NEW: Try API-based download first (SnagSave-style) ──
         try:
-            download_with_retry(video_url, filepath, res_height)
-        except Exception as dl_err:
-            # If yt-dlp download fails, try API fallback for direct URL download
-            logger.warning("yt-dlp download failed, trying API fallback: %s", str(dl_err)[:100])
-            api_info = extract_via_invidious_api(video_url)
-            if api_info and download_via_direct_url(api_info, filepath, res_height):
-                logger.info("✅ Downloaded via API fallback direct URL")
-            else:
-                raise dl_err  # Re-raise original error
+            api_result = extract_video(video_url, platform='youtube', quality=res_height)
+            if api_result and api_result.get('download_url'):
+                logger.info("⬇️  Downloading via API: %s", api_result.get('source', 'api'))
+                download_success = download_video_stream(
+                    api_result['download_url'], filepath
+                )
+                if download_success:
+                    logger.info("✅ API download succeeded!")
+        except Exception as api_err:
+            logger.warning("API download failed: %s — falling back to yt-dlp", str(api_err)[:100])
+
+        # ── Fallback: yt-dlp download ──
+        if not download_success:
+            try:
+                download_with_retry(video_url, filepath, res_height)
+            except Exception as dl_err:
+                # If yt-dlp download fails, try Invidious direct URL
+                logger.warning("yt-dlp download failed, trying Invidious fallback: %s", str(dl_err)[:100])
+                api_info = extract_via_invidious_api(video_url)
+                if api_info and download_via_direct_url(api_info, filepath, res_height):
+                    logger.info("✅ Downloaded via Invidious fallback direct URL")
+                else:
+                    raise dl_err
 
         delete_file_delayed(filepath, delay=1800)
         logger.info("✅ Download complete: %s", unique_filename)
