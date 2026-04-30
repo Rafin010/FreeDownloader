@@ -177,7 +177,7 @@
     </style>
 </head>
 
-<body class="font-sans text-sm pb-16 md:pb-0 flex flex-col h-screen overflow-hidden">
+<body class="font-sans text-sm pb-16 md:pb-0 bg-white text-gray-900">
 
     <header
         class="flex justify-between items-center px-3 sm:px-4 h-14 bg-white border-b border-gray-200 fixed w-full top-0 z-50 gap-3 transition-colors shadow-sm">
@@ -194,27 +194,19 @@
         </div>
 
         <div class="flex-1 max-w-[720px] flex items-center justify-end sm:justify-center">
-            <form id="desktop-search-form" class="flex flex-1 w-full max-w-full sm:max-w-2xl flex-row shadow-lg">
-                <div
-                    class="flex-1 flex items-center border border-gray-300 bg-white rounded-l-full px-3 sm:px-4 overflow-hidden focus-within:border-blue-500 transition-colors">
-                    <i class="fa-solid fa-search text-yt-textSec mr-2 text-[14px] sm:text-[16px]"></i>
-                    <input type="text" id="desktop-search-input" placeholder="Search videos or paste link"
-                        class="w-full bg-transparent border-none py-1.5 sm:py-2 text-gray-900 text-[14px] sm:text-[16px] focus:outline-none placeholder-gray-500"
-                        aria-label="Search">
+            <form id="desktop-search-form" class="flex flex-1 w-full max-w-full sm:max-w-2xl flex-row">
+                <div class="flex-1 flex items-center border border-gray-300 bg-white rounded-l-full px-4 overflow-hidden focus-within:border-blue-500 shadow-inner">
+                    <input type="text" id="desktop-search-input" placeholder="Search videos or paste link" class="w-full bg-transparent border-none py-2 text-gray-900 text-[16px] focus:outline-none placeholder-gray-500" aria-label="Search">
                 </div>
-                <button type="submit" aria-label="Submit Search"
-                    class="border border-l-0 border-gray-300 bg-gray-100 hover:bg-gray-200 px-4 sm:px-5 rounded-r-full flex items-center justify-center transition-all text-gray-600">
-                    <span class="hidden sm:inline font-medium tracking-wide">Search</span>
-                    <i class="fa-solid fa-search sm:hidden text-[14px]"></i>
+                <button type="submit" aria-label="Submit Search" class="border border-l-0 border-gray-300 bg-gray-50 hover:bg-gray-100 px-6 rounded-r-full flex items-center justify-center transition-colors text-gray-700" title="Search">
+                    <i class="fa-solid fa-magnifying-glass text-[16px]"></i>
                 </button>
             </form>
         </div>
     </header>
 
-    <div class="flex flex-1 pt-14 h-full overflow-hidden">
-        <aside
-            class="w-[72px] hidden sm:flex flex-col items-center py-2 shrink-0 bg-white border-r border-gray-200 h-full overflow-y-auto"
-            id="mini-sidebar">
+    <div class="flex pt-14 min-h-screen">
+        <aside class="w-[72px] hidden sm:flex flex-col items-center py-2 shrink-0 bg-white border-r border-gray-200 fixed left-0 top-14 bottom-0 z-40 overflow-y-auto" id="mini-sidebar">
             <a href="#"
                 class="w-full py-4 flex flex-col items-center hover:bg-yt-hover rounded-xl text-yt-text gap-1 transition-colors"
                 onclick="showHomeView()">
@@ -245,7 +237,7 @@
             </div>
         </aside>
 
-        <main class="flex-1 overflow-y-auto bg-yt-bg relative" id="main-scroll-area">
+        <main class="flex-1 sm:ml-[72px] bg-white relative w-full" id="main-scroll-area">
 
             <div id="view-home" class="w-full max-w-[2200px] mx-auto pb-8">
 
@@ -669,7 +661,7 @@
             document.title = "FreeDownloader - Video Streaming & Downloader";
 
             if (pushHistory) history.pushState({ view: 'home' }, 'Home', '/');
-            document.getElementById('main-scroll-area').scrollTo({ top: 0 });
+            window.scrollTo({ top: 0 });
         }
 
         function showPlayerView(videoInfo, pushHistory = true) {
@@ -687,7 +679,7 @@
             }
 
             if (pushHistory) history.pushState({ view: 'player', id: state.currentVideoId }, 'Video', `/?v=${state.currentVideoId}`);
-            document.getElementById('main-scroll-area').scrollTo({ top: 0 });
+            window.scrollTo({ top: 0 });
 
             fetchVideoDetails(state.currentVideoId);
             renderRelatedVideos();
@@ -798,10 +790,23 @@
                 els.authorIcon.classList.remove('hidden');
 
                 const wrapper = document.querySelector('.video-wrapper');
-                // Always use YouTube iframe embed for reliable playback (HTML5 video can't play separate audio+video streams)
-                const embedId = data.iframe_id || data.id || state.currentVideoId;
-                els.playerLoader.classList.add('hidden');
-                wrapper.innerHTML = `<iframe class="w-full h-full outline-none" style="position:absolute;top:0;left:0;width:100%;height:100%" src="https://www.youtube.com/embed/${embedId}?autoplay=1&rel=0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`;
+                
+                // If stream_url is available, use HTML5 player. Otherwise fallback to iframe.
+                if (data.stream_url) {
+                    els.playerLoader.classList.add('hidden');
+                    const vidTag = document.getElementById('html5-player');
+                    if(vidTag) {
+                        vidTag.src = data.stream_url;
+                        vidTag.poster = data.thumbnail;
+                    }
+                } else if (data.iframe_id || data.id) {
+                    const embedId = data.iframe_id || data.id || state.currentVideoId;
+                    els.playerLoader.classList.add('hidden');
+                    wrapper.innerHTML = `<iframe class="w-full h-full outline-none" style="position:absolute;top:0;left:0;width:100%;height:100%" src="https://www.youtube.com/embed/${embedId}?autoplay=1&rel=0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`;
+                } else {
+                    els.playerLoader.innerHTML = `<div class="bg-black/80 p-4 rounded flex flex-col items-center"><i class="fa-solid fa-video-slash text-gray-400 mb-2 text-2xl"></i><span class="text-sm text-white">Stream unavailable. Please Download.</span></div>`;
+                    els.playerLoader.classList.remove('shimmer');
+                }
 
                 renderDownloadOptions(data.download_formats, data.id);
             } catch (e) {
