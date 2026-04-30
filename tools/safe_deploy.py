@@ -20,8 +20,10 @@ def run_cmd(cmd):
 def main():
     fb_cookie_orig = os.path.join(PROJECT_ROOT, "fb_downloader", "cookies.txt")
     yt_cookie_orig = os.path.join(PROJECT_ROOT, "yt_d", "cookies.txt")
+    ig_cookie_orig = os.path.join(PROJECT_ROOT, "insta_d", "cookies.txt")
     fb_cookie_temp = os.path.join(PROJECT_ROOT, "temp_fb_cookies.txt")
     yt_cookie_temp = os.path.join(PROJECT_ROOT, "temp_yt_cookies.txt")
+    ig_cookie_temp = os.path.join(PROJECT_ROOT, "temp_ig_cookies.txt")
 
     # 1. Backup cookies
     print("Backing up cookies...")
@@ -29,6 +31,8 @@ def main():
         shutil.copy2(fb_cookie_orig, fb_cookie_temp)
     if os.path.exists(yt_cookie_orig):
         shutil.copy2(yt_cookie_orig, yt_cookie_temp)
+    if os.path.exists(ig_cookie_orig):
+        shutil.copy2(ig_cookie_orig, ig_cookie_temp)
 
     # 2. Git operations
     print("Rewriting git history to exclude cookies...")
@@ -38,12 +42,16 @@ def main():
     # Note: git paths are relative to repo root, and we run run_cmd with cwd=PROJECT_ROOT
     fb_rel = "fb_downloader/cookies.txt"
     yt_rel = "yt_d/cookies.txt"
+    ig_rel = "insta_d/cookies.txt"
     run_cmd(f"git checkout origin/main -- {fb_rel} {yt_rel}")
+    # Ensure IG cookies are not committed (may not exist in origin/main)
+    run_cmd(f"git rm --cached --ignore-unmatch {ig_rel}")
     run_cmd(f"git add {fb_rel} {yt_rel}")
 
     # Add all other untracked/modified files (the actual frontend/code updates)
     run_cmd("git add .")
-    run_cmd("git reset HEAD temp_fb_cookies.txt temp_yt_cookies.txt")
+    run_cmd("git reset HEAD temp_fb_cookies.txt temp_yt_cookies.txt temp_ig_cookies.txt")
+    run_cmd(f"git reset HEAD {ig_rel}")
     
     # Commit and Push
     run_cmd('git commit -m "Update frontend and deploy latest code (secrets removed)"')
@@ -56,6 +64,8 @@ def main():
             shutil.copy2(fb_cookie_temp, fb_cookie_orig)
         if os.path.exists(yt_cookie_temp):
             shutil.copy2(yt_cookie_temp, yt_cookie_orig)
+        if os.path.exists(ig_cookie_temp):
+            shutil.copy2(ig_cookie_temp, ig_cookie_orig)
         return
 
     # 3. VPS Deploy
@@ -84,7 +94,17 @@ def main():
             sftp.put(fb_cookie_temp, "/root/FreeDownloader/fb_downloader/cookies.txt")
         if os.path.exists(yt_cookie_temp):
             sftp.put(yt_cookie_temp, "/root/FreeDownloader/yt_d/cookies.txt")
+        if os.path.exists(ig_cookie_temp):
+            sftp.put(ig_cookie_temp, "/root/FreeDownloader/insta_d/cookies.txt")
         sftp.close()
+
+        # 3.2b Install correct curl-cffi for yt-dlp impersonation
+        print("Installing curl-cffi 0.14.0 for browser impersonation...")
+        curl_cmd = 'source /root/FreeDownloader/venv/bin/activate && pip install "curl-cffi>=0.10,<0.15"'
+        stdin, stdout, stderr = client.exec_command(curl_cmd)
+        print(stdout.read().decode('utf-8', errors='replace'))
+        err = stderr.read().decode('utf-8', errors='replace')
+        if err: print(f"curl-cffi install: {err}")
 
         # 3.3 Set up Free Store Nginx & Services
         print("Setting up Free Store configs...")
@@ -124,6 +144,9 @@ def main():
     if os.path.exists(yt_cookie_temp):
         shutil.copy2(yt_cookie_temp, yt_cookie_orig)
         os.remove(yt_cookie_temp)
+    if os.path.exists(ig_cookie_temp):
+        shutil.copy2(ig_cookie_temp, ig_cookie_orig)
+        os.remove(ig_cookie_temp)
     print("All done!")
 
 if __name__ == "__main__":

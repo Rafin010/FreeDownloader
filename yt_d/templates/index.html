@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
@@ -84,16 +84,16 @@
                     },
                     colors: {
                         yt: {
-                            bg: 'transparent',
-                            header: 'rgba(15, 5, 10, 0.55)',
-                            hover: 'rgba(255, 20, 60, 0.12)',
-                            border: 'rgba(255, 100, 120, 0.15)',
-                            searchBg: 'rgba(0, 0, 0, 0.4)',
-                            text: '#fdfdfd',
-                            textSec: '#ffb3c1',
-                            red: '#e6193c',
-                            blue: '#4db8ff',
-                            buttonBg: 'rgba(20, 0, 5, 0.4)'
+                            bg: '#ffffff',
+                            header: '#ffffff',
+                            hover: 'rgba(0,0,0,0.05)',
+                            border: '#e5e5e5',
+                            searchBg: '#f1f1f1',
+                            text: '#0f0f0f',
+                            textSec: '#606060',
+                            red: '#ff0000',
+                            blue: '#065fd4',
+                            buttonBg: '#f2f2f2'
                         }
                     }
                 }
@@ -103,19 +103,14 @@
 
     <style>
         body {
-            background-color: #0f0f0f;
-            background-image: 
-                radial-gradient(circle at 15% 50%, rgba(255, 20, 60, 0.04), transparent 30%),
-                radial-gradient(circle at 85% 30%, rgba(77, 184, 255, 0.04), transparent 30%);
-            background-size: 200% 200%;
-            animation: ambientBg 15s ease-in-out infinite alternate;
-            color: #f1f1f1;
+            background-color: #ffffff;
+            color: #0f0f0f;
             margin: 0; padding: 0;
             overflow-x: hidden;
         }
 
         /* Broken thumbnail fallback */
-        img.thumb-img { background: #222; }
+        img.thumb-img { background: #f0f0f0; }
         img.thumb-img[src=""], img.thumb-img:not([src]) { visibility: hidden; }
 
         ::-webkit-scrollbar {
@@ -123,16 +118,16 @@
         }
 
         ::-webkit-scrollbar-track {
-            background: transparent;
+            background: #f9f9f9;
         }
 
         ::-webkit-scrollbar-thumb {
-            background: #717171;
+            background: #ccc;
             border-radius: 4px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: #a0a0a0;
+            background: #999;
         }
 
         .line-clamp-2 {
@@ -165,7 +160,7 @@
 
         /* Skeleton Animation */
         .shimmer {
-            background: linear-gradient(90deg, #303030 25%, #404040 50%, #303030 75%);
+            background: linear-gradient(90deg, #e8e8e8 25%, #f0f0f0 50%, #e8e8e8 75%);
             background-size: 200% 100%;
             animation: shimmer 1.5s infinite;
         }
@@ -185,7 +180,7 @@
 <body class="font-sans text-sm pb-16 md:pb-0 flex flex-col h-screen overflow-hidden">
 
     <header
-        class="flex justify-between items-center px-3 sm:px-4 h-14 bg-yt-header backdrop-blur-lg border-b border-yt-border fixed w-full top-0 z-50 gap-3 transition-colors">
+        class="flex justify-between items-center px-3 sm:px-4 h-14 bg-white border-b border-gray-200 fixed w-full top-0 z-50 gap-3 transition-colors shadow-sm">
         <div class="flex items-center gap-4">
             <button class="text-yt-text text-xl sm:hidden" aria-label="Menu">
                 <i class="fa-solid fa-bars"></i>
@@ -201,14 +196,14 @@
         <div class="flex-1 max-w-[720px] flex items-center justify-end sm:justify-center">
             <form id="desktop-search-form" class="flex flex-1 w-full max-w-full sm:max-w-2xl flex-row shadow-lg">
                 <div
-                    class="flex-1 flex items-center border border-yt-border bg-yt-searchBg backdrop-blur-md rounded-l-full px-3 sm:px-4 overflow-hidden focus-within:border-yt-red focus-within:bg-black/50 transition-colors">
+                    class="flex-1 flex items-center border border-gray-300 bg-white rounded-l-full px-3 sm:px-4 overflow-hidden focus-within:border-blue-500 transition-colors">
                     <i class="fa-solid fa-search text-yt-textSec mr-2 text-[14px] sm:text-[16px]"></i>
                     <input type="text" id="desktop-search-input" placeholder="Search videos or paste link"
-                        class="w-full bg-transparent border-none py-1.5 sm:py-2 text-yt-text text-[14px] sm:text-[16px] focus:outline-none placeholder-gray-400"
+                        class="w-full bg-transparent border-none py-1.5 sm:py-2 text-gray-900 text-[14px] sm:text-[16px] focus:outline-none placeholder-gray-500"
                         aria-label="Search">
                 </div>
                 <button type="submit" aria-label="Submit Search"
-                    class="border border-l-0 border-yt-border bg-white/5 hover:bg-yt-red/80 hover:border-yt-red/80 hover:text-white backdrop-blur-md px-4 sm:px-5 rounded-r-full flex items-center justify-center transition-all text-yt-textSec shadow-inner">
+                    class="border border-l-0 border-gray-300 bg-gray-100 hover:bg-gray-200 px-4 sm:px-5 rounded-r-full flex items-center justify-center transition-all text-gray-600">
                     <span class="hidden sm:inline font-medium tracking-wide">Search</span>
                     <i class="fa-solid fa-search sm:hidden text-[14px]"></i>
                 </button>
@@ -218,7 +213,7 @@
 
     <div class="flex flex-1 pt-14 h-full overflow-hidden">
         <aside
-            class="w-[72px] hidden sm:flex flex-col items-center py-2 shrink-0 bg-yt-header/40 backdrop-blur-sm border-r border-yt-border h-full overflow-y-auto"
+            class="w-[72px] hidden sm:flex flex-col items-center py-2 shrink-0 bg-white border-r border-gray-200 h-full overflow-y-auto"
             id="mini-sidebar">
             <a href="#"
                 class="w-full py-4 flex flex-col items-center hover:bg-yt-hover rounded-xl text-yt-text gap-1 transition-colors"
@@ -354,7 +349,7 @@
     </div>
 
     <nav
-        class="sm:hidden fixed bottom-0 w-full h-14 bg-yt-header/90 backdrop-blur-lg border-t border-yt-border flex justify-around items-center z-50 shadow-[0_-5px_15px_rgba(0,0,0,0.3)]">
+        class="sm:hidden fixed bottom-0 w-full h-14 bg-white border-t border-gray-200 flex justify-around items-center z-50 shadow-lg">
         <a href="#" class="flex flex-col items-center text-yt-text p-1 hover:text-yt-red transition-colors"
             onclick="showHomeView()">
             <i class="fa-solid fa-house mb-1 text-lg"></i>
@@ -374,12 +369,12 @@
         class="hidden fixed inset-0 z-[100] flex items-end sm:items-center justify-center sm:p-4 bg-black/80 backdrop-blur-sm">
         <div class="absolute inset-0" onclick="closeDownloadModal()"></div>
 
-        <div class="relative w-full sm:max-w-md bg-[#111] border border-white/10 sm:rounded-2xl rounded-t-2xl shadow-[0_0_30px_rgba(229,9,20,0.2)] overflow-hidden transform translate-y-full transition-transform duration-300"
+        <div class="relative w-full sm:max-w-md bg-white border border-gray-200 sm:rounded-2xl rounded-t-2xl shadow-2xl overflow-hidden transform translate-y-full transition-transform duration-300"
             id="download-modal-content">
 
-            <div class="px-5 py-4 border-b border-yt-border/50 flex justify-between items-center bg-[#1a1a1a]">
+            <div class="px-5 py-4 border-b border-gray-200 flex justify-between items-center bg-gray-50">
                 <h3 class="text-lg font-bold text-white flex items-center gap-2 drop-shadow-md">
-                    <i class="fa-solid fa-download text-yt-red"></i> Download Options
+                    <i class="fa-solid fa-download text-red-600"></i> <span class="text-gray-900">Download Options</span>
                 </h3>
                 <button onclick="closeDownloadModal()" aria-label="Close"
                     class="text-yt-textSec hover:text-yt-red w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors">
@@ -388,10 +383,10 @@
             </div>
 
             <div class="p-0 max-h-[75vh] overflow-y-auto">
-                <div id="download-formats-list" class="flex flex-col bg-[#111]">
+                <div id="download-formats-list" class="flex flex-col bg-white">
                 </div>
 
-                <div id="dl-progress-box" class="hidden p-8 text-center bg-[#111]">
+                <div id="dl-progress-box" class="hidden p-8 text-center bg-white">
                     <div class="relative w-20 h-20 mx-auto mb-4">
                         <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
                             <circle cx="50" cy="50" r="45" fill="none" stroke="#303030" stroke-width="8"></circle>
@@ -468,12 +463,12 @@
         function generateGridSkeletons(count = 10) {
             return Array(count).fill(`
                 <div class="flex flex-col group animate-pulse cursor-wait">
-                    <div class="w-full aspect-video bg-[#222] rounded-xl mb-3 shadow"></div>
+                    <div class="w-full aspect-video bg-gray-200 rounded-xl mb-3"></div>
                     <div class="flex gap-3 pr-2">
-                        <div class="w-9 h-9 rounded-full bg-[#222] shrink-0"></div>
+                        <div class="w-9 h-9 rounded-full bg-gray-200 shrink-0"></div>
                         <div class="flex flex-col flex-1 gap-2 mt-1">
-                            <div class="h-4 bg-[#222] rounded w-full"></div>
-                            <div class="h-3 bg-[#222] rounded w-2/3"></div>
+                            <div class="h-4 bg-gray-200 rounded w-full"></div>
+                            <div class="h-3 bg-gray-200 rounded w-2/3"></div>
                         </div>
                     </div>
                 </div>
@@ -483,11 +478,11 @@
         function generateRelatedSkeletons(count = 5) {
             return Array(count).fill(`
                 <div class="flex gap-2 group animate-pulse">
-                    <div class="w-[168px] h-[94px] rounded-lg bg-[#222] shrink-0"></div>
+                    <div class="w-[168px] h-[94px] rounded-lg bg-gray-200 shrink-0"></div>
                     <div class="flex flex-col flex-1 py-1 gap-2">
-                        <div class="h-3 bg-[#222] rounded w-full"></div>
-                        <div class="h-3 bg-[#222] rounded w-4/5"></div>
-                        <div class="h-2 bg-[#222] rounded w-1/2 mt-2"></div>
+                        <div class="h-3 bg-gray-200 rounded w-full"></div>
+                        <div class="h-3 bg-gray-200 rounded w-4/5"></div>
+                        <div class="h-2 bg-gray-200 rounded w-1/2 mt-2"></div>
                     </div>
                 </div>
             `).join('');
@@ -803,20 +798,10 @@
                 els.authorIcon.classList.remove('hidden');
 
                 const wrapper = document.querySelector('.video-wrapper');
-
-                if (data.iframe_id) {
-                    els.playerLoader.classList.add('hidden');
-                    wrapper.innerHTML = `<iframe class="w-full h-full outline-none" src="https://www.youtube.com/embed/${data.iframe_id}?autoplay=1&rel=0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
-                } else if (data.stream_url) {
-                    els.playerLoader.classList.add('hidden');
-                    // Keep the overlays intact by just updating the video tag
-                    const vidTag = document.getElementById('html5-player');
-                    vidTag.src = data.stream_url;
-                    vidTag.poster = data.thumbnail;
-                } else {
-                    els.playerLoader.innerHTML = `<div class="bg-black/80 p-4 rounded flex flex-col items-center"><i class="fa-solid fa-video-slash text-yt-textSec mb-2 text-2xl"></i><span class="text-sm">Stream unavailable. Please Download.</span></div>`;
-                    els.playerLoader.classList.remove('shimmer');
-                }
+                // Always use YouTube iframe embed for reliable playback (HTML5 video can't play separate audio+video streams)
+                const embedId = data.iframe_id || data.id || state.currentVideoId;
+                els.playerLoader.classList.add('hidden');
+                wrapper.innerHTML = `<iframe class="w-full h-full outline-none" style="position:absolute;top:0;left:0;width:100%;height:100%" src="https://www.youtube.com/embed/${embedId}?autoplay=1&rel=0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`;
 
                 renderDownloadOptions(data.download_formats, data.id);
             } catch (e) {
@@ -844,18 +829,18 @@
                 // Calculate Mock Estimated Size based on height/quality if API doesn't provide it
                 const estSize = q.filesize ? (q.filesize / 1024 / 1024).toFixed(1) + ' MB' : (q.height ? Math.round(q.height * 0.08) + ' MB' : '12 MB');
 
-                btn.className = `w-full flex justify-between items-center px-5 py-3.5 border-b border-white/5 hover:bg-[#222] transition-colors text-left group`;
+                btn.className = `w-full flex justify-between items-center px-5 py-3.5 border-b border-gray-100 hover:bg-gray-50 transition-colors text-left group`;
                 btn.innerHTML = `
                     <div class="flex items-center gap-4">
-                        <i class="fa-solid ${icon} text-xl w-6 text-center text-yt-textSec group-hover:text-yt-red transition-colors"></i>
+                        <i class="fa-solid ${icon} text-xl w-6 text-center text-gray-400 group-hover:text-red-600 transition-colors"></i>
                         <div>
-                            <div class="font-bold text-white text-base">${q.resolution}</div>
-                            <div class="text-[11px] text-yt-textSec mt-0.5">${q.ext ? q.ext.toUpperCase() : 'MP4'} • ${typeText}</div>
+                            <div class="font-bold text-gray-900 text-base">${q.resolution}</div>
+                            <div class="text-[11px] text-gray-500 mt-0.5">${q.ext ? q.ext.toUpperCase() : 'MP4'} • ${typeText}</div>
                         </div>
                     </div>
                     <div class="flex items-center gap-4">
-                        <span class="text-xs font-mono text-gray-400 bg-black/50 px-2 py-1 rounded">${estSize}</span>
-                        <div class="w-8 h-8 rounded-full bg-yt-red/20 group-hover:bg-yt-red flex items-center justify-center text-yt-red group-hover:text-white transition-all shrink-0">
+                        <span class="text-xs font-mono text-gray-500 bg-gray-100 px-2 py-1 rounded">${estSize}</span>
+                        <div class="w-8 h-8 rounded-full bg-red-100 group-hover:bg-red-600 flex items-center justify-center text-red-600 group-hover:text-white transition-all shrink-0">
                             <i class="fa-solid fa-arrow-down text-sm"></i>
                         </div>
                     </div>
@@ -866,7 +851,7 @@
 
             if (vids.length) {
                 const head = document.createElement('div');
-                head.className = "px-5 py-2 text-[10px] font-bold text-yt-textSec uppercase tracking-wider bg-black/40 backdrop-blur";
+                head.className = "px-5 py-2 text-[10px] font-bold text-gray-500 uppercase tracking-wider bg-gray-50";
                 head.innerText = "Video Selection";
                 list.appendChild(head);
                 vids.forEach(q => list.appendChild(createRow(q, 'fa-video', 'Video + Audio')));
@@ -874,7 +859,7 @@
 
             if (auds.length) {
                 const head = document.createElement('div');
-                head.className = "px-5 py-2 text-[10px] font-bold text-yt-textSec uppercase tracking-wider bg-black/40 backdrop-blur";
+                head.className = "px-5 py-2 text-[10px] font-bold text-gray-500 uppercase tracking-wider bg-gray-50";
                 head.innerText = "Audio Selection";
                 list.appendChild(head);
                 auds.forEach(q => list.appendChild(createRow(q, 'fa-music', 'Audio Only')));
@@ -896,19 +881,19 @@
                 const thumbUrl = v.thumbnail || `https://i.ytimg.com/vi/${v.id}/hqdefault.jpg`;
                 const fallbackThumb = `https://i.ytimg.com/vi/${v.id}/mqdefault.jpg`;
                 card.innerHTML = `
-                    <div class="relative w-full aspect-video bg-[#181818] rounded-xl overflow-hidden mb-3 border border-white/5 shadow-lg group-hover:shadow-[0_0_20px_rgba(255,20,60,0.15)] transition-all duration-300">
+                    <div class="relative w-full aspect-video bg-gray-100 rounded-xl overflow-hidden mb-3 shadow-sm group-hover:shadow-md transition-all duration-300">
                         <img src="${thumbUrl}" onerror="this.onerror=null;this.src='${fallbackThumb}'" class="thumb-img w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" alt="${v.title}" loading="lazy">
                         ${durHTML}
                         <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     </div>
                     <div class="flex gap-3 pr-2">
-                        <div class="w-9 h-9 rounded-full bg-gradient-to-br from-red-500/20 to-blue-500/20 shrink-0 flex items-center justify-center text-yt-textSec border border-white/5">
+                        <div class="w-9 h-9 rounded-full bg-gray-200 shrink-0 flex items-center justify-center text-gray-500">
                             <i class="fa-solid fa-user text-sm"></i>
                         </div>
                         <div class="flex flex-col overflow-hidden">
-                            <h3 class="text-yt-text font-medium text-[15px] leading-snug line-clamp-2 mb-1 group-hover:text-white transition-colors">${v.title}</h3>
-                            <div class="text-yt-textSec text-[13px] flex flex-col">
-                                <span class="hover:text-yt-text transition-colors">${v.author || 'Unknown'}</span>
+                            <h3 class="text-gray-900 font-medium text-[15px] leading-snug line-clamp-2 mb-1">${v.title}</h3>
+                            <div class="text-gray-500 text-[13px] flex flex-col">
+                                <span>${v.author || 'Unknown'}</span>
                                 <span>${formatViews(v.viewCount)}</span>
                             </div>
                         </div>
@@ -937,7 +922,7 @@
                 const rThumb = v.thumbnail || `https://i.ytimg.com/vi/${v.id}/hqdefault.jpg`;
                 const rFallback = `https://i.ytimg.com/vi/${v.id}/mqdefault.jpg`;
                 card.innerHTML = `
-                    <div class="relative w-[168px] h-[94px] rounded-lg overflow-hidden shrink-0 bg-[#181818] border border-white/5">
+                    <div class="relative w-[168px] h-[94px] rounded-lg overflow-hidden shrink-0 bg-gray-100">
                         <img src="${rThumb}" onerror="this.onerror=null;this.src='${rFallback}'" class="thumb-img w-full h-full object-cover group-hover:scale-105 transition-transform duration-200" loading="lazy">
                         ${durHTML}
                     </div>
@@ -988,56 +973,10 @@
         }
 
         async function triggerNativeDownload(resHeight, title) {
-            els.dlFormatsList.classList.add('hidden');
-            els.dlProgressBox.classList.remove('hidden');
-            updateProgressUI(5, 'Connecting to server...');
-
+            // Direct sync download - reliable and immediate
             const videoUrl = `https://www.youtube.com/watch?v=${state.currentVideoId}`;
-
-            try {
-                const res = await fetch('/api/download_async', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ url: videoUrl, res: resHeight, title: title })
-                });
-
-                const data = await res.json();
-                if (!res.ok || data.error) throw new Error("Fallback to Sync");
-
-                pollTimer = setInterval(async () => {
-                    try {
-                        const sRes = await fetch(`/api/task_status/${data.task_id}`);
-                        const sData = await sRes.json();
-
-                        const stageMap = { queued: 'In Queue...', extracting: 'Extracting Format...', downloading: 'Downloading Media...', merging: 'Finalizing File...', ready: 'Ready!' };
-                        updateProgressUI(sData.percent || 10, sData.stage_text || stageMap[sData.stage] || sData.stage || 'Processing...');
-
-                        if (sData.stage === 'ready') {
-                            clearInterval(pollTimer);
-                            document.getElementById('dl-circle-bar').style.stroke = '#22c55e'; // Green
-                            setTimeout(() => {
-                                closeDownloadModal();
-                                window.location.href = `/api/download_file/${data.task_id}`;
-                            }, 1000);
-                        } else if (sData.stage === 'error') {
-                            throw new Error(sData.error);
-                        }
-                    } catch (e) {
-                        clearInterval(pollTimer);
-                        document.getElementById('dl-stage').innerText = 'Error processing file.';
-                        document.getElementById('dl-circle-bar').style.stroke = '#ef4444'; // Red
-                    }
-                }, 1500);
-
-            } catch (err) {
-                // Fallback Sync Route if Async fails
-                clearInterval(pollTimer);
-                updateProgressUI(100, 'Starting Direct Stream...');
-                setTimeout(() => {
-                    closeDownloadModal();
-                    window.location.href = `/api/download?url=${encodeURIComponent(videoUrl)}&res=${resHeight}&title=${encodeURIComponent(title)}`;
-                }, 1000);
-            }
+            closeDownloadModal();
+            window.location.href = `/api/download?url=${encodeURIComponent(videoUrl)}&res=${resHeight}&title=${encodeURIComponent(title)}`;
         }
     </script>
 </body>

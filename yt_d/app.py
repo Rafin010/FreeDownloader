@@ -681,7 +681,7 @@ def get_trending_youtube_api(page_token=None):
             'part': 'snippet,contentDetails,statistics',
             'chart': 'mostPopular',
             'regionCode': 'US',
-            'maxResults': '24',
+            'maxResults': '50',
             'key': YOUTUBE_API_KEY
         }
         if page_token:

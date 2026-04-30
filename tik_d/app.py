@@ -313,6 +313,9 @@ def get_info():
 THUMB_ALLOWED_DOMAINS = [
     'p16-sign-sg.tiktokcdn.com', 'p16-sign-va.tiktokcdn.com',
     'p77-sign-sg.tiktokcdn.com', 'p19-sign.tiktokcdn-us.com',
+    'p16-sign-sg.tiktokcdn-us.com', 'p19-sign-sg.tiktokcdn.com',
+    'tiktokcdn.com', 'tiktokcdn-us.com',
+    'www.tikwm.com', 'tikwm.com',  # tikwm API thumbnails
     'i.ytimg.com', 'img.youtube.com',
     'cdninstagram.com', 'scontent.cdninstagram.com',
     'scontent.xx.fbcdn.net', 'external.xx.fbcdn.net',
