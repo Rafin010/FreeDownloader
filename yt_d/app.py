@@ -230,7 +230,15 @@ def build_yt_opts(strategy_idx=0):
 
     # Browser TLS impersonation (requires curl-cffi)
     if _HAS_CURL_CFFI:
+        # Note: In some yt-dlp versions, passing a string directly to 'impersonate' in the constructor 
+        # causes an AssertionError. We must ensure it's handled or use a safe format.
         opts['impersonate'] = 'chrome'
+        # Fallback fix for latest yt-dlp versions that expect ImpersonateTarget object
+        try:
+            from yt_dlp.networking.impersonate import ImpersonateTarget
+            opts['impersonate'] = ImpersonateTarget.from_str('chrome')
+        except ImportError:
+            pass
 
     # Cookies — use if available
     if os.path.exists(COOKIES_FILE):

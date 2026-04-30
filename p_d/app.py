@@ -105,6 +105,11 @@ def build_opts(strategy_idx=0, referer_url=""):
     # Browser TLS impersonation (requires curl-cffi) — graceful fallback
     if _HAS_CURL_CFFI:
         opts['impersonate'] = 'chrome'
+        try:
+            from yt_dlp.networking.impersonate import ImpersonateTarget
+            opts['impersonate'] = ImpersonateTarget.from_str('chrome')
+        except:
+            pass
 
     if os.path.exists(COOKIES_FILE):
         opts['cookiefile'] = COOKIES_FILE

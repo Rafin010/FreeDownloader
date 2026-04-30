@@ -94,6 +94,11 @@ def get_ydl_opts_for_attempt(attempt=0):
     # Browser TLS impersonation (requires curl-cffi)
     if _HAS_CURL_CFFI:
         opts['impersonate'] = 'chrome'
+        try:
+            from yt_dlp.networking.impersonate import ImpersonateTarget
+            opts['impersonate'] = ImpersonateTarget.from_str('chrome')
+        except:
+            pass
     if os.path.exists(COOKIES_FILE):
         opts['cookiefile'] = COOKIES_FILE
     return opts
