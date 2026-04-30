@@ -942,6 +942,7 @@ def get_video_details(video_id):
             "title": info_dict.get('title', 'YouTube_Video'),
             "author": info_dict.get('uploader', ''),
             "description": info_dict.get('description', ''),
+            "viewCount": info_dict.get('view_count', 0),
             "thumbnail": f"/api/thumb_proxy?url={quote(info_dict.get('thumbnail', ''), safe='')}",
             "stream_url": stream_url,
             "iframe_id": video_id if not stream_url else None,

@@ -189,7 +189,7 @@
                 <img src="/static/logo.png" class="h-7 sm:h-9 object-contain group-hover:scale-105 transition-transform"
                     alt="FreeDownloader">
                 <span
-                    class="text-lg sm:text-xl font-bold tracking-tight hidden md:block text-white drop-shadow-md">FreeDownloader</span>
+                    class="text-lg sm:text-xl font-bold tracking-tight hidden md:block text-gray-900">FreeDownloader</span>
             </a>
         </div>
 
@@ -314,7 +314,7 @@
                         </div>
 
                         <div onclick="toggleDescription()"
-                            class="bg-yt-buttonBg/40 backdrop-blur-md hover:bg-yt-hover/60 border border-white/5 transition-colors rounded-xl p-3 mt-4 text-sm cursor-pointer mb-6 shadow-lg">
+                            class="bg-gray-100 hover:bg-gray-200 transition-colors rounded-xl p-3 mt-4 text-sm cursor-pointer mb-6">
                             <div class="font-semibold mb-1 flex justify-between">
                                 <span id="player-views">
                                     <div class="h-4 w-20 shimmer rounded inline-block"></div>
@@ -625,8 +625,19 @@
             els.playerAuthorSub.innerHTML = '<div class="h-3 w-2/3 shimmer rounded"></div>';
             els.playerViews.innerHTML = '<div class="h-4 w-20 shimmer rounded inline-block"></div>';
             els.playerDesc.innerHTML = '<div class="h-3 w-full shimmer rounded mb-1"></div><div class="h-3 w-5/6 shimmer rounded"></div>';
-            els.playerHtml5.src = '';
-            els.playerHtml5.poster = '';
+            // Remove any existing iframe from previous video
+            const wrapper = document.querySelector('.video-wrapper');
+            if (wrapper) {
+                const oldIframe = wrapper.querySelector('iframe');
+                if (oldIframe) oldIframe.remove();
+            }
+            // Restore HTML5 video tag visibility
+            const vidTag = document.getElementById('html5-player');
+            if (vidTag) {
+                vidTag.style.display = '';
+                vidTag.src = '';
+                vidTag.poster = '';
+            }
             els.relatedContainer.innerHTML = generateRelatedSkeletons();
         }
 
@@ -656,8 +667,18 @@
             els.viewPlayer.classList.add('hidden');
             els.viewHome.classList.remove('hidden');
 
-            els.playerHtml5.pause();
-            els.playerHtml5.src = "";
+            // Stop any playing video/iframe
+            const wrapper = document.querySelector('.video-wrapper');
+            if (wrapper) {
+                const iframe = wrapper.querySelector('iframe');
+                if (iframe) iframe.remove();
+            }
+            const vidTag = document.getElementById('html5-player');
+            if (vidTag) {
+                vidTag.pause();
+                vidTag.src = '';
+                vidTag.style.display = '';
+            }
             document.title = "FreeDownloader - Video Streaming & Downloader";
 
             if (pushHistory) history.pushState({ view: 'home' }, 'Home', '/');
@@ -790,23 +811,22 @@
                 els.authorIcon.classList.remove('hidden');
 
                 const wrapper = document.querySelector('.video-wrapper');
-                
-                // If stream_url is available, use HTML5 player. Otherwise fallback to iframe.
-                if (data.stream_url) {
-                    els.playerLoader.classList.add('hidden');
-                    const vidTag = document.getElementById('html5-player');
-                    if(vidTag) {
-                        vidTag.src = data.stream_url;
-                        vidTag.poster = data.thumbnail;
-                    }
-                } else if (data.iframe_id || data.id) {
-                    const embedId = data.iframe_id || data.id || state.currentVideoId;
-                    els.playerLoader.classList.add('hidden');
-                    wrapper.innerHTML = `<iframe class="w-full h-full outline-none" style="position:absolute;top:0;left:0;width:100%;height:100%" src="https://www.youtube.com/embed/${embedId}?autoplay=1&rel=0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`;
-                } else {
-                    els.playerLoader.innerHTML = `<div class="bg-black/80 p-4 rounded flex flex-col items-center"><i class="fa-solid fa-video-slash text-gray-400 mb-2 text-2xl"></i><span class="text-sm text-white">Stream unavailable. Please Download.</span></div>`;
-                    els.playerLoader.classList.remove('shimmer');
-                }
+                // Always use YouTube iframe embed for professional, reliable playback
+                const embedId = data.iframe_id || data.id || state.currentVideoId;
+                els.playerLoader.classList.add('hidden');
+                // Hide the HTML5 video tag
+                const vidTag = document.getElementById('html5-player');
+                if (vidTag) vidTag.style.display = 'none';
+                // Insert YouTube iframe
+                const existingIframe = wrapper.querySelector('iframe');
+                if (existingIframe) existingIframe.remove();
+                const iframe = document.createElement('iframe');
+                iframe.className = 'w-full h-full outline-none';
+                iframe.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;border:none;';
+                iframe.src = `https://www.youtube.com/embed/${embedId}?autoplay=1&rel=0&modestbranding=1`;
+                iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+                iframe.allowFullscreen = true;
+                wrapper.appendChild(iframe);
 
                 renderDownloadOptions(data.download_formats, data.id);
             } catch (e) {
