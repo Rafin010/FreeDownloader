@@ -1,9 +1,59 @@
+# ═══════════════════════════════════════════════════════════════
+# robots.txt — FreeDownloader.top (All Subdomains)
+# Last Updated: 2026-05-01
+# ═══════════════════════════════════════════════════════════════
+
 User-agent: *
 Allow: /
+
+# Block internal API, auth, and upload paths
 Disallow: /api/
 Disallow: /login
 Disallow: /logout
 Disallow: /health
 Disallow: /uploads/
+Disallow: /admin/
+Disallow: /static/js/
+Disallow: /static/css/
 
+# Block search result pages (to avoid thin content / duplicate indexing)
+Disallow: /*?q=*
+
+# Crawl-delay (polite crawling, avoids server overload)
+Crawl-delay: 2
+
+# ── Sitemaps ──────────────────────────────────────────────────
 Sitemap: https://freedownloader.top/sitemap.xml
+Sitemap: https://youtube.freedownloader.top/sitemap.xml
+Sitemap: https://facebook.freedownloader.top/sitemap.xml
+Sitemap: https://tiktok.freedownloader.top/sitemap.xml
+Sitemap: https://instagram.freedownloader.top/sitemap.xml
+
+# ── Specific Bot Rules ────────────────────────────────────────
+# Allow Google to index everything except API
+User-agent: Googlebot
+Allow: /
+Disallow: /api/
+Crawl-delay: 1
+
+# Allow Bing
+User-agent: Bingbot
+Allow: /
+Disallow: /api/
+Crawl-delay: 2
+
+# Block AI scrapers from training on our content
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ChatGPT-User
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+User-agent: Google-Extended
+Disallow: /

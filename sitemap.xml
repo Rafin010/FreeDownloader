@@ -1,68 +1,225 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-    <!-- Main Domain -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- Main Domain: freedownloader.top (freeStore App Hub)    -->
+    <!-- ═══════════════════════════════════════════════════════ -->
     <url>
         <loc>https://freedownloader.top/</loc>
+        <lastmod>2026-05-01</lastmod>
         <changefreq>daily</changefreq>
         <priority>1.0</priority>
     </url>
     <url>
         <loc>https://freedownloader.top/donate</loc>
+        <lastmod>2026-05-01</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.4</priority>
+    </url>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- YouTube Downloader: youtube.freedownloader.top         -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <url>
+        <loc>https://youtube.freedownloader.top/</loc>
+        <lastmod>2026-05-01</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>1.0</priority>
+    </url>
+    <url>
+        <loc>https://youtube.freedownloader.top/about</loc>
+        <lastmod>2026-04-30</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.5</priority>
     </url>
+    <url>
+        <loc>https://youtube.freedownloader.top/contact</loc>
+        <lastmod>2026-04-30</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.4</priority>
+    </url>
+    <url>
+        <loc>https://youtube.freedownloader.top/privacy</loc>
+        <lastmod>2026-04-30</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.3</priority>
+    </url>
+    <url>
+        <loc>https://youtube.freedownloader.top/terms</loc>
+        <lastmod>2026-04-30</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.3</priority>
+    </url>
 
-    <!-- Legacy / Info Domain -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- Facebook Downloader: facebook.freedownloader.top       -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <url>
+        <loc>https://facebook.freedownloader.top/</loc>
+        <lastmod>2026-05-01</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.95</priority>
+    </url>
+    <url>
+        <loc>https://facebook.freedownloader.top/about</loc>
+        <lastmod>2026-04-30</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.5</priority>
+    </url>
+    <url>
+        <loc>https://facebook.freedownloader.top/contact</loc>
+        <lastmod>2026-04-30</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.4</priority>
+    </url>
+    <url>
+        <loc>https://facebook.freedownloader.top/privacy</loc>
+        <lastmod>2026-04-30</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.3</priority>
+    </url>
+    <url>
+        <loc>https://facebook.freedownloader.top/terms</loc>
+        <lastmod>2026-04-30</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.3</priority>
+    </url>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- TikTok Downloader: tiktok.freedownloader.top           -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <url>
+        <loc>https://tiktok.freedownloader.top/</loc>
+        <lastmod>2026-05-01</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.95</priority>
+    </url>
+    <url>
+        <loc>https://tiktok.freedownloader.top/about</loc>
+        <lastmod>2026-04-30</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.5</priority>
+    </url>
+    <url>
+        <loc>https://tiktok.freedownloader.top/contact</loc>
+        <lastmod>2026-04-30</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.4</priority>
+    </url>
+    <url>
+        <loc>https://tiktok.freedownloader.top/privacy</loc>
+        <lastmod>2026-04-30</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.3</priority>
+    </url>
+    <url>
+        <loc>https://tiktok.freedownloader.top/terms</loc>
+        <lastmod>2026-04-30</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.3</priority>
+    </url>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- Instagram Downloader: instagram.freedownloader.top     -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <url>
+        <loc>https://instagram.freedownloader.top/</loc>
+        <lastmod>2026-05-01</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.95</priority>
+    </url>
+    <url>
+        <loc>https://instagram.freedownloader.top/about</loc>
+        <lastmod>2026-04-30</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.5</priority>
+    </url>
+    <url>
+        <loc>https://instagram.freedownloader.top/contact</loc>
+        <lastmod>2026-04-30</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.4</priority>
+    </url>
+    <url>
+        <loc>https://instagram.freedownloader.top/privacy</loc>
+        <lastmod>2026-04-30</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.3</priority>
+    </url>
+    <url>
+        <loc>https://instagram.freedownloader.top/terms</loc>
+        <lastmod>2026-04-30</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.3</priority>
+    </url>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- Adult Downloader: p.freedownloader.top                 -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <url>
+        <loc>https://p.freedownloader.top/</loc>
+        <lastmod>2026-05-01</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://p.freedownloader.top/about</loc>
+        <lastmod>2026-04-30</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.4</priority>
+    </url>
+    <url>
+        <loc>https://p.freedownloader.top/contact</loc>
+        <lastmod>2026-04-30</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.3</priority>
+    </url>
+    <url>
+        <loc>https://p.freedownloader.top/privacy</loc>
+        <lastmod>2026-04-30</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.3</priority>
+    </url>
+    <url>
+        <loc>https://p.freedownloader.top/terms</loc>
+        <lastmod>2026-04-30</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.3</priority>
+    </url>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- Legacy / Info Domain: web.freedownloader.top           -->
+    <!-- ═══════════════════════════════════════════════════════ -->
     <url>
         <loc>https://web.freedownloader.top/</loc>
+        <lastmod>2026-04-30</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
         <loc>https://web.freedownloader.top/privacy</loc>
+        <lastmod>2026-04-30</lastmod>
         <changefreq>yearly</changefreq>
         <priority>0.3</priority>
     </url>
     <url>
         <loc>https://web.freedownloader.top/terms</loc>
+        <lastmod>2026-04-30</lastmod>
         <changefreq>yearly</changefreq>
         <priority>0.3</priority>
     </url>
     <url>
         <loc>https://web.freedownloader.top/about</loc>
+        <lastmod>2026-04-30</lastmod>
         <changefreq>yearly</changefreq>
-        <priority>0.6</priority>
+        <priority>0.5</priority>
     </url>
     <url>
         <loc>https://web.freedownloader.top/contact</loc>
+        <lastmod>2026-04-30</lastmod>
         <changefreq>yearly</changefreq>
-        <priority>0.6</priority>
+        <priority>0.4</priority>
     </url>
 
-    <!-- Downloader Subdomains -->
-    <url>
-        <loc>https://youtube.freedownloader.top/</loc>
-        <changefreq>daily</changefreq>
-        <priority>0.9</priority>
-    </url>
-    <url>
-        <loc>https://facebook.freedownloader.top/</loc>
-        <changefreq>daily</changefreq>
-        <priority>0.9</priority>
-    </url>
-    <url>
-        <loc>https://tiktok.freedownloader.top/</loc>
-        <changefreq>daily</changefreq>
-        <priority>0.9</priority>
-    </url>
-    <url>
-        <loc>https://instagram.freedownloader.top/</loc>
-        <changefreq>daily</changefreq>
-        <priority>0.9</priority>
-    </url>
-    <url>
-        <loc>https://p.freedownloader.top/</loc>
-        <changefreq>daily</changefreq>
-        <priority>0.7</priority>
-    </url>
 </urlset>
