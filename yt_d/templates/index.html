@@ -248,7 +248,7 @@
                 </div>
 
                 <div id="video-grid"
-                    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-x-4 gap-y-10 px-4 pt-4">
+                    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-8 px-4 pt-4">
                 </div>
             </div>
 
@@ -409,7 +409,8 @@
             trendingCache: [],
             nextPageToken: null,
             isLoadingMore: false,
-            isTheatreMode: false
+            isTheatreMode: false,
+            currentRegion: 'US'
         };
 
         const els = {
@@ -713,18 +714,20 @@
         async function loadTrendingFeed() {
             state.currentMode = 'trending';
             state.nextPageToken = null;
-            els.videoGrid.innerHTML = generateGridSkeletons(15);
+            state.currentRegion = 'US';
+            els.videoGrid.innerHTML = generateGridSkeletons(20);
             els.feedHeader.classList.add('hidden');
 
             try {
-                const res = await fetch('/api/trending');
+                const res = await fetch('/api/trending?region=US');
                 if (!res.ok) throw new Error("Network response was not ok");
                 const data = await res.json();
                 state.nextPageToken = data.nextPageToken || null;
+                state.currentRegion = data.nextRegion || 'US';
                 state.trendingCache = data.results || [];
                 renderVideoGrid(state.trendingCache);
             } catch (err) {
-                els.videoGrid.innerHTML = '<div class="col-span-full flex flex-col items-center justify-center py-20 text-yt-textSec"><i class="fa-solid fa-satellite-dish text-4xl mb-4 text-yt-border"></i><p>Unable to connect to server. Please check your network.</p></div>';
+                els.videoGrid.innerHTML = '<div class="col-span-full flex flex-col items-center justify-center py-20 text-gray-500"><i class="fa-solid fa-satellite-dish text-4xl mb-4"></i><p>Unable to connect to server. Please check your network.</p></div>';
             }
         }
 
@@ -732,10 +735,17 @@
             if (!state.nextPageToken) return;
             state.isLoadingMore = true;
 
-            els.videoGrid.insertAdjacentHTML('beforeend', generateGridSkeletons(5));
+            els.videoGrid.insertAdjacentHTML('beforeend', generateGridSkeletons(8));
 
             try {
-                let url = state.currentMode === 'trending' ? `/api/trending?pageToken=${state.nextPageToken}` : `/api/search?q=${encodeURIComponent(state.lastQuery)}&pageToken=${state.nextPageToken}`;
+                let url;
+                if (state.currentMode === 'trending') {
+                    const token = state.nextPageToken === 'region_cycle' ? '' : state.nextPageToken;
+                    const region = state.currentRegion || 'US';
+                    url = `/api/trending?region=${region}${token ? '&pageToken=' + token : ''}`;
+                } else {
+                    url = `/api/search?q=${encodeURIComponent(state.lastQuery)}&pageToken=${state.nextPageToken}`;
+                }
                 const res = await fetch(url);
                 const data = await res.json();
 
@@ -744,7 +754,11 @@
                 skeletons.forEach(s => s.remove());
 
                 state.nextPageToken = data.nextPageToken || null;
-                if (data.results) renderVideoGrid(data.results, true);
+                state.currentRegion = data.nextRegion || state.currentRegion;
+                if (data.results && data.results.length > 0) {
+                    state.trendingCache = state.trendingCache.concat(data.results);
+                    renderVideoGrid(data.results, true);
+                }
             } catch (e) {
                 const skeletons = els.videoGrid.querySelectorAll('.animate-pulse');
                 skeletons.forEach(s => s.remove());

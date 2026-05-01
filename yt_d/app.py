@@ -679,7 +679,7 @@ def _parse_iso8601_duration(iso_str):
     return h * 3600 + m * 60 + s
 
 
-def get_trending_youtube_api(page_token=None):
+def get_trending_youtube_api(page_token=None, region='US'):
     """Fetch trending/popular videos using YouTube Data API v3."""
     if not YOUTUBE_API_KEY or YOUTUBE_API_KEY == 'YOUR_API_KEY_HERE':
         return None, None
@@ -688,7 +688,7 @@ def get_trending_youtube_api(page_token=None):
         params = {
             'part': 'snippet,contentDetails,statistics',
             'chart': 'mostPopular',
-            'regionCode': 'US',
+            'regionCode': region,
             'maxResults': '50',
             'key': YOUTUBE_API_KEY
         }
@@ -780,9 +780,9 @@ def search_youtube_api(query, page_token=None):
 
 # ── Combined Feed & Search ────────────────────────────────────
 
-def get_trending_feed(page_token=None):
+def get_trending_feed(page_token=None, region='US'):
     """Get trending — YouTube API first, Invidious fallback."""
-    results, next_token = get_trending_youtube_api(page_token)
+    results, next_token = get_trending_youtube_api(page_token, region)
     if results:
         return results, next_token
     for instance in INVIDIOUS_INSTANCES:
@@ -871,19 +871,38 @@ def index():
 @app.route('/api/trending')
 @limiter.limit("60/minute")
 def trending_api():
-    """Returns trending videos for the home feed."""
+    """Returns trending videos for the home feed with multi-region infinite loading."""
     page_token = request.args.get('pageToken', '')
-    cache_key = f"feed_{page_token}" if page_token else "feed"
+    region = request.args.get('region', 'US')
+    cache_key = f"feed_{region}_{page_token}" if page_token else f"feed_{region}"
     
     cached = cache_get('yt_trending', cache_key)
     if cached:
         return jsonify(cached)
 
-    results, next_token = get_trending_feed(page_token)
+    results, next_token = get_trending_feed(page_token, region)
+    
+    # Build response with region cycling for infinite scroll
+    REGIONS = ['US', 'BD', 'IN', 'GB', 'CA', 'AU', 'JP', 'BR', 'DE', 'FR', 'KR', 'PK', 'ID', 'PH', 'MX']
+    
     if results:
-        data = {"results": results, "nextPageToken": next_token, "ad_slot": True}
-        cache_set('yt_trending', cache_key, data, ttl=1800)  # 30 min cache
-        return jsonify(data)
+        response_data = {"results": results, "ad_slot": True}
+        if next_token:
+            # More pages available in this region
+            response_data["nextPageToken"] = next_token
+            response_data["nextRegion"] = region
+        else:
+            # No more pages in this region — cycle to the next one
+            try:
+                current_idx = REGIONS.index(region)
+                next_region = REGIONS[(current_idx + 1) % len(REGIONS)]
+            except ValueError:
+                next_region = REGIONS[1]  # fallback to BD
+            response_data["nextPageToken"] = "region_cycle"
+            response_data["nextRegion"] = next_region
+        
+        cache_set('yt_trending', cache_key, response_data, ttl=1800)
+        return jsonify(response_data)
     return jsonify({"error": "Failed to fetch trending feed"}), 500
 
 
