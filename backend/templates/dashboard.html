@@ -143,6 +143,17 @@
                     <div class="text-[11px] text-gray-500">Manage items & popups</div>
                 </div>
             </button>
+            <!-- Donations -->
+            <button onclick="showDonations()" id="btn-donations"
+                class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 text-left group">
+                <div class="w-9 h-9 rounded-lg bg-panel-card border border-panel-border shadow-sm flex items-center justify-center flex-shrink-0">
+                    <svg class="w-5 h-5 text-rose-400 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="truncate">Donations</div>
+                    <div class="text-[11px] text-gray-500">Track & manage funds</div>
+                </div>
+            </button>
             <!-- Dynamic site items will be injected here by JS -->
         </nav>
 
@@ -655,6 +666,61 @@
                     </div>
                 </section>
             </div> <!-- End view-freestore -->
+
+            <div id="view-donations" class="space-y-8 hidden">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-12 h-12 rounded-2xl bg-panel-card border border-panel-border shadow-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-rose-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl md:text-3xl font-bold text-white tracking-tight">Donations Tracking</h1>
+                        <p class="text-sm text-gray-500 mt-0.5">Track financial support across your network</p>
+                    </div>
+                </div>
+
+                <section>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="bg-panel-card border border-panel-border rounded-2xl p-5 hover:border-emerald-500/30 transition-all">
+                            <div class="text-xs font-medium text-gray-500 mb-2">Total USD ($)</div>
+                            <div class="text-3xl font-extrabold text-white" id="stat-donations-usd">$0</div>
+                        </div>
+                        <div class="bg-panel-card border border-panel-border rounded-2xl p-5 hover:border-emerald-500/30 transition-all">
+                            <div class="text-xs font-medium text-gray-500 mb-2">Total BDT (৳)</div>
+                            <div class="text-3xl font-extrabold text-white" id="stat-donations-bdt">৳0</div>
+                        </div>
+                        <div class="bg-panel-card border border-panel-border rounded-2xl p-5 hover:border-purple-500/30 transition-all">
+                            <div class="text-xs font-medium text-gray-500 mb-2">Total Crypto Initiated</div>
+                            <div class="text-3xl font-extrabold text-white" id="stat-donations-crypto">0</div>
+                        </div>
+                        <div class="bg-panel-card border border-panel-border rounded-2xl p-5 hover:border-indigo-500/30 transition-all">
+                            <div class="text-xs font-medium text-gray-500 mb-2">Total Contributors</div>
+                            <div class="text-3xl font-extrabold text-white" id="stat-donations-count">0</div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="mt-8">
+                    <h2 class="text-xs font-bold text-gray-500 uppercase tracking-[0.15em] mb-4">Donation Activity</h2>
+                    <div class="bg-panel-card border border-panel-border rounded-2xl overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left">
+                                <thead class="bg-white/[0.02]">
+                                    <tr>
+                                        <th class="px-4 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-panel-border">Date</th>
+                                        <th class="px-4 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-panel-border">Donor Name</th>
+                                        <th class="px-4 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-panel-border">Amount</th>
+                                        <th class="px-4 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-panel-border">Method</th>
+                                        <th class="px-4 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-panel-border">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="donations-tbody">
+                                    <tr><td colspan="5" class="text-center text-gray-600 py-8">Loading...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+            </div> <!-- End view-donations -->
 
         </main>
     </div>

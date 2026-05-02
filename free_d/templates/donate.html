@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Support Our Journey - Donate</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --primary:#0066ff;
+  --primary-l:#3b82f6;
+  --primary-d:#0052cc;
+  --accent:#06b6d4;
+  --accent-l:#22d3ee;
+}
+*{box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:#0a0e1a;color:#e2e8f0;overflow-x:hidden;}
+h1,h2,h3,.serif{font-family:'Cormorant Garamond',serif;}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:.5;}
+.hero-bg{background:radial-gradient(ellipse 80% 55% at 50% -5%,rgba(59,130,246,.18) 0%,transparent 68%),radial-gradient(ellipse 50% 40% at 85% 85%,rgba(6,182,212,.08) 0%,transparent 55%),#0a0e1a;}
+.gold-text{background:linear-gradient(135deg,#3b82f6 0%,#06b6d4 50%,#3b82f6 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+
+.glow-card{background:linear-gradient(145deg,rgba(255,255,255,.045),rgba(255,255,255,.01));border:1px solid rgba(59,130,246,.2);transition:all .32s ease;position:relative;overflow:hidden;}
+.glow-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at top left,rgba(59,130,246,.08),transparent 60%);opacity:0;transition:opacity .32s;}
+.glow-card:hover{border-color:rgba(59,130,246,.45);transform:translateY(-3px);box-shadow:0 18px 55px rgba(59,130,246,.12);}
+.glow-card:hover::before{opacity:1;}
+
+.pcard{background:linear-gradient(145deg,rgba(255,255,255,.03),rgba(255,255,255,.01));border:1px solid rgba(255,255,255,.08);border-radius:20px;transition:all .3s ease;position:relative;overflow:hidden;display:flex;flex-direction:column;padding:24px;}
+.pcard:hover {background:rgba(255,255,255,.05); border-color:rgba(59,130,246,.25); transform:translateY(-4px); box-shadow:0 15px 35px rgba(0,0,0,.4);}
+
+.brand-logo-wrap {background: #ffffff; border-radius: 14px; height: 65px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; padding: 12px; box-shadow: inset 0 2px 10px rgba(0,0,0,0.05);}
+.brand-logo-wrap img {max-height: 100%; max-width: 100%; object-fit: contain;}
+
+.tbtn{padding:11px 26px;border-radius:999px;font-size:.84rem;font-weight:600;letter-spacing:.06em;transition:all .28s;cursor:pointer;color:#64748b;border:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.02);text-transform:uppercase;}
+.tbtn.act{color:#3b82f6;border-color:rgba(59,130,246,.4);background:rgba(59,130,246,.1);box-shadow:0 0 18px rgba(59,130,246,.18);}
+.tbtn:not(.act):hover{color:#94a3b8;border-color:rgba(255,255,255,.12);}
+.tpanel{display:none;animation:fadeUp .38s ease;}
+.tpanel.act{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(13px)}to{opacity:1;transform:translateY(0)}}
+
+/* Updated Box Grid and Pill Styles */
+.amount-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:12px;}
+@media (max-width: 480px) {
+  .amount-grid{grid-template-columns:repeat(3, 1fr);gap:10px;}
+}
+.apill{
+  position:relative;padding:12px 10px;border-radius:12px;
+  border:1px solid rgba(59,130,246,.2);color:#cbd5e1;cursor:pointer;
+  transition:all .2s ease;background:transparent;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+}
+.apill:hover{border-color:#3b82f6;background:rgba(59,130,246,.05);transform:translateY(-1px);}
+.apill.sel{background:#3b82f6;border-color:#3b82f6;color:#fff;transform:scale(1.02);box-shadow:0 8px 20px rgba(59,130,246,.4);}
+.apill .amt-value{font-family:'Space Grotesk', sans-serif;font-size:1.3rem;font-weight:700;line-height:1;position:relative;z-index:1;}
+.apill .amt-label{font-size:.6rem;font-family:'DM Sans',sans-serif;letter-spacing:.05em;text-transform:uppercase;color:#64748b;font-weight:600;position:relative;z-index:1;}
+.apill.sel .amt-label{color:#e0e7ff;}
+.apill.popular{border-color:rgba(6,182,212,.5);}
+.apill.popular .badge-pop{position:absolute;top:-8px;left:50%;transform:translateX(-50%);background:#06b6d4;color:#fff;font-size:.5rem;padding:2px 8px;border-radius:999px;letter-spacing:.05em;text-transform:uppercase;font-weight:700;white-space:nowrap;z-index:2;}
+
+.amt-display-value{font-family:'Space Grotesk', sans-serif !important;font-size:1.75rem !important;font-weight:700 !important;letter-spacing:-0.02em !important;}
+
+.prog{height:100%;background:linear-gradient(90deg,#3b82f6,#06b6d4,#3b82f6);background-size:200% 100%;animation:shimmer 2.4s linear infinite;border-radius:999px;transition:width 1.8s cubic-bezier(.16,1,.3,1);}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+.dbtn{font-weight:600;letter-spacing:.04em;transition:all .28s;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;border-radius:12px;padding:14px 16px;font-size:.9rem;width:100%;margin-top:auto;position:relative;overflow:hidden;}
+.dbtn:disabled{opacity:0.6;cursor:not-allowed;transform:none !important;box-shadow:none !important;}
+.dbtn-bkash{background:#e2136e;color:#fff;}
+.dbtn-bkash:hover:not(:disabled){background:#c91061;box-shadow:0 8px 25px rgba(226,19,110,.35);transform:translateY(-2px);}
+.dbtn-nagad{background:#ec1c24;color:#fff;}
+.dbtn-nagad:hover:not(:disabled){background:#d1171e;box-shadow:0 8px 25px rgba(236,28,36,.35);transform:translateY(-2px);}
+.dbtn-rocket{background:#8c1561;color:#fff;}
+.dbtn-rocket:hover:not(:disabled){background:#751151;box-shadow:0 8px 25px rgba(140,21,97,.35);transform:translateY(-2px);}
+.dbtn-stripe{background:#635bff;color:#fff;}
+.dbtn-stripe:hover:not(:disabled){background:#534be0;box-shadow:0 8px 25px rgba(99,91,255,.35);transform:translateY(-2px);}
+.dbtn-paypal{background:#003087;color:#fff;}
+.dbtn-paypal:hover:not(:disabled){background:#002466;box-shadow:0 8px 25px rgba(0,48,135,.35);transform:translateY(-2px);}
+.dbtn-payoneer{background:#ff4800;color:#fff;}
+.dbtn-payoneer:hover:not(:disabled){background:#e64100;box-shadow:0 8px 25px rgba(255,72,0,.35);transform:translateY(-2px);}
+
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .65s ease,transform .65s ease;}
+.reveal.vis{opacity:1;transform:translateY(0);}
+
+.gdiv{height:1px;background:linear-gradient(90deg,transparent,rgba(59,130,246,.4),transparent);}
+
+.shake{animation:shake 0.4s cubic-bezier(.36,.07,.19,.97) both;}
+@keyframes shake{10%,90%{transform:translate3d(-1px, 0, 0);}20%,80%{transform:translate3d(2px, 0, 0);}30%,50%,70%{transform:translate3d(-4px, 0, 0);}40%,60%{transform:translate3d(4px, 0, 0);}}
+
+.tbadge{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);transition:border-color .28s,background .28s;}
+.tbadge:hover{background:rgba(59,130,246,.04);border-color:rgba(59,130,246,.25);}
+
+.pdot{width:7px;height:7px;border-radius:50%;background:#22d3ee;animation:pd 1.9s ease-in-out infinite;display:inline-block;flex-shrink:0;}
+@keyframes pd{0%,100%{box-shadow:0 0 0 0 rgba(34,211,238,.5)}50%{box-shadow:0 0 0 5px rgba(34,211,238,0)}}
+
+.flt{position:absolute;animation:fltAnim 6s ease-in-out infinite;opacity:.13;pointer-events:none;}
+@keyframes fltAnim{0%,100%{transform:translateY(0) rotate(-8deg)}50%{transform:translateY(-20px) rotate(8deg)}}
+
+.hcta{background:linear-gradient(135deg,#3b82f6,#06b6d4,#3b82f6);background-size:200% 100%;color:#fff;font-weight:700;font-size:.88rem;letter-spacing:.1em;text-transform:uppercase;padding:16px 40px;border-radius:999px;cursor:pointer;transition:all .3s;text-decoration:none;display:inline-flex;align-items:center;gap:10px;box-shadow:0 8px 25px rgba(59,130,246,.3);}
+.hcta:hover{background-position:right;box-shadow:0 12px 38px rgba(59,130,246,.5);transform:translateY(-2px);}
+
+.sav{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;flex-shrink:0;}
+
+.amt-display{background:linear-gradient(135deg,rgba(59,130,246,.08),rgba(6,182,212,.05));border:1px solid rgba(59,130,246,.2);border-radius:14px;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;margin-top:24px;flex-wrap:wrap;gap:12px;}
+
+/* Crypto Card */
+.crypto-card{background:linear-gradient(145deg,rgba(255,255,255,.03),rgba(255,255,255,.01));border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:18px;transition:all .3s ease;display:flex;flex-direction:column;}
+.crypto-card:hover{transform:translateY(-3px);box-shadow:0 12px 30px rgba(0,0,0,.3);}
+.crypto-icon-wrap{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:#fff;padding:6px;}
+.crypto-icon-wrap img{width:100%;height:100%;object-fit:contain;}
+.crypto-addr-box{background:rgba(0,0,0,.25);border:1px dashed rgba(255,255,255,.1);border-radius:10px;padding:10px 12px;margin:12px 0;}
+.copy-crypto-btn{display:flex;align-items:center;justify-content:center;gap:6px;padding:10px 14px;border-radius:10px;font-size:.78rem;font-weight:600;cursor:pointer;transition:all .25s;border:1px solid;width:100%;margin-top:auto;}
+.copy-crypto-btn:hover{transform:translateY(-1px);}
+
+/* Compatible Wallets Section */
+.wallet-compat{
+  background:linear-gradient(135deg,rgba(59,130,246,.05),rgba(6,182,212,.03));
+  border:1px solid rgba(59,130,246,.15);
+  border-radius:20px;
+  padding:24px;
+  margin-top:24px;
+}
+.wallet-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(110px,1fr));
+  gap:12px;
+  margin-top:16px;
+}
+.wallet-item{
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:12px;
+  padding:14px 10px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:8px;
+  transition:all .25s;
+}
+.wallet-item:hover{
+  background:rgba(255,255,255,.07);
+  border-color:rgba(59,130,246,.3);
+  transform:translateY(-2px);
+}
+.wallet-item-icon{
+  width:38px;
+  height:38px;
+  border-radius:10px;
+  background:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:5px;
+}
+.wallet-item-icon img{max-width:100%;max-height:100%;object-fit:contain;border-radius:6px;}
+.wallet-item-name{
+  font-size:.72rem;
+  color:#cbd5e1;
+  font-weight:600;
+  text-align:center;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .pcard{padding:18px;}
+  .brand-logo-wrap{height:55px;padding:10px;}
+  .amt-display{padding:14px 16px;}
+  .amt-display-value{font-size:1.5rem !important;}
+  .tbtn{padding:9px 18px;font-size:.78rem;}
+}
+@media (max-width: 480px) {
+  .apill{padding:10px 8px;}
+  .apill .amt-value{font-size:1.15rem;}
+  .apill .amt-label{font-size:.5rem;}
+  .wallet-grid{grid-template-columns:repeat(3, 1fr);}
+  
+  /* নতুন যুক্ত করা পেমেন্ট কার্ডের মোবাইল স্টাইল (২ কলামের জন্য) */
+  .pcard { padding: 12px; }
+  .brand-logo-wrap { height: 45px; margin-bottom: 12px; padding: 5px; }
+  .pcard .mb-5 { margin-bottom: 12px; }
+  .pcard .mb-5 p:first-child { font-size: 0.85rem !important; }
+  .pcard .mb-5 p:last-child { font-size: 0.65rem; line-height: 1.3; }
+  .pcard .flex-col.gap-2 { margin-bottom: 12px; }
+  .pcard .flex-col.gap-2 span { font-size: 0.6rem !important; }
+  .dbtn { padding: 10px 6px; font-size: 0.7rem; }
+}
+</style>
+</head>
+<body>
+
+<div id="toast" style="position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(18px);background:#0f172a;border:1px solid rgba(59,130,246,.4);color:#93c5fd;padding:12px 20px;border-radius:999px;font-size:.82rem;font-weight:500;opacity:0;transition:all .32s;z-index:9999;max-width:90vw;box-shadow:0 10px 40px rgba(0,0,0,.6);">
+  <span id="toast-inner" style="display:flex;align-items:center;gap:8px;"></span>
+</div>
+
+<!-- HERO -->
+<section class="hero-bg relative min-h-screen flex flex-col items-center justify-center px-5 py-28 text-center overflow-hidden">
+  <div class="flt" style="left:7%;top:20%;animation-delay:0s;"><svg width="30" height="30" viewBox="0 0 24 24" fill="#3b82f6"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+  <div class="flt" style="right:9%;top:26%;animation-delay:2s;"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+  <div class="flt" style="left:16%;bottom:22%;animation-delay:1s;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+  <div class="flt" style="right:15%;bottom:20%;animation-delay:3.5s;"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="1.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+
+  <div class="inline-flex items-center gap-2.5 mb-8 px-5 py-2.5 rounded-full" style="background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.22);">
+    <span class="pdot"></span>
+    <span style="color:#3b82f6;font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;font-weight:600;">Live Campaign · 2025</span>
+  </div>
+  <h1 class="serif gold-text font-bold leading-tight mb-6" style="font-size:clamp(2.4rem,8vw,5.5rem);max-width:800px;">Support Our Journey</h1>
+  <p class="mb-5 leading-relaxed max-w-lg mx-auto" style="color:#94a3b8;font-size:clamp(.92rem,2vw,1.1rem);">Do you want to help us grow and continue our services?<br>Your small contribution can make a big difference.</p>
+  <div class="mb-10 inline-flex items-center gap-3 px-5 py-3 rounded-2xl" style="background:rgba(59,130,246,.07);border:1px solid rgba(59,130,246,.2);max-width:90vw;">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="#3b82f6" style="flex-shrink:0;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    <p style="color:#60a5fa;font-size:.85rem;">A portion of every donation is contributed to <strong>charity</strong>.</p>
+  </div>
+
+  <div class="flex flex-wrap justify-center gap-6 sm:gap-8 mb-12">
+    <div class="text-center"><p class="serif font-bold gold-text" style="font-size:1.7rem;">$6,820</p><p style="color:#475569;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;margin-top:3px;">Raised</p></div>
+    <div style="width:1px;background:rgba(255,255,255,.07);"></div>
+    <div class="text-center"><p class="serif font-bold" style="color:#e2e8f0;font-size:1.7rem;">243</p><p style="color:#475569;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;margin-top:3px;">Supporters</p></div>
+    <div style="width:1px;background:rgba(255,255,255,.07);"></div>
+    <div class="text-center"><p class="serif font-bold" style="color:#e2e8f0;font-size:1.7rem;">$10K</p><p style="color:#475569;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;margin-top:3px;">Goal</p></div>
+  </div>
+
+  <a href="#donate" class="hcta">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+    Make a Donation
+  </a>
+  <div class="absolute bottom-8 flex flex-col items-center gap-1" style="opacity:.25;">
+    <span style="font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;color:#64748b;">Scroll</span>
+    <div style="width:1px;height:28px;background:linear-gradient(to bottom,#3b82f6,transparent);"></div>
+  </div>
+</section>
+
+<!-- PROGRESS -->
+<section class="reveal py-16 px-5" id="donate">
+  <div class="max-w-2xl mx-auto">
+    <div class="glow-card rounded-3xl p-6 sm:p-8">
+      <div class="flex items-center gap-3 mb-6">
+        <div style="width:34px;height:34px;background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.22);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+        </div>
+        <p style="color:#3b82f6;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;font-weight:600;">Campaign Progress</p>
+      </div>
+      <div class="flex justify-between items-end mb-3">
+        <div>
+          <p style="color:#64748b;font-size:.66rem;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;">Raised</p>
+          <p class="gold-text font-bold" style="font-family:'Space Grotesk',sans-serif;font-size:1.8rem;letter-spacing:-0.02em;">$6,820</p>
+        </div>
+        <div class="text-right">
+          <p style="color:#64748b;font-size:.66rem;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;">Goal</p>
+          <p class="font-semibold" style="color:#e2e8f0;font-family:'Space Grotesk',sans-serif;font-size:1.4rem;letter-spacing:-0.02em;">$10,000</p>
+        </div>
+      </div>
+      <div class="w-full rounded-full overflow-hidden" style="height:10px;background:rgba(255,255,255,.05);">
+        <div class="prog" id="progress-bar" style="width:0%;height:100%;"></div>
+      </div>
+      <div class="flex justify-between mt-3">
+        <span style="color:#64748b;font-size:.74rem;display:flex;align-items:center;gap:5px;"><span class="pdot"></span>68.2% funded</span>
+        <span style="color:#64748b;font-size:.74rem;">243 supporters</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AMOUNT & GATEWAYS -->
+<section class="reveal py-4 px-5">
+  <div class="max-w-4xl mx-auto">
+
+    <!-- Amount Selection -->
+    <div class="glow-card rounded-3xl p-6 sm:p-8 mb-8" id="amount-container">
+      <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
+        <div class="flex items-center gap-2">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          <p style="color:#3b82f6;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;font-weight:600;">Select Donation Amount</p>
+        </div>
+        <span style="color:#64748b;font-size:.7rem;background:rgba(59,130,246,.08);padding:4px 12px;border-radius:999px;border:1px solid rgba(59,130,246,.15);">Tap to select</span>
+      </div>
+
+      <!-- Dynamic Grid based on Tab -->
+      <div class="amount-grid" id="amount-grid">
+        <!-- JS will populate amounts here automatically -->
+      </div>
+
+      <div class="amt-display">
+        <div class="flex items-center gap-3">
+          <div style="width:36px;height:36px;background:rgba(59,130,246,.15);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div>
+            <p style="color:#64748b;font-size:.66rem;text-transform:uppercase;letter-spacing:.1em;font-weight:500;">You're donating</p>
+            <p class="gold-text amt-display-value" id="selected-display"></p>
+          </div>
+        </div>
+        <div style="text-align:right;">
+          <p style="color:#64748b;font-size:.68rem;">Secured by</p>
+          <p style="color:#e2e8f0;font-size:.78rem;font-weight:600;">SSL 256-bit</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="flex justify-center gap-2 sm:gap-3 mb-8 flex-wrap">
+      <button class="tbtn act" onclick="swTab(this,'bdt')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg> BDT (৳)
+      </button>
+      <button class="tbtn" onclick="swTab(this,'usd')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> USD ($)
+      </button>
+      <button class="tbtn" onclick="swTab(this,'crypto')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.5 9.5h3.5a2 2 0 0 1 0 4H9.5V9.5z"/><path d="M9.5 13.5h4a2 2 0 0 1 0 4H9.5v-4z"/></svg> Crypto
+      </button>
+    </div>
+
+    <!-- BDT GATEWAYS -->
+  <div class="tpanel act" id="tab-bdt">
+      <!-- Changed to 2 columns in mobile view -->
+      <div class="grid grid-cols-2 gap-3 sm:gap-6 md:grid-cols-3">
+        
+        <div class="pcard">
+          <div class="brand-logo-wrap" style="height: 80px; padding: 5px;">
+            <img src="Bkash Mobil Banking.png" alt="bKash" style="width: 100%; height: 100%; object-fit: contain; transform: scale(1.1);">
+          </div>
+          <div class="mb-5">
+            <p style="color:#fff;font-weight:600;font-size:1.05rem;margin-bottom:4px;">bKash Checkout</p>
+            <p style="color:#94a3b8;font-size:.8rem;line-height:1.5;">Official bKash payment gateway. Instant, secure processing.</p>
+          </div>
+          <div class="flex flex-col gap-2 mb-6">
+            <div class="flex items-center justify-between" style="background:rgba(255,255,255,.02);padding:10px 14px;border-radius:10px;border:1px solid rgba(255,255,255,.05);">
+              <span style="color:#94a3b8;font-size:.75rem;">Transaction Fee</span>
+              <span style="color:#22d3ee;font-size:.75rem;font-weight:600;">0.00 BDT</span>
+            </div>
+            <div class="flex items-center justify-between" style="background:rgba(255,255,255,.02);padding:10px 14px;border-radius:10px;border:1px solid rgba(255,255,255,.05);">
+              <span style="color:#94a3b8;font-size:.75rem;">Processing</span>
+              <span style="color:#e2e8f0;font-size:.75rem;">Instant</span>
+            </div>
+          </div>
+          <button onclick="initiatePayment('bKash', this)" class="dbtn dbtn-bkash">Proceed with bKash</button>
+        </div>
+
+        <div class="pcard">
+          <div class="brand-logo-wrap" style="height: 80px; padding: 5px;">
+            <img src="Nogod-Moblike Banking.png" alt="Nagad" style="width: 100%; height: 100%; object-fit: contain; transform: scale(1.1);">
+          </div>
+          <div class="mb-5">
+            <p style="color:#fff;font-weight:600;font-size:1.05rem;margin-bottom:4px;">Nagad Gateway</p>
+            <p style="color:#94a3b8;font-size:.8rem;line-height:1.5;">Fast and secure transactions via Bangladesh Post Office DFS.</p>
+          </div>
+          <div class="flex flex-col gap-2 mb-6">
+            <div class="flex items-center justify-between" style="background:rgba(255,255,255,.02);padding:10px 14px;border-radius:10px;border:1px solid rgba(255,255,255,.05);">
+              <span style="color:#94a3b8;font-size:.75rem;">Transaction Fee</span>
+              <span style="color:#22d3ee;font-size:.75rem;font-weight:600;">0.00 BDT</span>
+            </div>
+            <div class="flex items-center justify-between" style="background:rgba(255,255,255,.02);padding:10px 14px;border-radius:10px;border:1px solid rgba(255,255,255,.05);">
+              <span style="color:#94a3b8;font-size:.75rem;">Processing</span>
+              <span style="color:#e2e8f0;font-size:.75rem;">Instant</span>
+            </div>
+          </div>
+          <button onclick="initiatePayment('Nagad', this)" class="dbtn dbtn-nagad">Proceed with Nagad</button>
+        </div>
+
+        <div class="pcard">
+          <div class="brand-logo-wrap" style="height: 80px; padding: 5px;">
+            <img src="Roket Mobile Bankinge.png" alt="Rocket" style="width: 100%; height: 100%; object-fit: contain; transform: scale(1.1);" onerror="this.outerHTML='<span style=\'color:#8c1561;font-weight:900;font-size:1.4rem;\'>ROCKET</span>'">
+          </div>
+          <div class="mb-5">
+            <p style="color:#fff;font-weight:600;font-size:1.05rem;margin-bottom:4px;">Rocket DBBL</p>
+            <p style="color:#94a3b8;font-size:.8rem;line-height:1.5;">Trusted mobile banking by Dutch-Bangla Bank Limited.</p>
+          </div>
+          <div class="flex flex-col gap-2 mb-6">
+            <div class="flex items-center justify-between" style="background:rgba(255,255,255,.02);padding:10px 14px;border-radius:10px;border:1px solid rgba(255,255,255,.05);">
+              <span style="color:#94a3b8;font-size:.75rem;">Transaction Fee</span>
+              <span style="color:#22d3ee;font-size:.75rem;font-weight:600;">0.00 BDT</span>
+            </div>
+            <div class="flex items-center justify-between" style="background:rgba(255,255,255,.02);padding:10px 14px;border-radius:10px;border:1px solid rgba(255,255,255,.05);">
+              <span style="color:#94a3b8;font-size:.75rem;">Processing</span>
+              <span style="color:#e2e8f0;font-size:.75rem;">Instant</span>
+            </div>
+          </div>
+          <button onclick="initiatePayment('Rocket', this)" class="dbtn dbtn-rocket">Proceed with Rocket</button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- USD GATEWAYS -->
+    <div class="tpanel" id="tab-usd">
+      <!-- Changed to 2 columns in mobile view -->
+      <div class="grid grid-cols-2 gap-3 sm:gap-6 md:grid-cols-3">
+        <div class="pcard">
+          <div class="brand-logo-wrap" style="background:#f6f9fc;"><img src="https://upload.wikimedia.org/wikipedia/commons/b/ba/Stripe_Logo%2C_revised_2016.svg" alt="Stripe"></div>
+          <div class="mb-4"><p style="color:#fff;font-weight:600;font-size:1.05rem;margin-bottom:4px;">Credit / Debit Card</p><p style="color:#94a3b8;font-size:.8rem;line-height:1.5;">Secure processing via Stripe. Visa, Mastercard, Amex.</p></div>
+          <div class="flex gap-2 mb-6 justify-center flex-wrap">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" style="height:12px; opacity:0.7;">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" style="height:12px; opacity:0.7;">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/American_Express_logo_%282018%29.svg" style="height:12px; opacity:0.7;">
+          </div>
+          <button onclick="initiatePayment('Stripe', this)" class="dbtn dbtn-stripe">Pay with Card</button>
+        </div>
+        <div class="pcard">
+          <div class="brand-logo-wrap" style="background:#ffffff;"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal"></div>
+          <div class="mb-5"><p style="color:#fff;font-weight:600;font-size:1.05rem;margin-bottom:4px;">PayPal Checkout</p><p style="color:#94a3b8;font-size:.8rem;line-height:1.5;">Fast, safe online payments with buyer protection.</p></div>
+          <div class="flex flex-col gap-2 mb-6">
+            <div class="flex items-center justify-between" style="background:rgba(255,255,255,.02);padding:10px 14px;border-radius:10px;border:1px solid rgba(255,255,255,.05);"><span style="color:#94a3b8;font-size:.75rem;">Coverage</span><span style="color:#22d3ee;font-size:.75rem;font-weight:600;">200+ Countries</span></div>
+          </div>
+          <button onclick="initiatePayment('PayPal', this)" class="dbtn dbtn-paypal">Pay with PayPal</button>
+        </div>
+        <div class="pcard">
+          <div class="brand-logo-wrap" style="background:#ffffff;"><img src="https://upload.wikimedia.org/wikipedia/commons/4/41/Payoneer_logo_2021.svg" alt="Payoneer"></div>
+          <div class="mb-5"><p style="color:#fff;font-weight:600;font-size:1.05rem;margin-bottom:4px;">Payoneer Transfer</p><p style="color:#94a3b8;font-size:.8rem;line-height:1.5;">Ideal for cross-border and direct bank transfers.</p></div>
+          <div class="flex flex-col gap-2 mb-6">
+            <div class="flex items-center justify-between" style="background:rgba(255,255,255,.02);padding:10px 14px;border-radius:10px;border:1px solid rgba(255,255,255,.05);"><span style="color:#94a3b8;font-size:.75rem;">Security</span><span style="color:#e2e8f0;font-size:.75rem;font-weight:600;">256-bit SSL</span></div>
+          </div>
+          <button onclick="initiatePayment('Payoneer', this)" class="dbtn dbtn-payoneer">Pay with Payoneer</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CRYPTO GATEWAYS -->
+    <div class="tpanel" id="tab-crypto">
+      
+      <!-- Crypto Notice -->
+      <div class="mb-6 p-4 rounded-2xl" style="background:rgba(59,130,246,.06);border:1px solid rgba(59,130,246,.18);display:flex;align-items:flex-start;gap:12px;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" style="flex-shrink:0;margin-top:2px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <div>
+          <p style="color:#e2e8f0;font-size:.86rem;font-weight:600;margin-bottom:4px;">How to Donate Crypto</p>
+          <p style="color:#94a3b8;font-size:.78rem;line-height:1.6;">Choose a cryptocurrency below, copy the wallet address, and send your donation from any compatible wallet (Trust Wallet, MetaMask, Binance, etc.). Always verify the network.</p>
+        </div>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+
+        <!-- Bitcoin -->
+        <div class="crypto-card">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="crypto-icon-wrap"><img src="https://upload.wikimedia.org/wikipedia/commons/4/46/Bitcoin.svg" alt="BTC"></div>
+            <div style="flex:1;min-width:0;"><p style="color:#fff;font-weight:700;font-size:1rem;">Bitcoin</p><p style="color:#f7931a;font-size:.7rem;font-weight:500;">BTC · Mainnet</p></div>
+          </div>
+          <div class="crypto-addr-box">
+            <p style="color:#64748b;font-size:.6rem;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;">Wallet Address</p>
+            <p id="addr-btc" style="color:#f7931a;font-family:monospace;font-size:.72rem;word-break:break-all;line-height:1.4;">bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh</p>
+          </div>
+          <button onclick="copyAddr('addr-btc','Bitcoin')" class="copy-crypto-btn" style="background:rgba(247,147,26,.1);color:#f7931a;border-color:rgba(247,147,26,.3);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Copy BTC Address
+          </button>
+        </div>
+
+        <!-- Ethereum -->
+        <div class="crypto-card">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="crypto-icon-wrap"><img src="https://upload.wikimedia.org/wikipedia/commons/0/05/Ethereum_logo_2014.svg" alt="ETH"></div>
+            <div style="flex:1;min-width:0;"><p style="color:#fff;font-weight:700;font-size:1rem;">Ethereum</p><p style="color:#627eea;font-size:.7rem;font-weight:500;">ETH · ERC-20</p></div>
+          </div>
+          <div class="crypto-addr-box">
+            <p style="color:#64748b;font-size:.6rem;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;">Wallet Address</p>
+            <p id="addr-eth" style="color:#8fa8ff;font-family:monospace;font-size:.72rem;word-break:break-all;line-height:1.4;">0x71C7656EC7ab88b098defB751B7401B5f6d8976F</p>
+          </div>
+          <button onclick="copyAddr('addr-eth','Ethereum')" class="copy-crypto-btn" style="background:rgba(98,126,234,.1);color:#8fa8ff;border-color:rgba(98,126,234,.3);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Copy ETH Address
+          </button>
+        </div>
+
+        <!-- USDT -->
+        <div class="crypto-card">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="crypto-icon-wrap"><img src="https://cryptologos.cc/logos/tether-usdt-logo.svg" alt="USDT"></div>
+            <div style="flex:1;min-width:0;"><p style="color:#fff;font-weight:700;font-size:1rem;">Tether</p><p style="color:#26a17b;font-size:.7rem;font-weight:500;">USDT · TRC-20</p></div>
+          </div>
+          <div class="crypto-addr-box">
+            <p style="color:#64748b;font-size:.6rem;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;">Wallet Address</p>
+            <p id="addr-usdt" style="color:#5fd4a8;font-family:monospace;font-size:.72rem;word-break:break-all;line-height:1.4;">TXYZopYRdj2D9XRtbG411XZZ3kM5VkAeBf</p>
+          </div>
+          <button onclick="copyAddr('addr-usdt','USDT')" class="copy-crypto-btn" style="background:rgba(38,161,123,.1);color:#5fd4a8;border-color:rgba(38,161,123,.3);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Copy USDT Address
+          </button>
+        </div>
+
+        <!-- BNB -->
+        <div class="crypto-card">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="crypto-icon-wrap"><img src="https://cryptologos.cc/logos/bnb-bnb-logo.svg" alt="BNB"></div>
+            <div style="flex:1;min-width:0;"><p style="color:#fff;font-weight:700;font-size:1rem;">Binance Coin</p><p style="color:#f3ba2f;font-size:.7rem;font-weight:500;">BNB · BEP-20</p></div>
+          </div>
+          <div class="crypto-addr-box">
+            <p style="color:#64748b;font-size:.6rem;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;">Wallet Address</p>
+            <p id="addr-bnb" style="color:#f3ba2f;font-family:monospace;font-size:.72rem;word-break:break-all;line-height:1.4;">0xBE0eB53F46cd790Cd13851d5EFf43D12404d33E8</p>
+          </div>
+          <button onclick="copyAddr('addr-bnb','BNB')" class="copy-crypto-btn" style="background:rgba(243,186,47,.1);color:#f3ba2f;border-color:rgba(243,186,47,.3);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Copy BNB Address
+          </button>
+        </div>
+
+        <!-- Solana -->
+        <div class="crypto-card">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="crypto-icon-wrap"><img src="https://cryptologos.cc/logos/solana-sol-logo.svg" alt="SOL"></div>
+            <div style="flex:1;min-width:0;"><p style="color:#fff;font-weight:700;font-size:1rem;">Solana</p><p style="color:#14F195;font-size:.7rem;font-weight:500;">SOL · Solana Network</p></div>
+          </div>
+          <div class="crypto-addr-box">
+            <p style="color:#64748b;font-size:.6rem;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;">Wallet Address</p>
+            <p id="addr-sol" style="color:#14F195;font-family:monospace;font-size:.72rem;word-break:break-all;line-height:1.4;">DRpbCBMxVnDK7maPM5tGv6MvB3v1sRMC86PZ8okm21hy</p>
+          </div>
+          <button onclick="copyAddr('addr-sol','Solana')" class="copy-crypto-btn" style="background:rgba(20,241,149,.08);color:#14F195;border-color:rgba(20,241,149,.3);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Copy SOL Address
+          </button>
+        </div>
+
+        <!-- TRON -->
+        <div class="crypto-card">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="crypto-icon-wrap"><img src="https://cryptologos.cc/logos/tron-trx-logo.svg" alt="TRX"></div>
+            <div style="flex:1;min-width:0;"><p style="color:#fff;font-weight:700;font-size:1rem;">TRON</p><p style="color:#FF060A;font-size:.7rem;font-weight:500;">TRX · TRON Network</p></div>
+          </div>
+          <div class="crypto-addr-box">
+            <p style="color:#64748b;font-size:.6rem;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;">Wallet Address</p>
+            <p id="addr-trx" style="color:#FF6B6E;font-family:monospace;font-size:.72rem;word-break:break-all;line-height:1.4;">TQrY8tryqsYVCYS3MFbtffiPp2ccyn4STm</p>
+          </div>
+          <button onclick="copyAddr('addr-trx','TRON')" class="copy-crypto-btn" style="background:rgba(255,6,10,.08);color:#FF6B6E;border-color:rgba(255,6,10,.3);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Copy TRX Address
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Compatible Wallets Section -->
+      <div class="wallet-compat">
+        <div class="flex items-center gap-2 mb-2">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>
+          <p style="color:#3b82f6;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;font-weight:600;">Compatible Wallets</p>
+        </div>
+        <p style="color:#94a3b8;font-size:.8rem;line-height:1.6;">Send your donation from any of these popular wallets or exchanges:</p>
+        
+        <div class="wallet-grid">
+          <div class="wallet-item">
+            <div class="wallet-item-icon">
+              <img src="https://cryptologos.cc/logos/trust-wallet-token-twt-logo.svg" alt="Trust Wallet">
+            </div>
+            <span class="wallet-item-name">Trust Wallet</span>
+          </div>
+          <div class="wallet-item">
+            <div class="wallet-item-icon">
+              <img src="https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg" alt="MetaMask">
+            </div>
+            <span class="wallet-item-name">MetaMask</span>
+          </div>
+          <div class="wallet-item">
+            <div class="wallet-item-icon">
+              <img src="https://cryptologos.cc/logos/bnb-bnb-logo.svg" alt="Binance">
+            </div>
+            <span class="wallet-item-name">Binance</span>
+          </div>
+          <div class="wallet-item">
+            <div class="wallet-item-icon">
+              <img src="https://avatars.githubusercontent.com/u/1885080?s=200&v=4" alt="Coinbase">
+            </div>
+            <span class="wallet-item-name">Coinbase</span>
+          </div>
+          <div class="wallet-item">
+            <div class="wallet-item-icon">
+              <img src="https://avatars.githubusercontent.com/u/142fb?s=200&v=4" alt="Ledger">
+            </div>
+            <span class="wallet-item-name">Ledger</span>
+          </div>
+          <div class="wallet-item">
+            <div class="wallet-item-icon">
+              <img src="https://avatars.githubusercontent.com/u/37784886?s=200&v=4" alt="WalletConnect">
+            </div>
+            <span class="wallet-item-name">WalletConnect</span>
+          </div>
+          <div class="wallet-item">
+            <div class="wallet-item-icon">
+              <img src="https://avatars.githubusercontent.com/u/78782331?s=200&v=4" alt="Phantom">
+            </div>
+            <span class="wallet-item-name">Phantom</span>
+          </div>
+          <div class="wallet-item">
+            <div class="wallet-item-icon">
+              <img src="https://avatars.githubusercontent.com/u/43633636?s=200&v=4" alt="TronLink">
+            </div>
+            <span class="wallet-item-name">TronLink</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Warning -->
+      <div class="mt-6 text-center p-4 rounded-2xl" style="background:rgba(239,68,68,.05);border:1px solid rgba(239,68,68,.15);">
+        <p style="color:#fca5a5;font-size:.78rem;line-height:1.6;">
+          ⚠️ <strong>Important:</strong> Always verify the wallet address and network before sending. Crypto transactions are permanent and cannot be reversed.
+        </p>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+<!-- EVERY CONTRIBUTION -->
+<section class="reveal py-20 sm:py-24 px-5">
+  <div class="gdiv max-w-3xl mx-auto mb-16 sm:mb-20"></div>
+  <div class="max-w-3xl mx-auto text-center">
+    <div class="inline-flex items-center gap-2 mb-6 px-4 py-2 rounded-full" style="background:rgba(59,130,246,.07);border:1px solid rgba(59,130,246,.2);">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="#3b82f6"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      <span style="color:#3b82f6;font-size:.66rem;letter-spacing:.15em;text-transform:uppercase;font-weight:600;">Why It Matters</span>
+    </div>
+    <h2 class="serif font-bold mb-8 leading-tight" style="font-size:clamp(1.9rem,5vw,3.4rem);color:#e2e8f0;">Every Contribution<br><span class="gold-text">Matters</span></h2>
+    <p class="leading-relaxed mb-5 mx-auto" style="color:#94a3b8;font-size:1rem;max-width:540px;">Behind every donation is a story - a student who can now access our resources, a creator who found their voice, a community that grew stronger. You are giving someone a <span style="color:#3b82f6;font-weight:600;">chance</span>.</p>
+    <p class="leading-relaxed mx-auto" style="color:#94a3b8;font-size:1rem;max-width:540px;">We are a small team with a big dream. Every dollar goes directly into building and sustaining our work.</p>
+  </div>
+</section>
+
+<!-- SUPPORTERS -->
+<section class="reveal py-14 px-5">
+  <div class="max-w-3xl mx-auto">
+    <div class="text-center mb-10">
+      <div class="inline-flex items-center gap-2 mb-4 px-4 py-2 rounded-full" style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+        <span style="color:#3b82f6;font-size:.66rem;letter-spacing:.15em;text-transform:uppercase;font-weight:600;">Community</span>
+      </div>
+      <h2 class="serif font-bold" style="font-size:clamp(1.6rem,4vw,2.6rem);color:#e2e8f0;">Recent Supporters</h2>
+    </div>
+    <div class="glow-card rounded-3xl overflow-hidden">
+      <div class="px-5 sm:px-6 py-4 flex items-center justify-between" style="border-bottom:1px solid rgba(255,255,255,.05);background:rgba(255,255,255,.015);">
+        <div class="flex items-center gap-2"><span class="pdot"></span><span style="color:#64748b;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;">Live Activity</span></div>
+        <span style="color:#64748b;font-size:.7rem;">243 total</span>
+      </div>
+      <div>
+        <div class="flex items-center gap-3 sm:gap-4 px-5 sm:px-6 py-4" style="border-bottom:1px solid rgba(255,255,255,.04);">
+          <div class="sav" style="background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.22);color:#60a5fa;">RK</div>
+          <div style="flex:1;min-width:0;"><div class="flex items-center gap-2 flex-wrap"><p style="color:#e2e8f0;font-size:.85rem;font-weight:500;">Rahul K.</p><span style="background:rgba(34,211,238,.12);color:#22d3ee;font-size:.55rem;padding:2px 7px;border-radius:999px;text-transform:uppercase;letter-spacing:.06em;">New</span></div><p style="color:#64748b;font-size:.72rem;margin-top:2px;">2 min ago</p></div>
+          <div style="text-align:right;flex-shrink:0;"><span class="gold-text font-semibold" style="font-family:'Space Grotesk';font-size:1rem;">$25</span><p style="color:#64748b;font-size:.6rem;">USD</p></div>
+        </div>
+        <div class="flex items-center gap-3 sm:gap-4 px-5 sm:px-6 py-4" style="border-bottom:1px solid rgba(255,255,255,.04);">
+          <div class="sav" style="background:rgba(129,140,248,.12);border:1px solid rgba(129,140,248,.22);color:#818cf8;">SA</div>
+          <div style="flex:1;min-width:0;"><p style="color:#e2e8f0;font-size:.85rem;font-weight:500;">Sarah A.</p><p style="color:#64748b;font-size:.72rem;margin-top:2px;">15 min ago</p></div>
+          <div style="text-align:right;flex-shrink:0;"><span class="gold-text font-semibold" style="font-family:'Space Grotesk';font-size:1rem;">$50</span><p style="color:#64748b;font-size:.6rem;">Stripe</p></div>
+        </div>
+        <div class="flex items-center gap-3 sm:gap-4 px-5 sm:px-6 py-4" style="border-bottom:1px solid rgba(255,255,255,.04);">
+          <div class="sav" style="background:rgba(34,211,238,.1);border:1px solid rgba(34,211,238,.22);color:#22d3ee;">TM</div>
+          <div style="flex:1;min-width:0;"><p style="color:#e2e8f0;font-size:.85rem;font-weight:500;">Tariq M.</p><p style="color:#64748b;font-size:.72rem;margin-top:2px;">1 hr ago</p></div>
+          <div style="text-align:right;flex-shrink:0;"><span class="gold-text font-semibold" style="font-family:'Space Grotesk';font-size:1rem;">৳850</span><p style="color:#64748b;font-size:.6rem;">bKash</p></div>
+        </div>
+        <div class="flex items-center gap-3 sm:gap-4 px-5 sm:px-6 py-4" style="border-bottom:1px solid rgba(255,255,255,.04);">
+          <div class="sav" style="background:rgba(247,147,26,.1);border:1px solid rgba(247,147,26,.22);color:#f7931a;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+          <div style="flex:1;min-width:0;"><p style="color:#e2e8f0;font-size:.85rem;font-weight:500;">Anonymous</p><p style="color:#64748b;font-size:.72rem;margin-top:2px;">5 hrs ago</p></div>
+          <div style="text-align:right;flex-shrink:0;"><span class="gold-text font-semibold" style="font-family:'Space Grotesk';font-size:1rem;">0.002</span><p style="color:#64748b;font-size:.6rem;">BTC</p></div>
+        </div>
+        <div class="flex items-center gap-3 sm:gap-4 px-5 sm:px-6 py-4">
+          <div class="sav" style="background:rgba(244,114,182,.1);border:1px solid rgba(244,114,182,.22);color:#f472b6;">NJ</div>
+          <div style="flex:1;min-width:0;"><p style="color:#e2e8f0;font-size:.85rem;font-weight:500;">Nadia J.</p><p style="color:#64748b;font-size:.72rem;margin-top:2px;">Yesterday</p></div>
+          <div style="text-align:right;flex-shrink:0;"><span class="gold-text font-semibold" style="font-family:'Space Grotesk';font-size:1rem;">৳2,100</span><p style="color:#64748b;font-size:.6rem;">Nagad</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRUST -->
+<section class="reveal py-14 px-5">
+  <div class="gdiv max-w-3xl mx-auto mb-14"></div>
+  <div class="max-w-3xl mx-auto">
+    <div class="text-center mb-10">
+      <div class="inline-flex items-center gap-2 mb-4 px-4 py-2 rounded-full" style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span style="color:#3b82f6;font-size:.66rem;letter-spacing:.15em;text-transform:uppercase;font-weight:600;">Our Promise</span>
+      </div>
+      <h2 class="serif font-bold" style="font-size:clamp(1.6rem,4vw,2.6rem);color:#e2e8f0;">You Can Trust Us</h2>
+    </div>
+    <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-5">
+      <div class="tbadge rounded-2xl p-6 sm:p-7 text-center">
+        <div style="width:50px;height:50px;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.22);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+        <p style="color:#e2e8f0;font-weight:600;margin-bottom:7px;">100% Transparency</p>
+        <p style="color:#64748b;font-size:.78rem;line-height:1.65;">Every dollar is accounted for with regular public reports.</p>
+      </div>
+      <div class="tbadge rounded-2xl p-6 sm:p-7 text-center">
+        <div style="width:50px;height:50px;background:rgba(34,211,238,.06);border:1px solid rgba(34,211,238,.18);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+        <p style="color:#e2e8f0;font-weight:600;margin-bottom:7px;">Secure Payments</p>
+        <p style="color:#64748b;font-size:.78rem;line-height:1.65;">256-bit SSL encryption. Payment details never stored.</p>
+      </div>
+      <div class="tbadge rounded-2xl p-6 sm:p-7 text-center sm:col-span-2 md:col-span-1">
+        <div style="width:50px;height:50px;background:rgba(129,140,248,.06);border:1px solid rgba(129,140,248,.18);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
+        <p style="color:#e2e8f0;font-weight:600;margin-bottom:7px;">Trusted by 243+</p>
+        <p style="color:#64748b;font-size:.78rem;line-height:1.65;">Honor every contribution with full accountability.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="py-14 px-5 text-center">
+  <div class="gdiv max-w-3xl mx-auto mb-10"></div>
+  <div class="flex justify-center mb-5">
+    <div style="width:42px;height:42px;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.22);border-radius:12px;display:flex;align-items:center;justify-content:center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="#3b82f6"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+  </div>
+  <p class="serif gold-text font-semibold" style="font-size:1.4rem;margin-bottom:8px;">Together we can make a difference</p>
+  <p style="color:#475569;font-size:.74rem;margin-top:14px;">© 2025 · All donations are voluntary · Secure & Transparent</p>
+</footer>
+
+<script>
+const amountData = {
+  usd: [
+    {v: 2, l: 'Help'}, {v: 5, l: 'Coffee'}, {v: 10, l: 'Starter'},
+    {v: 25, l: 'Supporter', pop: true}, {v: 50, l: 'Champion'},
+    {v: 100, l: 'Hero'}, {v: 250, l: 'Legend'}
+  ],
+  bdt: [
+    {v: 50, l: 'Help'}, {v: 100, l: 'Coffee'}, {v: 200, l: 'Starter'},
+    {v: 500, l: 'Supporter', pop: true}, {v: 1000, l: 'Champion'},
+    {v: 2000, l: 'Hero'}, {v: 5000, l: 'Legend'}
+  ]
+};
+
+let selectedAmount = 0;
+let currencySymbol = '৳';
+
+function renderAmounts(tab) {
+  const grid = document.getElementById('amount-grid');
+  const isBDT = tab === 'bdt';
+  const data = isBDT ? amountData.bdt : amountData.usd;
+  currencySymbol = isBDT ? '৳' : '$';
+  
+  grid.innerHTML = '';
+  data.forEach(item => {
+    const isPop = item.pop ? 'popular' : '';
+    const popBadge = item.pop ? `<span class="badge-pop">Popular</span>` : '';
+    grid.innerHTML += `
+      <button class="apill ${isPop}" onclick="selAmt(this, ${item.v})">
+        ${popBadge}
+        <span class="amt-value">${currencySymbol}${item.v}</span>
+        <span class="amt-label">${item.l}</span>
+      </button>
+    `;
+  });
+  
+  const defaultAmt = isBDT ? 500 : 25;
+  const defaultBtn = grid.querySelector('.apill.popular') || grid.firstElementChild;
+  if(defaultBtn) {
+    selAmt(defaultBtn, defaultAmt);
+  }
+}
+
+function swTab(btn,tab){
+  document.querySelectorAll('.tbtn').forEach(b=>b.classList.remove('act'));
+  document.querySelectorAll('.tpanel').forEach(p=>p.classList.remove('act'));
+  btn.classList.add('act');
+  document.getElementById('tab-'+tab).classList.add('act');
+  
+  renderAmounts(tab);
+}
+
+function selAmt(btn, amount){
+  document.querySelectorAll('.apill').forEach(p=>p.classList.remove('sel'));
+  if(btn) btn.classList.add('sel');
+  selectedAmount = amount;
+  document.getElementById('selected-display').textContent = currencySymbol + amount;
+  document.getElementById('amount-container').classList.remove('shake');
+  document.getElementById('amount-container').style.borderColor = 'rgba(59,130,246,.2)';
+}
+
+function toast(msg, type="success"){
+  const el = document.getElementById('toast');
+  let icon = type === "error" 
+    ? `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`
+    : `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>`;
+  el.style.borderColor = type === "error" ? 'rgba(239,68,68,0.5)' : 'rgba(59,130,246,.4)';
+  el.querySelector('#toast-inner').innerHTML = `${icon} <span style="color:#fff">${msg}</span>`;
+  el.style.opacity = '1';
+  el.style.transform = 'translateX(-50%) translateY(0)';
+  setTimeout(() => { el.style.opacity = '0'; el.style.transform = 'translateX(-50%) translateY(18px)'; }, 3000);
+}
+
+function recordDonationAttempt(method, amount, currency, status='initiated') {
+  fetch('https://admin.freedownloader.top/api/donations/record', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ method: method, amount: amount, currency: currency, status: status })
+  }).catch(e => console.log('Tracking error:', e));
+}
+
+function initiatePayment(method, btnElement) {
+  if(!selectedAmount || selectedAmount <= 0) {
+    toast('Please select an amount first!', 'error');
+    let box = document.getElementById('amount-container');
+    box.classList.remove('shake');
+    void box.offsetWidth;
+    box.classList.add('shake');
+    box.style.borderColor = 'rgba(239,68,68,0.6)';
+    document.getElementById('donate').scrollIntoView({behavior:'smooth', block: 'center'});
+    return;
+  }
+  let origText = btnElement.innerHTML;
+  btnElement.disabled = true;
+  btnElement.innerHTML = `<svg style="animation: spin 1s linear infinite; height:16px; width:16px; margin-right:8px;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Connecting...`;
+  toast(`Connecting to ${method} for ${currencySymbol}${selectedAmount}...`);
+  
+  // Record donation attempt
+  let currencyCode = currencySymbol === '৳' ? 'BDT' : 'USD';
+  recordDonationAttempt(method, selectedAmount, currencyCode);
+
+  setTimeout(() => {
+    btnElement.innerHTML = origText;
+    btnElement.disabled = false;
+    toast(`Redirecting to ${method} secure checkout...`);
+    // Example redirection logic:
+    // window.location.href = `/api/checkout?method=${method}&amount=${selectedAmount}`;
+  }, 2000);
+}
+
+function copyAddr(id, coinName){
+  const addr = document.getElementById(id).textContent.trim();
+  navigator.clipboard.writeText(addr).then(()=>{
+    toast(`${coinName} address copied! Send your donation now.`);
+    recordDonationAttempt(coinName, selectedAmount || 0, coinName, 'address_copied');
+  }).catch(()=>{
+    toast('Failed to copy. Please copy manually.', 'error');
+  });
+}
+
+window.addEventListener('load',()=>{
+  renderAmounts('bdt'); // Load default amounts based on initial active tab
+  setTimeout(()=>{document.getElementById('progress-bar').style.width='68.2%';},700);
+});
+const io = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('vis');io.unobserve(e.target);}});
+},{threshold:.1});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+document.querySelector('a[href="#donate"]').addEventListener('click',e=>{
+  e.preventDefault();document.getElementById('donate').scrollIntoView({behavior:'smooth'});
+});
+</script>
+
+<style>@keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}</style>
+</body>
+</html>

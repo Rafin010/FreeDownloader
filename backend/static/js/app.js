@@ -174,6 +174,43 @@ function showFreeStore() {
     }
 }
 
+function showDonations() {
+    activeSite = 'donations';
+    
+    // View toggling
+    document.getElementById('view-dashboard')?.classList.add('hidden');
+    document.getElementById('view-dashboard')?.classList.remove('block');
+    document.getElementById('view-freestore')?.classList.add('hidden');
+    document.getElementById('view-freestore')?.classList.remove('block');
+    document.getElementById('view-donations')?.classList.remove('hidden');
+    document.getElementById('view-donations')?.classList.add('block');
+
+    document.getElementById('breadcrumb-site').textContent = 'Donations';
+    document.getElementById('active-site-name').textContent = 'Donations Tracking';
+
+    // Update sidebar active states
+    document.querySelectorAll('.sidebar-item').forEach(item => {
+        const isActive = item.id === 'btn-donations';
+        item.classList.toggle('bg-rose-500/10', isActive);
+        item.classList.toggle('text-white', isActive);
+        item.classList.toggle('border-rose-500/20', isActive);
+        item.classList.toggle('text-gray-400', !isActive);
+        item.classList.toggle('hover:bg-white/5', !isActive);
+        item.classList.toggle('hover:text-gray-200', !isActive);
+        
+        // Handle selectSite active classes removal
+        if(isActive) {
+            item.classList.remove('bg-indigo-500/10', 'border-indigo-500/20', 'bg-emerald-500/10', 'border-emerald-500/20');
+        }
+    });
+
+    if (window.innerWidth < 1024) {
+        document.getElementById('sidebar').classList.remove('sidebar-open');
+        document.getElementById('sidebar-overlay').classList.add('hidden');
+    }
+    loadDonations();
+}
+
 async function buildSidebar() {
     const sites = await apiFetch('/api/dashboard/sites');
     sitesList = sites;
@@ -479,7 +516,7 @@ async function loadAll() {
         await Promise.all([
             loadSummary(), loadDailyChart(), loadDoughnutChart(),
             loadHourlyChart(), loadSitesTable(), loadSessionsTable(),
-            loadActiveInstalls(), loadStoreItems(), loadPopups()
+            loadActiveInstalls(), loadStoreItems(), loadPopups(), loadDonations()
         ]);
     } catch (e) {
         console.error('[Dashboard]', e);
@@ -492,6 +529,50 @@ document.getElementById('refresh-btn')?.addEventListener('click', () => {
     loadAll();
     toast('Refreshing…');
 });
+
+// ══════════════════════════════════════════
+// DONATIONS MANAGEMENT
+// ══════════════════════════════════════════
+async function loadDonations() {
+    try {
+        const data = await apiFetch('/api/donations/stats');
+        
+        // Update stats
+        if (data.totals) {
+            document.getElementById('stat-donations-usd').textContent = `$${parseFloat(data.totals.total_usd||0).toLocaleString()}`;
+            document.getElementById('stat-donations-bdt').textContent = `৳${parseFloat(data.totals.total_bdt||0).toLocaleString()}`;
+            document.getElementById('stat-donations-crypto').textContent = parseFloat(data.totals.total_crypto||0).toLocaleString();
+            document.getElementById('stat-donations-count').textContent = (data.totals.total_donations||0).toLocaleString();
+        }
+
+        // Update table
+        const tb = document.getElementById('donations-tbody');
+        if (!data.recent || !data.recent.length) {
+            tb.innerHTML = '<tr><td colspan="5" class="text-center text-gray-600 py-8">No donations tracked yet.</td></tr>';
+            return;
+        }
+
+        tb.innerHTML = data.recent.map(d => {
+            let statusColor = 'text-gray-400';
+            if (d.payment_status === 'initiated' || d.payment_status === 'address_copied') statusColor = 'text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded';
+            if (d.payment_status === 'completed') statusColor = 'text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded';
+            
+            return `
+            <tr class="border-b border-panel-border hover:bg-white/[0.02]">
+                <td class="px-4 py-3 text-xs text-gray-400">${d.date}</td>
+                <td class="px-4 py-3 text-xs font-semibold text-white">${esc(d.donor_name)}</td>
+                <td class="px-4 py-3 text-sm font-bold text-emerald-400">${d.currency === 'BDT' ? '৳' : d.currency === 'USD' ? '$' : ''}${parseFloat(d.amount).toLocaleString()} ${!['BDT', 'USD'].includes(d.currency) ? d.currency : ''}</td>
+                <td class="px-4 py-3 text-xs text-gray-300">
+                    <span class="px-2 py-1 bg-indigo-500/10 text-indigo-400 rounded">${esc(d.payment_method)}</span>
+                </td>
+                <td class="px-4 py-3 text-[10px] uppercase font-bold tracking-wider ${statusColor}">${esc(d.payment_status)}</td>
+            </tr>
+            `;
+        }).join('');
+    } catch(e) {
+        console.error('Donations load error:', e);
+    }
+}
 
 // ══════════════════════════════════════════
 // FREE STORE & POPUP MANAGEMENT

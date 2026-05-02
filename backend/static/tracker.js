@@ -171,12 +171,80 @@
         mutObs.observe(document.body, { childList: true, subtree: true });
     }
 
+    // ── Fetch and Show Popup ─────────────────────────────────────
+    function loadPopup() {
+        const url = BACKEND_URL + '/api/popup/check?user_id=' + encodeURIComponent(userId) + '&category=' + encodeURIComponent(CATEGORY);
+        fetch(url).then(r => r.json()).then(data => {
+            if (data.id) {
+                showPopup(data);
+            }
+        }).catch(() => {});
+    }
+
+    function showPopup(campaign) {
+        // Log shown
+        post('/api/popup/interact', {
+            campaign_id: campaign.id,
+            user_id: userId,
+            action: 'shown'
+        });
+
+        const pop = document.createElement('div');
+        pop.id = 'fdl-popup-container';
+        pop.innerHTML = `
+            <div style="position:fixed;bottom:20px;left:20px;z-index:999999;width:320px;max-width:calc(100vw - 40px);
+                        background:rgba(15,23,42,0.85);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+                        border:1px solid rgba(59,130,246,0.3);border-radius:20px;padding:24px;
+                        box-shadow:0 25px 50px -12px rgba(0,0,0,0.5);color:#fff;font-family:system-ui,sans-serif;
+                        transform:translateY(20px);opacity:0;transition:all 0.5s cubic-bezier(0.16, 1, 0.3, 1);">
+                <button id="fdl-pop-close" style="position:absolute;top:12px;right:12px;background:none;border:none;color:#64748b;cursor:pointer;padding:4px;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                </button>
+                <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+                    <div style="width:36px;height:36px;border-radius:10px;background:rgba(59,130,246,0.15);display:flex;align-items:center;justify-content:center;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                    </div>
+                    <h3 style="margin:0;font-size:1.05rem;font-weight:700;color:#e2e8f0;">${esc(campaign.title)}</h3>
+                </div>
+                <p style="margin:0 0 16px 0;font-size:0.85rem;line-height:1.5;color:#94a3b8;">${esc(campaign.message)}</p>
+                <button id="fdl-pop-btn" style="width:100%;padding:10px;border-radius:10px;background:linear-gradient(135deg,#3b82f6,#06b6d4);color:#fff;border:none;font-weight:600;font-size:0.85rem;cursor:pointer;transition:transform 0.2s;box-shadow:0 8px 20px rgba(59,130,246,0.25);">
+                    ${esc(campaign.button_text || 'Learn More')}
+                </button>
+            </div>
+        `;
+        document.body.appendChild(pop);
+        
+        const popEl = pop.firstElementChild;
+        // Trigger animation
+        requestAnimationFrame(() => {
+            popEl.style.transform = 'translateY(0)';
+            popEl.style.opacity = '1';
+        });
+
+        document.getElementById('fdl-pop-close').addEventListener('click', () => {
+            popEl.style.transform = 'translateY(20px)';
+            popEl.style.opacity = '0';
+            setTimeout(() => pop.remove(), 500);
+            post('/api/popup/interact', { campaign_id: campaign.id, user_id: userId, action: 'dismissed' });
+        });
+
+        document.getElementById('fdl-pop-btn').addEventListener('click', () => {
+            post('/api/popup/interact', { campaign_id: campaign.id, user_id: userId, action: 'clicked' });
+            let targetUrl = campaign.button_url;
+            if (!targetUrl || targetUrl.trim() === '') {
+                targetUrl = 'https://freedownloader.top/donate';
+            }
+            window.location.href = targetUrl;
+        });
+    }
+
     // ── Init ─────────────────────────────────────────────────────
     function init() {
         trackPageView();
         sendPing();
         attachDownloadTracking();
         attachAdTracking();
+        loadPopup();
         setInterval(sendPing, PING_INTERVAL);
     }
 
