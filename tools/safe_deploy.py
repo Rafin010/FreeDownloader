@@ -106,16 +106,21 @@ def main():
         err = stderr.read().decode('utf-8', errors='replace')
         if err: print(f"curl-cffi install: {err}")
 
-        # 3.3 Set up Free Store Nginx & Services
-        print("Setting up Free Store configs...")
+        # 3.3 Set up Free Store & Donate Nginx & Services
+        print("Setting up Free Store and Donate configs...")
         fs_setup = [
             "cp /root/FreeDownloader/nginx/freestore-domains.conf /etc/nginx/sites-available/freestore-domains.conf",
             "ln -sf /etc/nginx/sites-available/freestore-domains.conf /etc/nginx/sites-enabled/",
+            "cp /root/FreeDownloader/nginx/donate-domain.conf /etc/nginx/sites-available/donate-domain.conf",
+            "ln -sf /etc/nginx/sites-available/donate-domain.conf /etc/nginx/sites-enabled/",
             "nginx -t && systemctl reload nginx",
             "source /root/FreeDownloader/venv/bin/activate && pip install -r /root/FreeDownloader/backend/requirements.txt",
             "cat << 'EOF' > /etc/systemd/system/freestore.service\n[Unit]\nDescription=Free Store Application (Flask)\nAfter=network.target\n\n[Service]\nUser=root\nWorkingDirectory=/root/FreeDownloader/freeStore\nEnvironment=\"PATH=/root/FreeDownloader/venv/bin\"\nExecStart=/root/FreeDownloader/venv/bin/gunicorn -w 2 -b 127.0.0.1:8010 app:app\nRestart=always\n\n[Install]\nWantedBy=multi-user.target\nEOF",
             "systemctl daemon-reload",
-            "systemctl enable --now freestore"
+            "systemctl enable --now freestore",
+            "cat << 'EOF' > /etc/systemd/system/donate.service\n[Unit]\nDescription=Donate Application (Flask)\nAfter=network.target\n\n[Service]\nUser=root\nWorkingDirectory=/root/FreeDownloader/donate_app\nEnvironment=\"PATH=/root/FreeDownloader/venv/bin\"\nExecStart=/root/FreeDownloader/venv/bin/gunicorn -w 2 -b 127.0.0.1:5007 app:app\nRestart=always\n\n[Install]\nWantedBy=multi-user.target\nEOF",
+            "systemctl daemon-reload",
+            "systemctl enable --now donate"
         ]
         for scmd in fs_setup:
             stdin, stdout, stderr = client.exec_command(scmd)
@@ -125,7 +130,7 @@ def main():
 
         # 3.4 Restart services
         print("Restarting services on VPS...")
-        restart_cmd = "systemctl restart fb.service yt.service free_d.service p_d.service tik_d.service insta.service freedownloader.service freestore.service"
+        restart_cmd = "systemctl restart fb.service yt.service free_d.service p_d.service tik_d.service insta.service freedownloader.service freestore.service donate.service"
         stdin, stdout, stderr = client.exec_command(restart_cmd)
         print(stdout.read().decode('utf-8', errors='replace'))
         
