@@ -6,7 +6,7 @@ import sys
 # Add backend to path for shared utils (like db)
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'backend')))
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='/donate/static')
 CORS(app)
 
 @app.route('/donate')
