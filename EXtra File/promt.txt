@@ -1,8 +1,8 @@
 freedownloader.top 
  Sub Domin ==>
-->facebook.freedownloader.top 
-->instagram.freedownloader.top 
-->tiktok.freedownloader.top
+->f.freedownloader.top 
+->i.freedownloader.top 
+->t.freedownloader.top
 ->pron.freedownloader.top 
  
 

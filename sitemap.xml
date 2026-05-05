@@ -19,136 +19,136 @@
     </url>
 
     <!-- ═══════════════════════════════════════════════════════ -->
-    <!-- YouTube Downloader: youtube.freedownloader.top         -->
+    <!-- YouTube Downloader: y.freedownloader.top         -->
     <!-- ═══════════════════════════════════════════════════════ -->
     <url>
-        <loc>https://youtube.freedownloader.top/</loc>
+        <loc>https://y.freedownloader.top/</loc>
         <lastmod>2026-05-01</lastmod>
         <changefreq>daily</changefreq>
         <priority>1.0</priority>
     </url>
     <url>
-        <loc>https://youtube.freedownloader.top/about</loc>
+        <loc>https://y.freedownloader.top/about</loc>
         <lastmod>2026-04-30</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.5</priority>
     </url>
     <url>
-        <loc>https://youtube.freedownloader.top/contact</loc>
+        <loc>https://y.freedownloader.top/contact</loc>
         <lastmod>2026-04-30</lastmod>
         <changefreq>yearly</changefreq>
         <priority>0.4</priority>
     </url>
     <url>
-        <loc>https://youtube.freedownloader.top/privacy</loc>
+        <loc>https://y.freedownloader.top/privacy</loc>
         <lastmod>2026-04-30</lastmod>
         <changefreq>yearly</changefreq>
         <priority>0.3</priority>
     </url>
     <url>
-        <loc>https://youtube.freedownloader.top/terms</loc>
+        <loc>https://y.freedownloader.top/terms</loc>
         <lastmod>2026-04-30</lastmod>
         <changefreq>yearly</changefreq>
         <priority>0.3</priority>
     </url>
 
     <!-- ═══════════════════════════════════════════════════════ -->
-    <!-- Facebook Downloader: facebook.freedownloader.top       -->
+    <!-- Facebook Downloader: f.freedownloader.top       -->
     <!-- ═══════════════════════════════════════════════════════ -->
     <url>
-        <loc>https://facebook.freedownloader.top/</loc>
+        <loc>https://f.freedownloader.top/</loc>
         <lastmod>2026-05-01</lastmod>
         <changefreq>daily</changefreq>
         <priority>0.95</priority>
     </url>
     <url>
-        <loc>https://facebook.freedownloader.top/about</loc>
+        <loc>https://f.freedownloader.top/about</loc>
         <lastmod>2026-04-30</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.5</priority>
     </url>
     <url>
-        <loc>https://facebook.freedownloader.top/contact</loc>
+        <loc>https://f.freedownloader.top/contact</loc>
         <lastmod>2026-04-30</lastmod>
         <changefreq>yearly</changefreq>
         <priority>0.4</priority>
     </url>
     <url>
-        <loc>https://facebook.freedownloader.top/privacy</loc>
+        <loc>https://f.freedownloader.top/privacy</loc>
         <lastmod>2026-04-30</lastmod>
         <changefreq>yearly</changefreq>
         <priority>0.3</priority>
     </url>
     <url>
-        <loc>https://facebook.freedownloader.top/terms</loc>
+        <loc>https://f.freedownloader.top/terms</loc>
         <lastmod>2026-04-30</lastmod>
         <changefreq>yearly</changefreq>
         <priority>0.3</priority>
     </url>
 
     <!-- ═══════════════════════════════════════════════════════ -->
-    <!-- TikTok Downloader: tiktok.freedownloader.top           -->
+    <!-- TikTok Downloader: t.freedownloader.top           -->
     <!-- ═══════════════════════════════════════════════════════ -->
     <url>
-        <loc>https://tiktok.freedownloader.top/</loc>
+        <loc>https://t.freedownloader.top/</loc>
         <lastmod>2026-05-01</lastmod>
         <changefreq>daily</changefreq>
         <priority>0.95</priority>
     </url>
     <url>
-        <loc>https://tiktok.freedownloader.top/about</loc>
+        <loc>https://t.freedownloader.top/about</loc>
         <lastmod>2026-04-30</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.5</priority>
     </url>
     <url>
-        <loc>https://tiktok.freedownloader.top/contact</loc>
+        <loc>https://t.freedownloader.top/contact</loc>
         <lastmod>2026-04-30</lastmod>
         <changefreq>yearly</changefreq>
         <priority>0.4</priority>
     </url>
     <url>
-        <loc>https://tiktok.freedownloader.top/privacy</loc>
+        <loc>https://t.freedownloader.top/privacy</loc>
         <lastmod>2026-04-30</lastmod>
         <changefreq>yearly</changefreq>
         <priority>0.3</priority>
     </url>
     <url>
-        <loc>https://tiktok.freedownloader.top/terms</loc>
+        <loc>https://t.freedownloader.top/terms</loc>
         <lastmod>2026-04-30</lastmod>
         <changefreq>yearly</changefreq>
         <priority>0.3</priority>
     </url>
 
     <!-- ═══════════════════════════════════════════════════════ -->
-    <!-- Instagram Downloader: instagram.freedownloader.top     -->
+    <!-- Instagram Downloader: i.freedownloader.top     -->
     <!-- ═══════════════════════════════════════════════════════ -->
     <url>
-        <loc>https://instagram.freedownloader.top/</loc>
+        <loc>https://i.freedownloader.top/</loc>
         <lastmod>2026-05-01</lastmod>
         <changefreq>daily</changefreq>
         <priority>0.95</priority>
     </url>
     <url>
-        <loc>https://instagram.freedownloader.top/about</loc>
+        <loc>https://i.freedownloader.top/about</loc>
         <lastmod>2026-04-30</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.5</priority>
     </url>
     <url>
-        <loc>https://instagram.freedownloader.top/contact</loc>
+        <loc>https://i.freedownloader.top/contact</loc>
         <lastmod>2026-04-30</lastmod>
         <changefreq>yearly</changefreq>
         <priority>0.4</priority>
     </url>
     <url>
-        <loc>https://instagram.freedownloader.top/privacy</loc>
+        <loc>https://i.freedownloader.top/privacy</loc>
         <lastmod>2026-04-30</lastmod>
         <changefreq>yearly</changefreq>
         <priority>0.3</priority>
     </url>
     <url>
-        <loc>https://instagram.freedownloader.top/terms</loc>
+        <loc>https://i.freedownloader.top/terms</loc>
         <lastmod>2026-04-30</lastmod>
         <changefreq>yearly</changefreq>
         <priority>0.3</priority>

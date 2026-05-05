@@ -20,22 +20,22 @@ def fix_nginx_subdomains():
         
         script = """
         echo "Fixing facebook proxy port to 8002..."
-        sed -i -E 's/proxy_pass http:\/\/127.0.0.1:[0-9]+;/proxy_pass http:\/\/127.0.0.1:8002;/g' /etc/nginx/sites-available/facebook.freedownloader.top
+        sed -i -E 's/proxy_pass http:\/\/127.0.0.1:[0-9]+;/proxy_pass http:\/\/127.0.0.1:8002;/g' /etc/nginx/sites-available/f.freedownloader.top
         
         echo "Fixing instagram proxy port to 8004..."
-        sed -i -E 's/proxy_pass http:\/\/127.0.0.1:[0-9]+;/proxy_pass http:\/\/127.0.0.1:8004;/g' /etc/nginx/sites-available/instagram.freedownloader.top
+        sed -i -E 's/proxy_pass http:\/\/127.0.0.1:[0-9]+;/proxy_pass http:\/\/127.0.0.1:8004;/g' /etc/nginx/sites-available/i.freedownloader.top
         
         echo "Fixing youtube proxy port to 8001..."
-        sed -i -E 's/proxy_pass http:\/\/127.0.0.1:[0-9]+;/proxy_pass http:\/\/127.0.0.1:8001;/g' /etc/nginx/sites-available/youtube.freedownloader.top
+        sed -i -E 's/proxy_pass http:\/\/127.0.0.1:[0-9]+;/proxy_pass http:\/\/127.0.0.1:8001;/g' /etc/nginx/sites-available/y.freedownloader.top
         
         echo "Fixing tiktok proxy port to 8003 (just in case)..."
-        sed -i -E 's/proxy_pass http:\/\/127.0.0.1:[0-9]+;/proxy_pass http:\/\/127.0.0.1:8003;/g' /etc/nginx/sites-available/tiktok.freedownloader.top
+        sed -i -E 's/proxy_pass http:\/\/127.0.0.1:[0-9]+;/proxy_pass http:\/\/127.0.0.1:8003;/g' /etc/nginx/sites-available/t.freedownloader.top
 
         # Ensure the symlinks exist/are correct (sometimes sites-enabled has the copied file instead of symlink so fix it there too just in case)
-        sed -i -E 's/proxy_pass http:\/\/127.0.0.1:[0-9]+;/proxy_pass http:\/\/127.0.0.1:8002;/g' /etc/nginx/sites-enabled/facebook.freedownloader.top 2>/dev/null || true
-        sed -i -E 's/proxy_pass http:\/\/127.0.0.1:[0-9]+;/proxy_pass http:\/\/127.0.0.1:8004;/g' /etc/nginx/sites-enabled/instagram.freedownloader.top 2>/dev/null || true
-        sed -i -E 's/proxy_pass http:\/\/127.0.0.1:[0-9]+;/proxy_pass http:\/\/127.0.0.1:8001;/g' /etc/nginx/sites-enabled/youtube.freedownloader.top 2>/dev/null || true
-        sed -i -E 's/proxy_pass http:\/\/127.0.0.1:[0-9]+;/proxy_pass http:\/\/127.0.0.1:8003;/g' /etc/nginx/sites-enabled/tiktok.freedownloader.top 2>/dev/null || true
+        sed -i -E 's/proxy_pass http:\/\/127.0.0.1:[0-9]+;/proxy_pass http:\/\/127.0.0.1:8002;/g' /etc/nginx/sites-enabled/f.freedownloader.top 2>/dev/null || true
+        sed -i -E 's/proxy_pass http:\/\/127.0.0.1:[0-9]+;/proxy_pass http:\/\/127.0.0.1:8004;/g' /etc/nginx/sites-enabled/i.freedownloader.top 2>/dev/null || true
+        sed -i -E 's/proxy_pass http:\/\/127.0.0.1:[0-9]+;/proxy_pass http:\/\/127.0.0.1:8001;/g' /etc/nginx/sites-enabled/y.freedownloader.top 2>/dev/null || true
+        sed -i -E 's/proxy_pass http:\/\/127.0.0.1:[0-9]+;/proxy_pass http:\/\/127.0.0.1:8003;/g' /etc/nginx/sites-enabled/t.freedownloader.top 2>/dev/null || true
         
         echo "Restarting nginx..."
         systemctl restart nginx

@@ -27,11 +27,11 @@ CORS(app, resources={r"/api/*": {"origins": [
     "https://freedownloader.top",
     "https://www.freedownloader.top",
     "https://admin.freedownloader.top",
-    "https://youtube.freedownloader.top",
-    "https://tiktok.freedownloader.top",
-    "https://instagram.freedownloader.top",
-    "https://facebook.freedownloader.top",
-    "https://porn.freedownloader.top",
+    "https://y.freedownloader.top",
+    "https://t.freedownloader.top",
+    "https://i.freedownloader.top",
+    "https://f.freedownloader.top",
+    "https://p.freedownloader.top",
     "http://localhost:5000"
 ]}})
 

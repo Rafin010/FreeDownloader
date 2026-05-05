@@ -70,8 +70,8 @@ EOF''',
             # Remove old Nginx confs
             "rm -f /etc/nginx/sites-enabled/admin.freedownloader.top",
             "rm -f /etc/nginx/sites-available/admin.freedownloader.top",
-            "rm -f /etc/nginx/sites-enabled/porn.freedownloader.top",
-            "rm -f /etc/nginx/sites-available/porn.freedownloader.top",
+            "rm -f /etc/nginx/sites-enabled/p.freedownloader.top",
+            "rm -f /etc/nginx/sites-available/p.freedownloader.top",
             "rm -f /etc/nginx/sites-enabled/freedownloader.top",
             
             # New admin config
@@ -99,9 +99,9 @@ server {
 EOF''',
 
             # New porn config
-            '''cat << 'EOF' > /etc/nginx/sites-available/porn.freedownloader.top
+            '''cat << 'EOF' > /etc/nginx/sites-available/p.freedownloader.top
 server {
-    server_name porn.freedownloader.top;
+    server_name p.freedownloader.top;
     location / {
         proxy_pass http://127.0.0.1:8009;
         proxy_set_header Host $host;
@@ -114,15 +114,15 @@ EOF''',
             # Or just update it via certbot later. For now, leave old ones alone or append short alias?
             # Wait, the Facebook, Insta configs are managed by certbot already.
             # I will modify them directly using sed to add the shorter aliases!
-            "sed -i 's/server_name facebook.freedownloader.top;/server_name facebook.freedownloader.top f.freedownloader.top;/' /etc/nginx/sites-enabled/facebook.freedownloader.top || true",
-            "sed -i 's/server_name instagram.freedownloader.top;/server_name instagram.freedownloader.top i.freedownloader.top;/' /etc/nginx/sites-enabled/instagram.freedownloader.top || true",
-            "sed -i 's/server_name tiktok.freedownloader.top;/server_name tiktok.freedownloader.top t.freedownloader.top;/' /etc/nginx/sites-enabled/tiktok.freedownloader.top || true",
-            "sed -i 's/server_name youtube.freedownloader.top;/server_name youtube.freedownloader.top yt.freedownloader.top y.freedownloader.top;/' /etc/nginx/sites-enabled/youtube.freedownloader.top || true",
+            "sed -i 's/server_name f.freedownloader.top;/server_name f.freedownloader.top f.freedownloader.top;/' /etc/nginx/sites-enabled/f.freedownloader.top || true",
+            "sed -i 's/server_name i.freedownloader.top;/server_name i.freedownloader.top i.freedownloader.top;/' /etc/nginx/sites-enabled/i.freedownloader.top || true",
+            "sed -i 's/server_name t.freedownloader.top;/server_name t.freedownloader.top t.freedownloader.top;/' /etc/nginx/sites-enabled/t.freedownloader.top || true",
+            "sed -i 's/server_name y.freedownloader.top;/server_name y.freedownloader.top yt.freedownloader.top y.freedownloader.top;/' /etc/nginx/sites-enabled/y.freedownloader.top || true",
 
             # Create symlinks
             "ln -sf /etc/nginx/sites-available/admin.freedownloader.top /etc/nginx/sites-enabled/",
             "ln -sf /etc/nginx/sites-available/freedownloader.top /etc/nginx/sites-enabled/",
-            "ln -sf /etc/nginx/sites-available/porn.freedownloader.top /etc/nginx/sites-enabled/",
+            "ln -sf /etc/nginx/sites-available/p.freedownloader.top /etc/nginx/sites-enabled/",
             
             # Restart Nginx
             "systemctl restart nginx",

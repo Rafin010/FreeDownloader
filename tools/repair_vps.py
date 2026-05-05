@@ -41,41 +41,41 @@ server {
 }
 EOF
 
-cat << 'EOF' > /etc/nginx/sites-available/porn.freedownloader.top
+cat << 'EOF' > /etc/nginx/sites-available/p.freedownloader.top
 server {
-    server_name porn.freedownloader.top;
+    server_name p.freedownloader.top;
     location / { proxy_pass http://127.0.0.1:8009; proxy_set_header Host $host; }
     listen 80;
 }
 EOF
 
-cat << 'EOF' > /etc/nginx/sites-available/facebook.freedownloader.top
+cat << 'EOF' > /etc/nginx/sites-available/f.freedownloader.top
 server {
-    server_name facebook.freedownloader.top f.freedownloader.top;
+    server_name f.freedownloader.top f.freedownloader.top;
     location / { proxy_pass http://127.0.0.1:8001; proxy_set_header Host $host; }
     listen 80;
 }
 EOF
 
-cat << 'EOF' > /etc/nginx/sites-available/instagram.freedownloader.top
+cat << 'EOF' > /etc/nginx/sites-available/i.freedownloader.top
 server {
-    server_name instagram.freedownloader.top i.freedownloader.top;
+    server_name i.freedownloader.top i.freedownloader.top;
     location / { proxy_pass http://127.0.0.1:8002; proxy_set_header Host $host; }
     listen 80;
 }
 EOF
 
-cat << 'EOF' > /etc/nginx/sites-available/tiktok.freedownloader.top
+cat << 'EOF' > /etc/nginx/sites-available/t.freedownloader.top
 server {
-    server_name tiktok.freedownloader.top t.freedownloader.top;
+    server_name t.freedownloader.top t.freedownloader.top;
     location / { proxy_pass http://127.0.0.1:8003; proxy_set_header Host $host; }
     listen 80;
 }
 EOF
 
-cat << 'EOF' > /etc/nginx/sites-available/youtube.freedownloader.top
+cat << 'EOF' > /etc/nginx/sites-available/y.freedownloader.top
 server {
-    server_name youtube.freedownloader.top yt.freedownloader.top y.freedownloader.top;
+    server_name y.freedownloader.top yt.freedownloader.top y.freedownloader.top;
     location / { proxy_pass http://127.0.0.1:8004; proxy_set_header Host $host; }
     listen 80;
 }
@@ -87,11 +87,11 @@ rm -f /etc/nginx/sites-enabled/*
 # Link them explicitly
 ln -sf /etc/nginx/sites-available/freedownloader.top /etc/nginx/sites-enabled/
 ln -sf /etc/nginx/sites-available/admin.freedownloader.top /etc/nginx/sites-enabled/
-ln -sf /etc/nginx/sites-available/porn.freedownloader.top /etc/nginx/sites-enabled/
-ln -sf /etc/nginx/sites-available/facebook.freedownloader.top /etc/nginx/sites-enabled/
-ln -sf /etc/nginx/sites-available/instagram.freedownloader.top /etc/nginx/sites-enabled/
-ln -sf /etc/nginx/sites-available/tiktok.freedownloader.top /etc/nginx/sites-enabled/
-ln -sf /etc/nginx/sites-available/youtube.freedownloader.top /etc/nginx/sites-enabled/
+ln -sf /etc/nginx/sites-available/p.freedownloader.top /etc/nginx/sites-enabled/
+ln -sf /etc/nginx/sites-available/f.freedownloader.top /etc/nginx/sites-enabled/
+ln -sf /etc/nginx/sites-available/i.freedownloader.top /etc/nginx/sites-enabled/
+ln -sf /etc/nginx/sites-available/t.freedownloader.top /etc/nginx/sites-enabled/
+ln -sf /etc/nginx/sites-available/y.freedownloader.top /etc/nginx/sites-enabled/
 
 
 # 3. Reload Nginx
@@ -107,7 +107,7 @@ pkill gunicorn || true
 systemctl restart fb.service insta.service tiktok.service freedownloader.service free_d.service p_d.service
 
 # 5. Run Certbot for ALL domains to ensure SSL is perfectly aligned!
-certbot --nginx -d freedownloader.top -d www.freedownloader.top -d admin.freedownloader.top -d porn.freedownloader.top -d facebook.freedownloader.top -d f.freedownloader.top -d instagram.freedownloader.top -d i.freedownloader.top -d tiktok.freedownloader.top -d t.freedownloader.top -d youtube.freedownloader.top -d yt.freedownloader.top -d y.freedownloader.top --non-interactive --agree-tos -m admin@freedownloader.top --expand
+certbot --nginx -d freedownloader.top -d www.freedownloader.top -d admin.freedownloader.top -d p.freedownloader.top -d f.freedownloader.top -d f.freedownloader.top -d i.freedownloader.top -d i.freedownloader.top -d t.freedownloader.top -d t.freedownloader.top -d y.freedownloader.top -d yt.freedownloader.top -d y.freedownloader.top --non-interactive --agree-tos -m admin@freedownloader.top --expand
 """
         stdin, stdout, stderr = client.exec_command(script)
         stdout.channel.recv_exit_status()

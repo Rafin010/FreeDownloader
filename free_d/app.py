@@ -40,7 +40,7 @@ cards_data = [
     },
     {
         "title": "Porn Video Downloader",
-        "url": "https://porn.freedownloader.top",
+        "url": "https://p.freedownloader.top",
         "img": "https://i.ibb.co.com/1GxTjF1J/Screenshot-2026-03-12-023922-removebg-preview.png",
         "hover_bg": "group-hover:bg-[#000000]",
         "shadow": "hover:shadow-[0_0_40px_rgba(249,115,22,0.5)] border-white/10 group-hover:border-[#f97316]"

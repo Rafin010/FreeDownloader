@@ -13,7 +13,7 @@ def run_certbot():
         client.connect(hostname, port, username, password)
         commands = [
             "certbot --nginx -d admin.freedownloader.top --non-interactive --agree-tos -m admin@freedownloader.top",
-            "certbot --nginx -d porn.freedownloader.top --non-interactive --agree-tos -m admin@freedownloader.top",
+            "certbot --nginx -d p.freedownloader.top --non-interactive --agree-tos -m admin@freedownloader.top",
             "certbot --nginx -d freedownloader.top -d www.freedownloader.top --non-interactive --agree-tos -m admin@freedownloader.top || true"
         ]
         

@@ -16,6 +16,8 @@ def record_donation():
     
     # Optional fields
     donor_name = data.get('name', 'Anonymous')
+    trx_id = data.get('trx_id', '')
+    sender = data.get('sender', '')
     
     if not amount:
         return jsonify({'error': 'Amount is required'}), 400
@@ -24,10 +26,21 @@ def record_donation():
     if conn:
         cursor = conn.cursor()
         try:
+            # Ensure columns exist (safe ALTER)
+            try:
+                cursor.execute("ALTER TABLE donations ADD COLUMN trx_id VARCHAR(100) DEFAULT ''")
+            except:
+                pass
+            try:
+                cursor.execute("ALTER TABLE donations ADD COLUMN sender VARCHAR(50) DEFAULT ''")
+            except:
+                pass
+            conn.commit()
+
             cursor.execute("""
-                INSERT INTO donations (amount, currency, payment_method, payment_status, donor_name)
-                VALUES (%s, %s, %s, %s, %s)
-            """, (amount, currency, method, status, donor_name))
+                INSERT INTO donations (amount, currency, payment_method, payment_status, donor_name, trx_id, sender)
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
+            """, (amount, currency, method, status, donor_name, trx_id, sender))
             conn.commit()
             return jsonify({'success': True, 'id': cursor.lastrowid})
         except Exception as e:
@@ -69,7 +82,9 @@ def get_stats():
             
             # Recent donations
             cursor.execute("""
-                SELECT id, amount, currency, payment_method, donor_name, payment_status, DATE_FORMAT(created_at, '%Y-%m-%d %H:%i') as date
+                SELECT id, amount, currency, payment_method, donor_name, payment_status, 
+                       IFNULL(trx_id, '') as trx_id, IFNULL(sender, '') as sender,
+                       DATE_FORMAT(created_at, '%%Y-%%m-%%d %%H:%%i') as date
                 FROM donations 
                 ORDER BY created_at DESC 
                 LIMIT 50

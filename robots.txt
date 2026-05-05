@@ -24,10 +24,10 @@ Crawl-delay: 2
 
 # ── Sitemaps ──────────────────────────────────────────────────
 Sitemap: https://freedownloader.top/sitemap.xml
-Sitemap: https://youtube.freedownloader.top/sitemap.xml
-Sitemap: https://facebook.freedownloader.top/sitemap.xml
-Sitemap: https://tiktok.freedownloader.top/sitemap.xml
-Sitemap: https://instagram.freedownloader.top/sitemap.xml
+Sitemap: https://y.freedownloader.top/sitemap.xml
+Sitemap: https://f.freedownloader.top/sitemap.xml
+Sitemap: https://t.freedownloader.top/sitemap.xml
+Sitemap: https://i.freedownloader.top/sitemap.xml
 
 # ── Specific Bot Rules ────────────────────────────────────────
 # Allow Google to index everything except API

@@ -3,7 +3,30 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Support Our Journey - Donate</title>
+
+<!-- SEO Meta Tags -->
+<title>Donate to FreeDownloader | Support Our Journey</title>
+<meta name="description" content="Support FreeDownloader and help us keep our platform free, fast, and ad-free. Donate via bKash, Nagad, Rocket, PayPal, or Crypto."/>
+<meta name="keywords" content="Donate FreeDownloader, Support FreeDownloader, bKash donation, Nagad donation, Crypto donation, Free video downloader"/>
+<meta name="author" content="FreeDownloader"/>
+<meta name="robots" content="index, follow"/>
+<link rel="canonical" href="https://freedownloader.top/donate"/>
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website"/>
+<meta property="og:url" content="https://freedownloader.top/donate"/>
+<meta property="og:title" content="Donate to FreeDownloader | Support Our Journey"/>
+<meta property="og:description" content="Support FreeDownloader and help us keep our platform free, fast, and ad-free. Donate securely today."/>
+<meta property="og:image" content="https://i.ibb.co.com/5gyM1GtX/free-downloade-top.png"/>
+
+<!-- Twitter -->
+<meta property="twitter:card" content="summary_large_image"/>
+<meta property="twitter:url" content="https://freedownloader.top/donate"/>
+<meta property="twitter:title" content="Donate to FreeDownloader | Support Our Journey"/>
+<meta property="twitter:description" content="Support FreeDownloader and help us keep our platform free, fast, and ad-free. Donate securely today."/>
+<meta property="twitter:image" content="https://i.ibb.co.com/5gyM1GtX/free-downloade-top.png"/>
+
+<link rel="icon" href="https://i.ibb.co.com/5gyM1GtX/free-downloade-top.png" type="image/png">
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -314,7 +337,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
         
         <div class="pcard">
           <div class="brand-logo-wrap" style="height: 80px; padding: 5px;">
-            <img src="{{ url_for('static', filename='Bkash Mobil Banking.png') }}" alt="bKash" style="width: 100%; height: 100%; object-fit: contain; transform: scale(1.1);">
+            <img src="/donate/static/Bkash Mobil Banking.png" alt="bKash" style="width: 100%; height: 100%; object-fit: contain; transform: scale(1.1);">
           </div>
           <div class="mb-5">
             <p style="color:#fff;font-weight:600;font-size:1.05rem;margin-bottom:4px;">bKash Checkout</p>
@@ -335,7 +358,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 
         <div class="pcard">
           <div class="brand-logo-wrap" style="height: 80px; padding: 5px;">
-            <img src="{{ url_for('static', filename='Nogod-Moblike Banking.png') }}" alt="Nagad" style="width: 100%; height: 100%; object-fit: contain; transform: scale(1.1);">
+            <img src="/donate/static/Nagad Mobile Banking.png" alt="Nagad" style="width: 100%; height: 100%; object-fit: contain; transform: scale(1.1);">
           </div>
           <div class="mb-5">
             <p style="color:#fff;font-weight:600;font-size:1.05rem;margin-bottom:4px;">Nagad Gateway</p>
@@ -356,7 +379,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 
         <div class="pcard">
           <div class="brand-logo-wrap" style="height: 80px; padding: 5px;">
-            <img src="{{ url_for('static', filename='Roket Mobile Bankinge.png') }}" alt="Rocket" style="width: 100%; height: 100%; object-fit: contain; transform: scale(1.1);" onerror="this.outerHTML='<span style=\'color:#8c1561;font-weight:900;font-size:1.4rem;\'>ROCKET</span>'">
+            <img src="/donate/static/Rocket Mobile Bankinge.png" alt="Rocket" style="width: 100%; height: 100%; object-fit: contain; transform: scale(1.1);" onerror="this.outerHTML='<span style=\'color:#8c1561;font-weight:900;font-size:1.4rem;\'>ROCKET</span>'">
           </div>
           <div class="mb-5">
             <p style="color:#fff;font-weight:600;font-size:1.05rem;margin-bottom:4px;">Rocket DBBL</p>
@@ -401,7 +424,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
           <button onclick="initiatePayment('PayPal', this)" class="dbtn dbtn-paypal">Pay with PayPal</button>
         </div>
         <div class="pcard">
-          <div class="brand-logo-wrap" style="background:#ffffff;"><img src="https://upload.wikimedia.org/wikipedia/commons/4/41/Payoneer_logo_2021.svg" alt="Payoneer"></div>
+          <div class="brand-logo-wrap" style="background:#ffffff;"><img src="/donate/static/payoneer-logo-png-.png" alt="Payoneer"></div>
           <div class="mb-5"><p style="color:#fff;font-weight:600;font-size:1.05rem;margin-bottom:4px;">Payoneer Transfer</p><p style="color:#94a3b8;font-size:.8rem;line-height:1.5;">Ideal for cross-border and direct bank transfers.</p></div>
           <div class="flex flex-col gap-2 mb-6">
             <div class="flex items-center justify-between" style="background:rgba(255,255,255,.02);padding:10px 14px;border-radius:10px;border:1px solid rgba(255,255,255,.05);"><span style="color:#94a3b8;font-size:.75rem;">Security</span><span style="color:#e2e8f0;font-size:.75rem;font-weight:600;">256-bit SSL</span></div>
@@ -696,6 +719,86 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
   <p style="color:#475569;font-size:.74rem;margin-top:14px;">© 2025 · All donations are voluntary · Secure & Transparent</p>
 </footer>
 
+<!-- PAYMENT MODAL -->
+<div id="payment-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:9999;backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:16px;overflow-y:auto;">
+  <div style="background:linear-gradient(145deg,#0f172a,#1a1f35);border:1px solid rgba(59,130,246,.3);border-radius:24px;width:100%;max-width:420px;padding:24px 22px;position:relative;animation:fadeUp .3s ease;margin:auto;max-height:95vh;overflow-y:auto;">
+    <button onclick="closeModal()" style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:50%;color:#94a3b8;cursor:pointer;width:32px;height:32px;display:flex;align-items:center;justify-content:center;transition:all .2s;" onmouseover="this.style.background='rgba(239,68,68,.15)';this.style.borderColor='rgba(239,68,68,.4)';this.style.color='#ef4444'" onmouseout="this.style.background='rgba(255,255,255,.05)';this.style.borderColor='rgba(255,255,255,.1)';this.style.color='#94a3b8'">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+
+    <!-- Header with icon -->
+    <div style="text-align:center;margin-bottom:20px;">
+      <div style="width:52px;height:52px;background:linear-gradient(135deg,rgba(59,130,246,.2),rgba(6,182,212,.15));border:1px solid rgba(59,130,246,.3);border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+      </div>
+      <h3 class="serif font-bold" id="modal-title" style="font-size:1.5rem;color:#e2e8f0;margin-bottom:6px;">Complete Payment</h3>
+      <p style="color:#94a3b8;font-size:.82rem;line-height:1.5;">Follow the steps below to complete your <span id="modal-amount" class="gold-text font-bold"></span> donation</p>
+    </div>
+
+    <!-- STEP 1: Tutorial Card -->
+    <div style="background:linear-gradient(135deg,rgba(34,197,94,.06),rgba(6,182,212,.04));border:1px solid rgba(34,197,94,.2);border-radius:14px;padding:16px;margin-bottom:14px;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+        <div style="width:26px;height:26px;background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.3);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <span style="color:#22c55e;font-size:.75rem;font-weight:800;">1</span>
+        </div>
+        <p style="color:#22c55e;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;">Send Money</p>
+      </div>
+      <!-- Tutorial Instructions -->
+      <div id="modal-tutorial" style="background:rgba(0,0,0,.2);border-radius:10px;padding:12px 14px;margin-bottom:12px;border-left:3px solid rgba(34,197,94,.5);">
+        <p style="color:#d1fae5;font-size:.78rem;line-height:1.7;">
+          <span style="color:#86efac;">①</span> Open your <strong id="modal-app-name" style="color:#fff;">Rocket</strong> app or dial <strong style="color:#fbbf24;">*322#</strong><br>
+          <span style="color:#86efac;">②</span> Select <strong style="color:#fff;">"Send Money"</strong><br>
+          <span style="color:#86efac;">③</span> Copy the number below and paste it as the recipient<br>
+          <span style="color:#86efac;">④</span> Enter amount: <strong id="modal-amount-3" style="color:#fbbf24;">৳500</strong><br>
+          <span style="color:#86efac;">⑤</span> Confirm with your <strong style="color:#fff;">PIN</strong><br>
+          <span style="color:#86efac;">⑥</span> Save the <strong style="color:#fbbf24;">Transaction ID (TrxID)</strong> from the confirmation SMS
+        </p>
+      </div>
+      <!-- Number to copy -->
+      <p style="color:#94a3b8;font-size:.72rem;margin-bottom:8px;text-align:center;">Send exactly <strong id="modal-amount-2" style="color:#fff;"></strong> to this <span id="modal-method-name" style="color:#22c55e;font-weight:600;"></span> number:</p>
+      <div style="background:rgba(0,0,0,.35);border-radius:10px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;border:1px dashed rgba(59,130,246,.4);gap:8px;">
+        <span id="admin-number" style="font-family:'Space Grotesk',monospace;font-size:1.15rem;font-weight:700;color:#3b82f6;letter-spacing:.03em;">01700000000</span>
+        <button onclick="copyAddr('admin-number', 'Number')" style="background:linear-gradient(135deg,rgba(59,130,246,.2),rgba(59,130,246,.1));color:#60a5fa;border:1px solid rgba(59,130,246,.3);border-radius:8px;padding:7px 14px;font-size:.68rem;font-weight:700;cursor:pointer;transition:all .2s;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap;" onmouseover="this.style.background='rgba(59,130,246,.3)'" onmouseout="this.style.background='linear-gradient(135deg,rgba(59,130,246,.2),rgba(59,130,246,.1))'">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="display:inline;vertical-align:-2px;margin-right:4px;"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>COPY
+        </button>
+      </div>
+    </div>
+
+    <!-- STEP 2: Sender Number -->
+    <div style="background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:14px 16px;margin-bottom:12px;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+        <div style="width:26px;height:26px;background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.25);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <span style="color:#3b82f6;font-size:.75rem;font-weight:800;">2</span>
+        </div>
+        <label for="sender-number" style="color:#3b82f6;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;">Your Sender Number</label>
+      </div>
+      <input type="text" id="sender-number" placeholder="e.g. 01712345678" style="width:100%;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:12px 14px;color:#fff;font-size:.9rem;font-family:'Space Grotesk',sans-serif;outline:none;transition:border-color .2s;" onfocus="this.style.borderColor='rgba(59,130,246,.5)'" onblur="this.style.borderColor='rgba(255,255,255,.1)'">
+    </div>
+
+    <!-- STEP 3: TrxID -->
+    <div style="background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:14px 16px;margin-bottom:18px;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+        <div style="width:26px;height:26px;background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.25);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <span style="color:#fbbf24;font-size:.75rem;font-weight:800;">3</span>
+        </div>
+        <label for="trx-id" style="color:#fbbf24;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;">Transaction ID (TrxID)</label>
+      </div>
+      <input type="text" id="trx-id" placeholder="e.g. 8A7B6C5D4E" style="width:100%;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:12px 14px;color:#fff;font-size:.9rem;font-family:'Space Grotesk',sans-serif;outline:none;text-transform:uppercase;letter-spacing:.05em;transition:border-color .2s;" onfocus="this.style.borderColor='rgba(251,191,36,.5)'" onblur="this.style.borderColor='rgba(255,255,255,.1)'">
+    </div>
+
+    <!-- Verify Button -->
+    <button id="verify-btn" onclick="verifyPayment()" class="dbtn" style="background:linear-gradient(135deg,#3b82f6,#2563eb);color:#fff;width:100%;font-size:.9rem;padding:14px;border-radius:12px;box-shadow:0 8px 25px rgba(59,130,246,.3);">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="display:inline;vertical-align:-3px;margin-right:6px;"><polyline points="20 6 9 17 4 12"/></svg>Verify Payment
+    </button>
+
+    <!-- Security badge -->
+    <div style="display:flex;align-items:center;justify-content:center;gap:6px;margin-top:14px;">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      <span style="color:#64748b;font-size:.65rem;">Secured with 256-bit SSL · Payments verified by admin</span>
+    </div>
+  </div>
+</div>
+
 <script>
 const amountData = {
   usd: [
@@ -769,63 +872,254 @@ function toast(msg, type="success"){
   setTimeout(() => { el.style.opacity = '0'; el.style.transform = 'translateX(-50%) translateY(18px)'; }, 3000);
 }
 
-function recordDonationAttempt(method, amount, currency, status='initiated') {
-  fetch('https://admin.freedownloader.top/api/donations/record', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ method: method, amount: amount, currency: currency, status: status })
-  }).catch(e => console.log('Tracking error:', e));
+let currentMethod = '';
+let currentPaymentId = null;
+const API_BASE = '/donate/api';
+
+// ════════════════════════════════════════════════
+//  Tutorial content per payment method
+// ════════════════════════════════════════════════
+function setModalTutorial(method, amount) {
+  const tutorials = {
+    'bKash': {
+      app: 'bKash',
+      dial: '*247#',
+      color: '#e2136e',
+      steps: `
+        <span style="color:#f9a8d4">①</span> আপনার <strong style="color:#fff">bKash</strong> অ্যাপ ওপেন করুন অথবা <strong style="color:#fbbf24">*247#</strong> ডায়াল করুন<br>
+        <span style="color:#f9a8d4">②</span> <strong style="color:#fff">"Send Money"</strong> (সেন্ড মানি) সিলেক্ট করুন<br>
+        <span style="color:#f9a8d4">③</span> নিচের নম্বরটি <strong style="color:#fbbf24">কপি</strong> করে রিসিভার নম্বর হিসেবে পেস্ট করুন<br>
+        <span style="color:#f9a8d4">④</span> Amount: <strong style="color:#fbbf24">${currencySymbol}${amount}</strong> দিন<br>
+        <span style="color:#f9a8d4">⑤</span> আপনার <strong style="color:#fff">bKash PIN</strong> দিয়ে কনফার্ম করুন<br>
+        <span style="color:#f9a8d4">⑥</span> কনফার্মেশন SMS থেকে <strong style="color:#fbbf24">TrxID</strong> সংরক্ষণ করে নিচে এন্টার করুন
+      `
+    },
+    'Nagad': {
+      app: 'Nagad',
+      dial: '*167#',
+      color: '#f37021',
+      steps: `
+        <span style="color:#fdba74">①</span> আপনার <strong style="color:#fff">Nagad</strong> অ্যাপ ওপেন করুন অথবা <strong style="color:#fbbf24">*167#</strong> ডায়াল করুন<br>
+        <span style="color:#fdba74">②</span> <strong style="color:#fff">"Send Money"</strong> (সেন্ড মানি) সিলেক্ট করুন<br>
+        <span style="color:#fdba74">③</span> নিচের নম্বরটি <strong style="color:#fbbf24">কপি</strong> করে রিসিভার নম্বর হিসেবে পেস্ট করুন<br>
+        <span style="color:#fdba74">④</span> Amount: <strong style="color:#fbbf24">${currencySymbol}${amount}</strong> দিন<br>
+        <span style="color:#fdba74">⑤</span> আপনার <strong style="color:#fff">Nagad PIN</strong> দিয়ে কনফার্ম করুন<br>
+        <span style="color:#fdba74">⑥</span> কনফার্মেশন SMS থেকে <strong style="color:#fbbf24">TrxID</strong> সংরক্ষণ করে নিচে এন্টার করুন
+      `
+    },
+    'Rocket': {
+      app: 'Rocket (DBBL)',
+      dial: '*322#',
+      color: '#8c1561',
+      steps: `
+        <span style="color:#c084fc">①</span> আপনার <strong style="color:#fff">Rocket</strong> অ্যাপ ওপেন করুন অথবা <strong style="color:#fbbf24">*322#</strong> ডায়াল করুন<br>
+        <span style="color:#c084fc">②</span> <strong style="color:#fff">"Send Money"</strong> (সেন্ড মানি) সিলেক্ট করুন<br>
+        <span style="color:#c084fc">③</span> নিচের নম্বরটি <strong style="color:#fbbf24">কপি</strong> করে রিসিভার নম্বর হিসেবে পেস্ট করুন<br>
+        <span style="color:#c084fc">④</span> Amount: <strong style="color:#fbbf24">${currencySymbol}${amount}</strong> দিন<br>
+        <span style="color:#c084fc">⑤</span> আপনার <strong style="color:#fff">Rocket PIN</strong> দিয়ে কনফার্ম করুন<br>
+        <span style="color:#c084fc">⑥</span> কনফার্মেশন SMS থেকে <strong style="color:#fbbf24">TrxID</strong> সংরক্ষণ করে নিচে এন্টার করুন
+      `
+    },
+  };
+  const t = tutorials[method] || tutorials['Rocket'];
+  document.getElementById('modal-tutorial').innerHTML = `<p style="color:#d1fae5;font-size:.78rem;line-height:1.8;">${t.steps}</p>`;
+  document.getElementById('modal-amount-3').innerText = `${currencySymbol}${amount}`;
+  document.getElementById('modal-app-name').innerText = t.app;
 }
 
-function initiatePayment(method, btnElement) {
-  if(!selectedAmount || selectedAmount <= 0) {
+// ════════════════════════════════════════════════
+//  CORE API CALL — All payments go through backend
+// ════════════════════════════════════════════════
+async function apiCall(endpoint, data) {
+  try {
+    const resp = await fetch(`${API_BASE}${endpoint}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    return await resp.json();
+  } catch (e) {
+    console.error('API Error:', e);
+    return { success: false, error: 'Network error. Please try again.' };
+  }
+}
+
+// ════════════════════════════════════════════════
+//  INITIATE PAYMENT — Routes to correct gateway
+// ════════════════════════════════════════════════
+async function initiatePayment(method, btnElement) {
+  if (!selectedAmount || selectedAmount <= 0) {
     toast('Please select an amount first!', 'error');
     let box = document.getElementById('amount-container');
     box.classList.remove('shake');
     void box.offsetWidth;
     box.classList.add('shake');
     box.style.borderColor = 'rgba(239,68,68,0.6)';
-    document.getElementById('donate').scrollIntoView({behavior:'smooth', block: 'center'});
+    document.getElementById('donate').scrollIntoView({ behavior: 'smooth', block: 'center' });
     return;
   }
+
+  let currencyCode = currencySymbol === '৳' ? 'BDT' : 'USD';
+  currentMethod = method;
+
+  // Show loading state
   let origText = btnElement.innerHTML;
   btnElement.disabled = true;
-  btnElement.innerHTML = `<svg style="animation: spin 1s linear infinite; height:16px; width:16px; margin-right:8px;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Connecting...`;
-  toast(`Connecting to ${method} for ${currencySymbol}${selectedAmount}...`);
-  
-  // Record donation attempt
-  let currencyCode = currencySymbol === '৳' ? 'BDT' : 'USD';
-  recordDonationAttempt(method, selectedAmount, currencyCode);
+  btnElement.innerHTML = `<svg style="animation:spin 1s linear infinite;height:16px;width:16px;margin-right:8px" viewBox="0 0 24 24" fill="none"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/></svg> Processing...`;
 
-  setTimeout(() => {
+  // ── Rocket: Show manual TrxID modal ────────
+  if (method === 'Rocket') {
+    const result = await apiCall('/create-payment', { method: 'rocket', amount: selectedAmount, currency: currencyCode });
     btnElement.innerHTML = origText;
     btnElement.disabled = false;
-    toast(`Redirecting to ${method} secure checkout...`);
-    // Example redirection logic:
-    // window.location.href = `/api/checkout?method=${method}&amount=${selectedAmount}`;
-  }, 2000);
+
+    if (result.success || result.payment_id) {
+      currentPaymentId = result.payment_id;
+      document.getElementById('modal-title').innerText = `Pay with Rocket`;
+      document.getElementById('modal-amount').innerText = `${currencySymbol}${selectedAmount}`;
+      document.getElementById('modal-amount-2').innerText = `${currencySymbol}${selectedAmount}`;
+      document.getElementById('modal-method-name').innerText = 'Rocket';
+      document.getElementById('admin-number').innerText = result.admin_number || '017XXXXXXXX';
+      document.getElementById('sender-number').value = '';
+      document.getElementById('trx-id').value = '';
+      setModalTutorial('Rocket', selectedAmount);
+      document.getElementById('payment-modal').style.display = 'flex';
+    } else {
+      toast(result.error || 'Failed to start payment.', 'error');
+    }
+    return;
+  }
+
+  // ── bKash / Nagad: Show manual modal (API redirect when keys are set) ──
+  if (method === 'bKash' || method === 'Nagad') {
+    const result = await apiCall('/create-payment', { method: method.toLowerCase(), amount: selectedAmount, currency: currencyCode });
+    btnElement.innerHTML = origText;
+    btnElement.disabled = false;
+
+    if (result.success && result.redirect_url) {
+      // Real API mode — redirect to gateway
+      toast(`Redirecting to ${method}...`);
+      setTimeout(() => { window.location.href = result.redirect_url; }, 800);
+    } else if (result.payment_id) {
+      // Manual fallback — show TrxID modal
+      currentPaymentId = result.payment_id;
+      let adminNumbers = { 'bKash': '018XXXXXXXX', 'Nagad': '019XXXXXXXX' };
+      document.getElementById('modal-title').innerText = `Pay with ${method}`;
+      document.getElementById('modal-amount').innerText = `${currencySymbol}${selectedAmount}`;
+      document.getElementById('modal-amount-2').innerText = `${currencySymbol}${selectedAmount}`;
+      document.getElementById('modal-method-name').innerText = method;
+      document.getElementById('admin-number').innerText = adminNumbers[method] || '01XXXXXXXXX';
+      document.getElementById('sender-number').value = '';
+      document.getElementById('trx-id').value = '';
+      setModalTutorial(method, selectedAmount);
+      document.getElementById('payment-modal').style.display = 'flex';
+    } else {
+      toast(result.error || `Failed to connect to ${method}.`, 'error');
+    }
+    return;
+  }
+
+  // ── Stripe / PayPal: Redirect to hosted checkout ──
+  if (method === 'Stripe' || method === 'PayPal') {
+    const result = await apiCall('/create-payment', { method: method.toLowerCase(), amount: selectedAmount, currency: currencyCode });
+    btnElement.innerHTML = origText;
+    btnElement.disabled = false;
+
+    if (result.success && result.redirect_url) {
+      toast(`Redirecting to ${method} secure checkout...`);
+      setTimeout(() => { window.location.href = result.redirect_url; }, 800);
+    } else {
+      toast(result.error || `${method} is currently unavailable.`, 'error');
+    }
+    return;
+  }
+
+  // ── Payoneer: Coming soon ──
+  btnElement.innerHTML = origText;
+  btnElement.disabled = false;
+  toast(`${method} integration coming soon.`, 'error');
 }
 
-function copyAddr(id, coinName){
+// ════════════════════════════════════════════════
+//  VERIFY PAYMENT — Submit TrxID to backend
+// ════════════════════════════════════════════════
+async function verifyPayment() {
+  const sender = document.getElementById('sender-number').value.trim();
+  const trxId = document.getElementById('trx-id').value.trim();
+  const btn = document.getElementById('verify-btn');
+
+  if (!sender || !trxId) {
+    toast('Please enter both Sender Number and TrxID.', 'error');
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = '<svg style="animation:spin 1s linear infinite;height:16px;width:16px;margin-right:8px" viewBox="0 0 24 24" fill="none"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg> Verifying...';
+
+  const result = await apiCall('/verify-payment', {
+    payment_id: currentPaymentId,
+    trx_id: trxId,
+    sender: sender,
+  });
+
+  setTimeout(() => {
+    closeModal();
+    btn.disabled = false;
+    btn.innerHTML = 'Verify Payment';
+
+    if (result.success) {
+      toast(`Payment submitted! TrxID: ${trxId} is under review. Thank you!`);
+      const origBox = document.getElementById('amount-container');
+      origBox.style.background = 'rgba(34,197,94,0.1)';
+      origBox.style.borderColor = 'rgba(34,197,94,0.5)';
+      setTimeout(() => {
+        origBox.style.background = '';
+        origBox.style.borderColor = 'rgba(59,130,246,.2)';
+      }, 3000);
+    } else {
+      toast(result.error || 'Verification failed. Please contact support.', 'error');
+    }
+  }, 1200);
+}
+
+function closeModal() {
+  document.getElementById('payment-modal').style.display = 'none';
+}
+
+function copyAddr(id, coinName) {
   const addr = document.getElementById(id).textContent.trim();
-  navigator.clipboard.writeText(addr).then(()=>{
+  navigator.clipboard.writeText(addr).then(() => {
     toast(`${coinName} address copied! Send your donation now.`);
-    recordDonationAttempt(coinName, selectedAmount || 0, coinName, 'address_copied');
-  }).catch(()=>{
+  }).catch(() => {
     toast('Failed to copy. Please copy manually.', 'error');
   });
 }
 
-window.addEventListener('load',()=>{
-  renderAmounts('bdt'); // Load default amounts based on initial active tab
-  setTimeout(()=>{document.getElementById('progress-bar').style.width='68.2%';},700);
+// ── Check URL params for payment callbacks ──
+window.addEventListener('load', () => {
+  renderAmounts('bdt');
+  setTimeout(() => { document.getElementById('progress-bar').style.width = '68.2%'; }, 700);
+
+  // Handle gateway callback status
+  const params = new URLSearchParams(window.location.search);
+  const status = params.get('status');
+  if (status === 'success') {
+    toast('Payment successful! Thank you for your donation! 🎉');
+  } else if (status === 'failed') {
+    toast('Payment failed. ' + (params.get('reason') || 'Please try again.'), 'error');
+  } else if (status === 'cancelled') {
+    toast('Payment was cancelled.', 'error');
+  } else if (status === 'processing') {
+    toast('Payment is being verified. Please wait...');
+  }
 });
-const io = new IntersectionObserver(entries=>{
-  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('vis');io.unobserve(e.target);}});
-},{threshold:.1});
-document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
-document.querySelector('a[href="#donate"]').addEventListener('click',e=>{
-  e.preventDefault();document.getElementById('donate').scrollIntoView({behavior:'smooth'});
+
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('vis'); io.unobserve(e.target); } });
+}, { threshold: .1 });
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+document.querySelector('a[href="#donate"]').addEventListener('click', e => {
+  e.preventDefault(); document.getElementById('donate').scrollIntoView({ behavior: 'smooth' });
 });
 </script>
 

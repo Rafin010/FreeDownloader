@@ -13,10 +13,10 @@ def fix_nginx_port():
         print("Connecting to server...")
         client.connect(hostname, port, username, password)
         
-        # Change 8009 to 8005 in porn.freedownloader.top nginx config
+        # Change 8009 to 8005 in p.freedownloader.top nginx config
         script = """
-        sed -i 's/8009/8005/g' /etc/nginx/sites-available/porn.freedownloader.top
-        sed -i 's/8009/8005/g' /etc/nginx/sites-enabled/porn.freedownloader.top 2>/dev/null || true
+        sed -i 's/8009/8005/g' /etc/nginx/sites-available/p.freedownloader.top
+        sed -i 's/8009/8005/g' /etc/nginx/sites-enabled/p.freedownloader.top 2>/dev/null || true
         systemctl restart nginx
         echo "Nginx updated and restarted successfully."
         """
