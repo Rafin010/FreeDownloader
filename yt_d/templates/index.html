@@ -453,6 +453,19 @@
     </div>
 
     <script>
+        
+        // --- ALGORITHM & HISTORY ---
+        let watchHistory = JSON.parse(localStorage.getItem('yt_watchHistory')) || [];
+
+        function saveToHistory(video) {
+            if (typeof video !== 'object') return;
+            // Prevent duplicates
+            watchHistory = watchHistory.filter(v => v.id !== video.id);
+            watchHistory.unshift({id: video.id, title: video.title});
+            if (watchHistory.length > 15) watchHistory.pop();
+            localStorage.setItem('yt_watchHistory', JSON.stringify(watchHistory));
+        }
+
         const state = {
             view: 'home',
             currentMode: 'trending',
@@ -733,7 +746,7 @@
             document.title = "FreeDownloader - Video Streaming & Downloader";
 
             if (pushHistory) history.pushState({ view: 'home' }, 'Home', '/');
-            window.scrollTo({ top: 0 });
+            window.scrollTo(0, 0);
         }
 
         function showPlayerView(videoInfo, pushHistory = true) {
@@ -747,11 +760,12 @@
 
             if (typeof videoInfo === 'object') {
                 updateSEO(videoInfo.title, videoInfo.title, videoInfo.thumbnail, state.currentVideoId);
+                saveToHistory(videoInfo);
                 els.playerHtml5.poster = videoInfo.thumbnail || '';
             }
 
             if (pushHistory) history.pushState({ view: 'player', id: state.currentVideoId }, 'Video', `/?v=${state.currentVideoId}`);
-            window.scrollTo({ top: 0 });
+            window.scrollTo(0, 0);
 
             fetchVideoDetails(state.currentVideoId);
             renderRelatedVideos();
@@ -769,7 +783,21 @@
             els.feedHeader.classList.add('hidden');
 
             try {
-                const res = await fetch('/api/trending?region=US');
+                
+                let url = '/api/trending?region=US';
+                // User Algorithm: 60% chance to show personalized content if history exists
+                if (watchHistory.length > 0 && Math.random() > 0.4) {
+                    let randomVid = watchHistory[Math.floor(Math.random() * watchHistory.length)];
+                    let words = randomVid.title.replace(/[^a-zA-Z0-9 ]/g, '').split(' ').filter(w => w.length > 3);
+                    if (words.length > 0) {
+                        let randomWord = words[Math.floor(Math.random() * words.length)];
+                        url = `/api/search?q=${encodeURIComponent(randomWord)}`;
+                        state.currentMode = 'search';
+                        state.lastQuery = randomWord;
+                    }
+                }
+                const res = await fetch(url);
+
                 if (!res.ok) throw new Error("Network response was not ok");
                 const data = await res.json();
                 state.nextPageToken = data.nextPageToken || null;
