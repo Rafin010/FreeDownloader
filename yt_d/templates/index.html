@@ -102,16 +102,16 @@
                     },
                     colors: {
                         yt: {
-                            bg: '#ffffff',
-                            header: '#ffffff',
-                            hover: 'rgba(0,0,0,0.05)',
-                            border: '#e5e5e5',
-                            searchBg: '#f1f1f1',
-                            text: '#0f0f0f',
-                            textSec: '#606060',
+                            bg: '#0f0f0f',
+                            header: '#0f0f0f',
+                            hover: 'rgba(255,255,255,0.1)',
+                            border: '#272727',
+                            searchBg: '#121212',
+                            text: '#f1f1f1',
+                            textSec: '#aaaaaa',
                             red: '#ff0000',
-                            blue: '#065fd4',
-                            buttonBg: '#f2f2f2'
+                            blue: '#3ea6ff',
+                            buttonBg: '#272727'
                         }
                     }
                 }
@@ -121,14 +121,14 @@
 
     <style>
         body {
-            background-color: #ffffff;
-            color: #0f0f0f;
+            background-color: #0f0f0f;
+            color: #f1f1f1;
             margin: 0; padding: 0;
             overflow-x: hidden;
         }
 
         /* Broken thumbnail fallback */
-        img.thumb-img { background: #f0f0f0; }
+        img.thumb-img { background: #272727; }
         img.thumb-img[src=""], img.thumb-img:not([src]) { visibility: hidden; }
 
         ::-webkit-scrollbar {
@@ -136,16 +136,16 @@
         }
 
         ::-webkit-scrollbar-track {
-            background: #f9f9f9;
+            background: #0f0f0f;
         }
 
         ::-webkit-scrollbar-thumb {
-            background: #ccc;
+            background: #555;
             border-radius: 4px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: #999;
+            background: #777;
         }
 
         .line-clamp-2 {
@@ -178,7 +178,7 @@
 
         /* Skeleton Animation */
         .shimmer {
-            background: linear-gradient(90deg, #e8e8e8 25%, #f0f0f0 50%, #e8e8e8 75%);
+            background: linear-gradient(90deg, #1a1a1a 25%, #272727 50%, #1a1a1a 75%);
             background-size: 200% 100%;
             animation: shimmer 1.5s infinite;
         }
@@ -297,8 +297,6 @@
                 <div id="feed-header" class="px-4 pt-4 pb-2 hidden text-xl font-bold">Search Results</div>
 
                 <div id="ad-container-top" class="w-full hidden px-4 py-2 my-2 overflow-hidden flex justify-center"></div>
-                <!-- Ad removed: broken placeholder images -->
-                </div>
 
                 <div id="video-grid"
                     class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-8 px-4 pt-4">
@@ -394,7 +392,7 @@
     </div>
 
     <nav
-        class="sm:hidden fixed bottom-0 w-full h-14 bg-[#0f0f0f] border-t border-gray-200 flex justify-around items-center z-50 shadow-lg">
+        class="sm:hidden fixed bottom-0 w-full h-14 bg-[#0f0f0f] border-t border-[#272727] flex justify-around items-center z-50 shadow-lg">
         <a href="#" class="flex flex-col items-center text-yt-text p-1 hover:text-yt-red transition-colors"
             onclick="showHomeView()">
             <i class="fa-solid fa-house mb-1 text-lg"></i>
@@ -414,10 +412,10 @@
         class="hidden fixed inset-0 z-[100] flex items-end sm:items-center justify-center sm:p-4 bg-black/80 backdrop-blur-sm">
         <div class="absolute inset-0" onclick="closeDownloadModal()"></div>
 
-        <div class="relative w-full sm:max-w-md bg-[#0f0f0f] border border-gray-200 sm:rounded-2xl rounded-t-2xl shadow-2xl overflow-hidden transform translate-y-full transition-transform duration-300"
+        <div class="relative w-full sm:max-w-md bg-[#0f0f0f] border border-[#272727] sm:rounded-2xl rounded-t-2xl shadow-2xl overflow-hidden transform translate-y-full transition-transform duration-300"
             id="download-modal-content">
 
-            <div class="px-5 py-4 border-b border-gray-200 flex justify-between items-center bg-[#222222]">
+            <div class="px-5 py-4 border-b border-[#272727] flex justify-between items-center bg-[#222222]">
                 <h3 class="text-lg font-bold text-white flex items-center gap-2 drop-shadow-md">
                     <i class="fa-solid fa-download text-red-600"></i> <span class="text-gray-100">Download Options</span>
                 </h3>
