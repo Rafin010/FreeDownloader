@@ -873,7 +873,29 @@ def index():
 def trending_api():
     """Returns trending videos for the home feed with multi-region infinite loading."""
     page_token = request.args.get('pageToken', '')
-    region = request.args.get('region', 'US')
+    region = request.args.get('region', '')
+    
+    if not region:
+        # Detect region from IP using ip-api.com
+        client_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
+        if client_ip and ',' in client_ip:
+            client_ip = client_ip.split(',')[0].strip()
+            
+        region = 'US' # Default
+        try:
+            if client_ip and client_ip != '127.0.0.1':
+                cached_region = cache_get('geoip', client_ip)
+                if cached_region:
+                    region = cached_region
+                else:
+                    resp = http_requests.get(f"http://ip-api.com/json/{client_ip}?fields=countryCode", timeout=3)
+                    if resp.status_code == 200:
+                        data = resp.json()
+                        region = data.get('countryCode', 'US')
+                        cache_set('geoip', client_ip, region, ttl=86400)
+        except Exception:
+            pass
+
     cache_key = f"feed_{region}_{page_token}" if page_token else f"feed_{region}"
     
     cached = cache_get('yt_trending', cache_key)
