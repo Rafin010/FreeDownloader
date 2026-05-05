@@ -781,21 +781,7 @@
             els.feedHeader.classList.add('hidden');
 
             try {
-                
-                let url = '/api/trending?region=US';
-                // User Algorithm: 60% chance to show personalized content if history exists
-                if (watchHistory.length > 0 && Math.random() > 0.4) {
-                    let randomVid = watchHistory[Math.floor(Math.random() * watchHistory.length)];
-                    let words = randomVid.title.replace(/[^a-zA-Z0-9 ]/g, '').split(' ').filter(w => w.length > 3);
-                    if (words.length > 0) {
-                        let randomWord = words[Math.floor(Math.random() * words.length)];
-                        url = `/api/search?q=${encodeURIComponent(randomWord)}`;
-                        state.currentMode = 'search';
-                        state.lastQuery = randomWord;
-                    }
-                }
-                const res = await fetch(url);
-
+                const res = await fetch('/api/trending');
                 if (!res.ok) throw new Error("Network response was not ok");
                 const data = await res.json();
                 state.nextPageToken = data.nextPageToken || null;
@@ -807,20 +793,37 @@
             }
         }
 
+        let scrollPageCount = 0;
+
         async function loadMoreVideos() {
             if (!state.nextPageToken) return;
             state.isLoadingMore = true;
+            scrollPageCount++;
 
             els.videoGrid.insertAdjacentHTML('beforeend', generateGridSkeletons(8));
 
             try {
                 let url;
-                if (state.currentMode === 'trending') {
-                    const token = state.nextPageToken === 'region_cycle' ? '' : state.nextPageToken;
-                    const region = state.currentRegion || 'US';
-                    url = `/api/trending?region=${region}${token ? '&pageToken=' + token : ''}`;
-                } else {
-                    url = `/api/search?q=${encodeURIComponent(state.lastQuery)}&pageToken=${state.nextPageToken}`;
+                // Algorithm: every 3rd page, mix in personalized content from watch history
+                const useAlgorithm = (scrollPageCount % 3 === 0) && watchHistory.length > 0 && state.currentMode === 'trending';
+                
+                if (useAlgorithm) {
+                    let randomVid = watchHistory[Math.floor(Math.random() * watchHistory.length)];
+                    let words = randomVid.title.replace(/[^a-zA-Z0-9 ]/g, '').split(' ').filter(w => w.length > 3);
+                    if (words.length > 0) {
+                        let keyword = words[Math.floor(Math.random() * words.length)];
+                        url = `/api/search?q=${encodeURIComponent(keyword)}`;
+                    }
+                }
+                
+                if (!url) {
+                    if (state.currentMode === 'trending') {
+                        const token = state.nextPageToken === 'region_cycle' ? '' : state.nextPageToken;
+                        const region = state.currentRegion || 'US';
+                        url = `/api/trending?region=${region}${token ? '&pageToken=' + token : ''}`;
+                    } else {
+                        url = `/api/search?q=${encodeURIComponent(state.lastQuery)}&pageToken=${state.nextPageToken}`;
+                    }
                 }
                 const res = await fetch(url);
                 const data = await res.json();
@@ -829,8 +832,10 @@
                 const skeletons = els.videoGrid.querySelectorAll('.animate-pulse');
                 skeletons.forEach(s => s.remove());
 
-                state.nextPageToken = data.nextPageToken || null;
-                state.currentRegion = data.nextRegion || state.currentRegion;
+                if (!useAlgorithm) {
+                    state.nextPageToken = data.nextPageToken || null;
+                    state.currentRegion = data.nextRegion || state.currentRegion;
+                }
                 if (data.results && data.results.length > 0) {
                     state.trendingCache = state.trendingCache.concat(data.results);
                     renderVideoGrid(data.results, true);
