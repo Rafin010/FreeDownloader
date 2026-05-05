@@ -52,6 +52,12 @@ except ImportError:
     pass
 
 try:
+    from routes.popup_config_routes import popup_config_bp
+    app.register_blueprint(popup_config_bp, url_prefix="/api/popup")
+except ImportError:
+    pass
+
+try:
     from routes.install_routes import install_bp
     app.register_blueprint(install_bp, url_prefix="/api/install")
 except ImportError:

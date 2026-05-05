@@ -108,6 +108,10 @@ function selectSite(siteUrl, siteName) {
 
     // View toggling
     document.getElementById('view-freestore')?.classList.add('hidden');
+    document.getElementById('view-donations')?.classList.add('hidden');
+    document.getElementById('view-popup-control')?.classList.add('hidden');
+    document.getElementById('view-popup-control')?.classList.remove('block');
+    document.getElementById('view-donations')?.classList.remove('block');
     document.getElementById('view-dashboard')?.classList.remove('hidden');
     document.getElementById('view-dashboard')?.classList.add('block');
 
@@ -146,6 +150,10 @@ function showFreeStore() {
     // View toggling
     document.getElementById('view-dashboard')?.classList.add('hidden');
     document.getElementById('view-dashboard')?.classList.remove('block');
+    document.getElementById('view-donations')?.classList.add('hidden');
+    document.getElementById('view-donations')?.classList.remove('block');
+    document.getElementById('view-popup-control')?.classList.add('hidden');
+    document.getElementById('view-popup-control')?.classList.remove('block');
     document.getElementById('view-freestore')?.classList.remove('hidden');
     document.getElementById('view-freestore')?.classList.add('block');
 
@@ -182,6 +190,8 @@ function showDonations() {
     document.getElementById('view-dashboard')?.classList.remove('block');
     document.getElementById('view-freestore')?.classList.add('hidden');
     document.getElementById('view-freestore')?.classList.remove('block');
+    document.getElementById('view-popup-control')?.classList.add('hidden');
+    document.getElementById('view-popup-control')?.classList.remove('block');
     document.getElementById('view-donations')?.classList.remove('hidden');
     document.getElementById('view-donations')?.classList.add('block');
 
@@ -209,6 +219,155 @@ function showDonations() {
         document.getElementById('sidebar-overlay').classList.add('hidden');
     }
     loadDonations();
+}
+
+function showPopupControl() {
+    activeSite = 'popup-control';
+    
+    // View toggling — hide all, show popup control
+    document.getElementById('view-dashboard')?.classList.add('hidden');
+    document.getElementById('view-dashboard')?.classList.remove('block');
+    document.getElementById('view-freestore')?.classList.add('hidden');
+    document.getElementById('view-freestore')?.classList.remove('block');
+    document.getElementById('view-donations')?.classList.add('hidden');
+    document.getElementById('view-donations')?.classList.remove('block');
+    document.getElementById('view-popup-control')?.classList.remove('hidden');
+    document.getElementById('view-popup-control')?.classList.add('block');
+
+    document.getElementById('breadcrumb-site').textContent = 'Popup Control';
+    document.getElementById('active-site-name').textContent = 'Popup & Notification Control';
+
+    // Update sidebar active states
+    document.querySelectorAll('.sidebar-item').forEach(item => {
+        const isActive = item.id === 'btn-popup-control';
+        item.classList.toggle('bg-violet-500/10', isActive);
+        item.classList.toggle('text-white', isActive);
+        item.classList.toggle('border-violet-500/20', isActive);
+        item.classList.toggle('text-gray-400', !isActive);
+        item.classList.toggle('hover:bg-white/5', !isActive);
+        item.classList.toggle('hover:text-gray-200', !isActive);
+        if(isActive) {
+            item.classList.remove('bg-indigo-500/10', 'border-indigo-500/20', 'bg-emerald-500/10', 'border-emerald-500/20', 'bg-rose-500/10', 'border-rose-500/20');
+        }
+    });
+
+    if (window.innerWidth < 1024) {
+        document.getElementById('sidebar').classList.remove('sidebar-open');
+        document.getElementById('sidebar-overlay').classList.add('hidden');
+    }
+    loadPopupStatus();
+}
+
+// ── Popup Config API ─────────────────────────
+async function loadPopupStatus() {
+    try {
+        const resp = await fetch('/api/popup/config/status');
+        const data = await resp.json();
+        
+        const btn = document.getElementById('popup-toggle-btn');
+        const dot = document.getElementById('popup-toggle-dot');
+        const status = document.getElementById('popup-toggle-status');
+        
+        if (data.donate_popup_enabled) {
+            btn.className = 'relative w-14 h-8 rounded-full transition-all duration-300 bg-blue-600 border border-blue-500';
+            dot.className = 'absolute top-1 left-7 w-6 h-6 rounded-full bg-white transition-all duration-300';
+            status.innerHTML = '<span class="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span> Donation popup is <strong class="text-blue-400">ENABLED</strong> — showing on all sites';
+        } else {
+            btn.className = 'relative w-14 h-8 rounded-full transition-all duration-300 bg-gray-700 border border-gray-600';
+            dot.className = 'absolute top-1 left-1 w-6 h-6 rounded-full bg-gray-400 transition-all duration-300';
+            status.innerHTML = '<span class="w-2 h-2 rounded-full bg-gray-500"></span> Donation popup is <strong class="text-gray-400">DISABLED</strong>';
+        }
+        
+        // Show active notification preview
+        const preview = document.getElementById('active-notif-preview');
+        if (data.notification_id && data.notification_message) {
+            preview.classList.remove('hidden');
+            document.getElementById('active-notif-title').textContent = data.notification_title || 'Notification';
+            document.getElementById('active-notif-msg').textContent = data.notification_message;
+        } else {
+            preview.classList.add('hidden');
+        }
+    } catch (e) {
+        console.error('[Popup Status]', e);
+    }
+}
+
+async function toggleDonatePopup() {
+    const btn = document.getElementById('popup-toggle-btn');
+    const isCurrentlyOn = btn.className.includes('bg-blue-600');
+    const newState = !isCurrentlyOn;
+    
+    try {
+        const resp = await fetch('/api/popup/config/toggle', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ enabled: newState }),
+        });
+        const data = await resp.json();
+        if (data.success) {
+            toast(newState ? '✅ Donation popup ENABLED on all sites' : '⏸️ Donation popup DISABLED');
+            loadPopupStatus();
+        } else {
+            toast('Error: ' + (data.error || 'Unknown'));
+        }
+    } catch (e) {
+        toast('Failed to toggle popup');
+    }
+}
+
+async function sendNotification() {
+    const title = document.getElementById('notif-title').value.trim();
+    const message = document.getElementById('notif-message').value.trim();
+    const btnText = document.getElementById('notif-btn-text').value.trim();
+    const btnUrl = document.getElementById('notif-btn-url').value.trim();
+    
+    if (!message) {
+        toast('Please enter a notification message');
+        return;
+    }
+    
+    try {
+        const resp = await fetch('/api/popup/config/notification', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                title: title || 'Notification',
+                message: message,
+                button_text: btnText || null,
+                button_url: btnUrl || null,
+            }),
+        });
+        const data = await resp.json();
+        if (data.success) {
+            toast('🚀 Notification broadcast sent to all sites!');
+            document.getElementById('notif-title').value = '';
+            document.getElementById('notif-message').value = '';
+            document.getElementById('notif-btn-text').value = '';
+            document.getElementById('notif-btn-url').value = '';
+            loadPopupStatus();
+        } else {
+            toast('Error: ' + (data.error || 'Unknown'));
+        }
+    } catch (e) {
+        toast('Failed to send notification');
+    }
+}
+
+async function clearNotification() {
+    try {
+        const resp = await fetch('/api/popup/config/notification', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ clear: true }),
+        });
+        const data = await resp.json();
+        if (data.success) {
+            toast('🗑️ Active notification cleared');
+            loadPopupStatus();
+        }
+    } catch (e) {
+        toast('Failed to clear notification');
+    }
 }
 
 async function buildSidebar() {
