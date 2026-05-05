@@ -529,5 +529,18 @@ def download_file(task_id):
 def sitemap():
     return send_file('sitemap.xml')
 
+
+@app.route('/sitemap.xml')
+def serve_sitemap():
+    import os
+    from flask import send_from_directory
+    return send_from_directory(os.path.dirname(os.path.abspath(__file__)), 'sitemap.xml')
+
+@app.route('/robots.txt')
+def serve_robots():
+    import os
+    from flask import send_from_directory
+    return send_from_directory(os.path.dirname(os.path.abspath(__file__)), 'robots.txt')
+
 if __name__ == '__main__':
     app.run(debug=True, threaded=True)
