@@ -34,6 +34,17 @@ def _ensure_config_table():
         if row[0] == 0:
             cursor.execute("INSERT INTO popup_config (id, donate_popup_enabled) VALUES (1, TRUE)")
         conn.commit()
+
+        # Add new columns if they don't exist
+        try:
+            cursor.execute("ALTER TABLE popup_config ADD COLUMN donate_popup_mode VARCHAR(50) DEFAULT 'all_time'")
+            cursor.execute("ALTER TABLE popup_config ADD COLUMN donate_popup_start_day INT DEFAULT 1")
+            cursor.execute("ALTER TABLE popup_config ADD COLUMN donate_popup_end_day INT DEFAULT 3")
+            cursor.execute("ALTER TABLE popup_config ADD COLUMN donate_push_id VARCHAR(100) DEFAULT NULL")
+            conn.commit()
+        except Exception:
+            pass
+
     except Exception as e:
         print(f"[POPUP CONFIG TABLE] {e}")
     finally:
@@ -68,6 +79,10 @@ def get_config():
 
     result = {
         'donate_popup_enabled': bool(cfg.get('donate_popup_enabled', True)),
+        'donate_popup_mode': cfg.get('donate_popup_mode', 'all_time'),
+        'donate_popup_start_day': cfg.get('donate_popup_start_day', 1),
+        'donate_popup_end_day': cfg.get('donate_popup_end_day', 3),
+        'donate_push_id': cfg.get('donate_push_id'),
         'notification': None,
     }
 
@@ -93,17 +108,37 @@ def get_config():
 def toggle_donate_popup():
     _ensure_config_table()
     data = request.get_json(silent=True) or {}
-    enabled = data.get('enabled', True)
-
+    
     conn = get_connection()
     if not conn:
         return jsonify({'error': 'DB error'}), 500
 
     cursor = conn.cursor()
     try:
-        cursor.execute("UPDATE popup_config SET donate_popup_enabled = %s WHERE id = 1", (enabled,))
-        conn.commit()
-        return jsonify({'success': True, 'donate_popup_enabled': enabled})
+        if 'mode' in data:
+            mode = data['mode']
+            start_day = data.get('start_day', 1)
+            end_day = data.get('end_day', 3)
+            cursor.execute("""
+                UPDATE popup_config 
+                SET donate_popup_mode = %s, donate_popup_start_day = %s, donate_popup_end_day = %s 
+                WHERE id = 1
+            """, (mode, start_day, end_day))
+            conn.commit()
+            return jsonify({'success': True, 'mode': mode})
+        elif 'push' in data:
+            import uuid
+            push_id = f"push-{uuid.uuid4().hex[:8]}"
+            cursor.execute("UPDATE popup_config SET donate_push_id = %s WHERE id = 1", (push_id,))
+            conn.commit()
+            return jsonify({'success': True, 'push_id': push_id})
+        else:
+            # Legacy toggle
+            enabled = data.get('enabled', True)
+            mode = 'all_time' if enabled else 'off'
+            cursor.execute("UPDATE popup_config SET donate_popup_enabled = %s, donate_popup_mode = %s WHERE id = 1", (enabled, mode))
+            conn.commit()
+            return jsonify({'success': True, 'donate_popup_enabled': enabled})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
     finally:

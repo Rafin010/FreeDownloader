@@ -15,7 +15,7 @@
   const STORAGE_DISMISS = 'fd_donate_dismissed';
   const STORAGE_NOTIF = 'fd_notif_seen_';
   const SHOW_DELAY_MS = 6000;
-  const DISMISS_HOURS = 24;
+  const DISMISS_HOURS = 12;
 
   // Don't show on the donate page itself
   if (window.location.pathname.includes('/donate')) return;
@@ -241,11 +241,37 @@
       }
 
       // 2) Show donation popup if enabled by admin
-      if (cfg.donate_popup_enabled) {
-        const dismissed = localStorage.getItem(STORAGE_DISMISS);
-        if (dismissed) {
-          const diff = Date.now() - parseInt(dismissed, 10);
-          if (diff < DISMISS_HOURS * 60 * 60 * 1000) return;
+      const mode = cfg.donate_popup_mode || (cfg.donate_popup_enabled ? 'all_time' : 'off');
+      if (mode === 'off' && !cfg.donate_popup_enabled) return;
+
+      let shouldShow = false;
+      if (mode === 'specific_dates') {
+        const today = new Date().getDate();
+        const startDay = cfg.donate_popup_start_day || 1;
+        const endDay = cfg.donate_popup_end_day || 3;
+        if (today >= startDay && today <= endDay) {
+          shouldShow = true;
+        }
+      } else {
+        shouldShow = true;
+      }
+
+      if (shouldShow) {
+        let ignoreDismiss = false;
+        if (cfg.donate_push_id) {
+          const lastPush = localStorage.getItem('fd_last_push_id');
+          if (lastPush !== cfg.donate_push_id) {
+            ignoreDismiss = true;
+            localStorage.setItem('fd_last_push_id', cfg.donate_push_id);
+          }
+        }
+
+        if (!ignoreDismiss) {
+          const dismissed = localStorage.getItem(STORAGE_DISMISS);
+          if (dismissed) {
+            const diff = Date.now() - parseInt(dismissed, 10);
+            if (diff < DISMISS_HOURS * 60 * 60 * 1000) return;
+          }
         }
         setTimeout(createDonatePopup, SHOW_DELAY_MS);
       }

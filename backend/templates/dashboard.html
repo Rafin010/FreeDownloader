@@ -760,13 +760,42 @@
                                 </svg>
                             </div>
                             <div>
-                                <h2 class="text-sm font-bold text-white">Donation Popup</h2>
-                                <p class="text-[11px] text-gray-500">Toggle the donation popup that appears on all websites</p>
+                                <h2 class="text-sm font-bold text-white">Donation Popup Settings</h2>
+                                <p class="text-[11px] text-gray-500">Configure when the donation popup appears (dismisses for 12 hours after closing)</p>
                             </div>
                         </div>
-                        <button id="popup-toggle-btn" onclick="toggleDonatePopup()" class="relative w-14 h-8 rounded-full transition-all duration-300 bg-gray-700 border border-gray-600">
-                            <span id="popup-toggle-dot" class="absolute top-1 left-1 w-6 h-6 rounded-full bg-gray-400 transition-all duration-300"></span>
-                        </button>
+                    </div>
+                    
+                    <div class="space-y-4 mb-4">
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Display Mode</label>
+                            <select id="popup-mode" onchange="updatePopupModeUI()" class="w-full bg-panel-bg border border-panel-border rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-blue-500/50 transition-colors">
+                                <option value="all_time">All Time (Always Enabled)</option>
+                                <option value="specific_dates">Specific Dates in Month</option>
+                                <option value="off">Off (Disabled)</option>
+                            </select>
+                        </div>
+                        
+                        <div id="popup-dates-wrapper" class="hidden grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Start Day (1-31)</label>
+                                <input id="popup-start-day" type="number" min="1" max="31" value="1" class="w-full bg-panel-bg border border-panel-border rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-blue-500/50 transition-colors">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">End Day (1-31)</label>
+                                <input id="popup-end-day" type="number" min="1" max="31" value="3" class="w-full bg-panel-bg border border-panel-border rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-blue-500/50 transition-colors">
+                            </div>
+                        </div>
+                        
+                        <div class="flex gap-3 pt-2">
+                            <button onclick="saveDonatePopupSettings()" class="flex-1 px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-xl transition-all shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30">
+                                Save Settings
+                            </button>
+                            <button onclick="pushDonatePopup()" class="flex-1 flex items-center justify-center gap-2 px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold rounded-xl transition-all shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 2L11 13"/><path d="M22 2L15 22l-4-9-9-4 20-7z"/></svg>
+                                Push Popup Now
+                            </button>
+                        </div>
                     </div>
                     <div id="popup-toggle-status" class="text-xs text-gray-500 flex items-center gap-2">
                         <span class="w-2 h-2 rounded-full bg-gray-500"></span> Loading status...

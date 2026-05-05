@@ -264,17 +264,24 @@ async function loadPopupStatus() {
         const resp = await fetch('/api/popup/config/status');
         const data = await resp.json();
         
-        const btn = document.getElementById('popup-toggle-btn');
-        const dot = document.getElementById('popup-toggle-dot');
+        const modeSelect = document.getElementById('popup-mode');
+        const startDay = document.getElementById('popup-start-day');
+        const endDay = document.getElementById('popup-end-day');
         const status = document.getElementById('popup-toggle-status');
         
-        if (data.donate_popup_enabled) {
-            btn.className = 'relative w-14 h-8 rounded-full transition-all duration-300 bg-blue-600 border border-blue-500';
-            dot.className = 'absolute top-1 left-7 w-6 h-6 rounded-full bg-white transition-all duration-300';
-            status.innerHTML = '<span class="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span> Donation popup is <strong class="text-blue-400">ENABLED</strong> — showing on all sites';
+        // Handle legacy or mode
+        let currentMode = data.donate_popup_mode || (data.donate_popup_enabled ? 'all_time' : 'off');
+        if (modeSelect) modeSelect.value = currentMode;
+        if (startDay) startDay.value = data.donate_popup_start_day || 1;
+        if (endDay) endDay.value = data.donate_popup_end_day || 3;
+        
+        updatePopupModeUI();
+        
+        if (currentMode === 'all_time') {
+            status.innerHTML = '<span class="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span> Donation popup is <strong class="text-blue-400">ENABLED (All Time)</strong>';
+        } else if (currentMode === 'specific_dates') {
+            status.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Donation popup is <strong class="text-emerald-400">SCHEDULED</strong> (Days ${startDay.value}-${endDay.value})`;
         } else {
-            btn.className = 'relative w-14 h-8 rounded-full transition-all duration-300 bg-gray-700 border border-gray-600';
-            dot.className = 'absolute top-1 left-1 w-6 h-6 rounded-full bg-gray-400 transition-all duration-300';
             status.innerHTML = '<span class="w-2 h-2 rounded-full bg-gray-500"></span> Donation popup is <strong class="text-gray-400">DISABLED</strong>';
         }
         
@@ -292,26 +299,55 @@ async function loadPopupStatus() {
     }
 }
 
-async function toggleDonatePopup() {
-    const btn = document.getElementById('popup-toggle-btn');
-    const isCurrentlyOn = btn.className.includes('bg-blue-600');
-    const newState = !isCurrentlyOn;
+function updatePopupModeUI() {
+    const mode = document.getElementById('popup-mode').value;
+    const datesWrapper = document.getElementById('popup-dates-wrapper');
+    if (mode === 'specific_dates') {
+        datesWrapper.classList.remove('hidden');
+    } else {
+        datesWrapper.classList.add('hidden');
+    }
+}
+
+async function saveDonatePopupSettings() {
+    const mode = document.getElementById('popup-mode').value;
+    const startDay = parseInt(document.getElementById('popup-start-day').value) || 1;
+    const endDay = parseInt(document.getElementById('popup-end-day').value) || 3;
     
     try {
         const resp = await fetch('/api/popup/config/toggle', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ enabled: newState }),
+            body: JSON.stringify({ mode: mode, start_day: startDay, end_day: endDay }),
         });
         const data = await resp.json();
         if (data.success) {
-            toast(newState ? '✅ Donation popup ENABLED on all sites' : '⏸️ Donation popup DISABLED');
+            toast('✅ Donation popup settings saved');
             loadPopupStatus();
         } else {
             toast('Error: ' + (data.error || 'Unknown'));
         }
     } catch (e) {
-        toast('Failed to toggle popup');
+        toast('Failed to save settings');
+    }
+}
+
+async function pushDonatePopup() {
+    try {
+        const resp = await fetch('/api/popup/config/toggle', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ push: true }),
+        });
+        const data = await resp.json();
+        if (data.success) {
+            toast('🚀 Push signal sent! Users will see the donation popup immediately (ignoring 12-hour limit).');
+            loadPopupStatus();
+        } else {
+            toast('Error: ' + (data.error || 'Unknown'));
+        }
+    } catch (e) {
+        toast('Failed to send push signal');
     }
 }
 
