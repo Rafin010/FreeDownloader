@@ -1,0 +1,169 @@
+services:
+  # ── Infrastructure ──────────────────────────────────────────
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_DATABASE: downloader_analytics
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - fdl_network
+
+  redis:
+    image: redis:7-alpine
+    restart: always
+    networks:
+      - fdl_network
+
+  # ── Downloader Services ──────────────────────────────────────
+  yt_d:
+    build: .
+    command: gunicorn -c infra/gunicorn.conf.py --bind 0.0.0.0:8004 yt_d.app:app
+    ports:
+      - "8004:8004"
+    environment:
+      - DB_HOST=db
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/1
+      - CELERY_RESULT_BACKEND=redis://redis:6379/1
+    volumes:
+      - ./yt_d/downloads:/app/yt_d/downloads
+    depends_on:
+      - redis
+      - db
+    networks:
+      - fdl_network
+
+  fb_d:
+    build: .
+    command: gunicorn -c infra/gunicorn.conf.py --bind 0.0.0.0:8001 fb_downloader.app:app
+    ports:
+      - "8001:8001"
+    environment:
+      - DB_HOST=db
+      - REDIS_URL=redis://redis:6379/0
+    volumes:
+      - ./fb_downloader/downloads:/app/fb_downloader/downloads
+    depends_on:
+      - redis
+      - db
+    networks:
+      - fdl_network
+
+  insta_d:
+    build: .
+    command: gunicorn -c infra/gunicorn.conf.py --bind 0.0.0.0:8002 insta_d.app:app
+    ports:
+      - "8002:8002"
+    environment:
+      - DB_HOST=db
+      - REDIS_URL=redis://redis:6379/0
+    volumes:
+      - ./insta_d/downloads:/app/insta_d/downloads
+    depends_on:
+      - redis
+      - db
+    networks:
+      - fdl_network
+
+  tik_d:
+    build: .
+    command: gunicorn -c infra/gunicorn.conf.py --bind 0.0.0.0:8003 tik_d.app:app
+    ports:
+      - "8003:8003"
+    environment:
+      - DB_HOST=db
+      - REDIS_URL=redis://redis:6379/0
+    volumes:
+      - ./tik_d/downloads:/app/tik_d/downloads
+    depends_on:
+      - redis
+      - db
+    networks:
+      - fdl_network
+
+  p_d:
+    build: .
+    command: gunicorn -c infra/gunicorn.conf.py --bind 0.0.0.0:8009 p_d.app:app
+    ports:
+      - "8009:8009"
+    environment:
+      - DB_HOST=db
+      - REDIS_URL=redis://redis:6379/0
+    volumes:
+      - ./p_d/downloads:/app/p_d/downloads
+    depends_on:
+      - redis
+      - db
+    networks:
+      - fdl_network
+
+  # ── Core Apps ───────────────────────────────────────────────
+  backend:
+    build: .
+    command: gunicorn -c infra/gunicorn.conf.py --bind 0.0.0.0:5000 backend.app:app
+    ports:
+      - "5000:5000"
+    environment:
+      - DB_HOST=db
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - db
+      - redis
+    networks:
+      - fdl_network
+
+  free_store:
+    build: .
+    command: gunicorn -c infra/gunicorn.conf.py --bind 0.0.0.0:8010 freeStore.app:app
+    ports:
+      - "8010:8010"
+    environment:
+      - DB_HOST=db
+      - REDIS_URL=redis://redis:6379/0
+    volumes:
+      - ./freeStore/uploads:/app/freeStore/uploads
+    depends_on:
+      - db
+      - redis
+    networks:
+      - fdl_network
+
+  donate_app:
+    build: .
+    command: gunicorn -c infra/gunicorn.conf.py --bind 0.0.0.0:5007 donate_app.app:app
+    ports:
+      - "5007:5007"
+    environment:
+      - DB_HOST=db
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - db
+      - redis
+    networks:
+      - fdl_network
+
+  # ── Celery Workers ──────────────────────────────────────────
+  # One worker per service for independent scaling
+  yt_worker:
+    build: .
+    command: celery -A yt_d.tasks worker --loglevel=info -Q yt_d_queue
+    environment:
+      - DB_HOST=db
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/1
+      - CELERY_RESULT_BACKEND=redis://redis:6379/1
+    depends_on:
+      - redis
+      - db
+    networks:
+      - fdl_network
+
+networks:
+  fdl_network:
+    driver: bridge
+
+volumes:
+  db_data:
