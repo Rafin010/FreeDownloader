@@ -19,6 +19,7 @@ The system is composed of several microservices, each specialized in a platform 
 | **Donate App** | `5007` | `donate_app/` | Microservice for handling donations and support. |
 | **Legacy Landing** | `8008` | `free_d/` | Legacy web landing page. |
 | **Admin Backend** | `5000` | `backend/` | Central analytics, user tracking, and dashboard. |
+| **phpMyAdmin** | `8080` | N/A | Database management interface. |
 
 ## Infrastructure
 
@@ -28,6 +29,7 @@ The system is composed of several microservices, each specialized in a platform 
     - `DB 1`: Celery broker and result backend.
 - **Celery**: Background workers for long-running download tasks.
 - **MySQL**: Stores analytics, software catalog, and user session data.
+- **phpMyAdmin**: Web-based interface for MySQL database management.
 
 ## Configuration (Environment Variables)
 

@@ -54,12 +54,11 @@ FILE_EXPIRY_TIME = 1800  # 30 minutes
 YOUTUBE_API_KEY = os.environ.get('YOUTUBE_API_KEY', 'AIzaSyDNhA-ILxYK98XO-K4H0mKoWB5Mog46K7o')
 
 
-# ── Check if curl-cffi is available for browser impersonation ──
+# ── Check if curl-cffi browser impersonation is available ──
 _HAS_CURL_CFFI = False
 try:
     import curl_cffi  # noqa: F401
-    _HAS_CURL_CFFI = True
-    logger.info("✅ curl-cffi detected — browser TLS impersonation ENABLED")
+    logger.warning("⚠️  curl-cffi installed but impersonation targets not available. Skipping.")
 except ImportError:
     logger.warning("⚠️  curl-cffi not installed — browser impersonation DISABLED. "
                    "Install with: pip install curl-cffi")
@@ -227,18 +226,6 @@ def build_yt_opts(strategy_idx=0):
 
         opts['extractor_args']['youtube']['po_token'] = [f'web+{_po_token}']
         opts['extractor_args']['youtube']['visitor_data'] = [_visitor_data]
-
-    # Browser TLS impersonation (requires curl-cffi)
-    if _HAS_CURL_CFFI:
-        # Note: In some yt-dlp versions, passing a string directly to 'impersonate' in the constructor 
-        # causes an AssertionError. We must ensure it's handled or use a safe format.
-        opts['impersonate'] = 'chrome'
-        # Fallback fix for latest yt-dlp versions that expect ImpersonateTarget object
-        try:
-            from yt_dlp.networking.impersonate import ImpersonateTarget
-            opts['impersonate'] = ImpersonateTarget.from_str('chrome')
-        except ImportError:
-            pass
 
     # Cookies — use if available
     if os.path.exists(COOKIES_FILE):

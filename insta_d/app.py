@@ -47,16 +47,6 @@ FILE_EXPIRY_TIME = 1800  # 30 minutes
 MP4_SIGNATURES = [b'ftyp', b'moov', b'mdat']
 MIN_VIDEO_SIZE = 10240  # 10KB minimum for a valid video file
 
-# ── Check if curl-cffi is available for browser impersonation ──
-_HAS_CURL_CFFI = False
-try:
-    import curl_cffi  # noqa: F401
-    _HAS_CURL_CFFI = True
-    logger.info("✅ curl-cffi detected — browser TLS impersonation ENABLED")
-except ImportError:
-    logger.warning("⚠️  curl-cffi not installed — browser impersonation DISABLED.")
-
-
 # ── Multi-Strategy UA Rotation ────────────────────────────────
 USER_AGENTS = [
     "Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1",
@@ -91,14 +81,6 @@ def get_ydl_opts_for_attempt(attempt=0):
         'retries': 5,
         'fragment_retries': 5,
     }
-    # Browser TLS impersonation (requires curl-cffi)
-    if _HAS_CURL_CFFI:
-        opts['impersonate'] = 'chrome'
-        try:
-            from yt_dlp.networking.impersonate import ImpersonateTarget
-            opts['impersonate'] = ImpersonateTarget.from_str('chrome')
-        except:
-            pass
     if os.path.exists(COOKIES_FILE):
         opts['cookiefile'] = COOKIES_FILE
     return opts

@@ -1,3 +1,9 @@
+import os
+import sys
+
+# Add backend directory to path for local imports (utils/, routes/)
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flask_cors import CORS
 from functools import wraps
@@ -6,7 +12,6 @@ from utils.db import initialize_database
 from routes.analytics_routes import analytics_bp
 from routes.dashboard_routes import dashboard_bp
 from apscheduler.schedulers.background import BackgroundScheduler
-import os
 import secrets
 import time
 import bcrypt

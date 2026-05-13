@@ -29,7 +29,7 @@ access_log_format = '%(h)s %(l)s %(u)s %(t)s "%(r)s" %(s)s %(b)s "%(f)s" "%(a)s"
 
 # ── Server ────────────────────────────────────────────────────
 bind = os.environ.get('GUNICORN_BIND', '127.0.0.1:8000')
-preload_app = True                 # Load app before forking (saves memory)
+preload_app = False                 # Load app after forking (avoids gevent monkey-patch issues with yt-dlp)
 forwarded_allow_ips = '*'          # Trust X-Forwarded-For from nginx
 
 # ── Hooks ─────────────────────────────────────────────────────

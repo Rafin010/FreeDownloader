@@ -49,8 +49,7 @@ FILE_EXPIRY_TIME = 1800  # 30 minutes
 _HAS_CURL_CFFI = False
 try:
     import curl_cffi  # noqa: F401
-    _HAS_CURL_CFFI = True
-    logger.info("✅ curl-cffi detected — browser TLS impersonation ENABLED")
+    logger.warning("⚠️  curl-cffi installed but impersonation targets not available. Skipping.")
 except ImportError:
     logger.warning("⚠️  curl-cffi not installed — browser impersonation DISABLED. "
                    "Install with: pip install curl-cffi")
@@ -260,15 +259,6 @@ def get_ydl_opts_for_attempt(attempt=0, strategy_idx=0):
         opts['extractor_args'] = strategy['extractor_args']
     if strategy.get('extra'):
         opts.update(strategy['extra'])
-
-    # Browser TLS impersonation (requires curl-cffi)
-    if _HAS_CURL_CFFI:
-        opts['impersonate'] = 'chrome'
-        try:
-            from yt_dlp.networking.impersonate import ImpersonateTarget
-            opts['impersonate'] = ImpersonateTarget.from_str('chrome')
-        except:
-            pass
 
     if os.path.exists(COOKIES_FILE) and os.path.getsize(COOKIES_FILE) > 10:
         opts['cookiefile'] = COOKIES_FILE

@@ -5,7 +5,7 @@ services:
     restart: always
     environment:
       MYSQL_DATABASE: downloader_analytics
-      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
     volumes:
       - db_data:/var/lib/mysql
     networks:
@@ -17,6 +17,18 @@ services:
     networks:
       - fdl_network
 
+  phpmyadmin:
+    image: phpmyadmin:latest
+    restart: always
+    ports:
+      - "8080:80"
+    environment:
+      - PMA_HOST=db
+    depends_on:
+      - db
+    networks:
+      - fdl_network
+
   # ── Downloader Services ──────────────────────────────────────
   yt_d:
     build: .
@@ -25,6 +37,7 @@ services:
       - "8004:8004"
     environment:
       - DB_HOST=db
+      - DB_PASSWORD=${DB_PASSWORD}
       - REDIS_URL=redis://redis:6379/0
       - CELERY_BROKER_URL=redis://redis:6379/1
       - CELERY_RESULT_BACKEND=redis://redis:6379/1
@@ -43,6 +56,7 @@ services:
       - "8001:8001"
     environment:
       - DB_HOST=db
+      - DB_PASSWORD=${DB_PASSWORD}
       - REDIS_URL=redis://redis:6379/0
     volumes:
       - ./fb_downloader/downloads:/app/fb_downloader/downloads
@@ -59,6 +73,7 @@ services:
       - "8002:8002"
     environment:
       - DB_HOST=db
+      - DB_PASSWORD=${DB_PASSWORD}
       - REDIS_URL=redis://redis:6379/0
     volumes:
       - ./insta_d/downloads:/app/insta_d/downloads
@@ -75,6 +90,7 @@ services:
       - "8003:8003"
     environment:
       - DB_HOST=db
+      - DB_PASSWORD=${DB_PASSWORD}
       - REDIS_URL=redis://redis:6379/0
     volumes:
       - ./tik_d/downloads:/app/tik_d/downloads
@@ -91,6 +107,7 @@ services:
       - "8009:8009"
     environment:
       - DB_HOST=db
+      - DB_PASSWORD=${DB_PASSWORD}
       - REDIS_URL=redis://redis:6379/0
     volumes:
       - ./p_d/downloads:/app/p_d/downloads
@@ -108,6 +125,7 @@ services:
       - "5000:5000"
     environment:
       - DB_HOST=db
+      - DB_PASSWORD=${DB_PASSWORD}
       - REDIS_URL=redis://redis:6379/0
     depends_on:
       - db
@@ -122,6 +140,7 @@ services:
       - "8010:8010"
     environment:
       - DB_HOST=db
+      - DB_PASSWORD=${DB_PASSWORD}
       - REDIS_URL=redis://redis:6379/0
     volumes:
       - ./freeStore/uploads:/app/freeStore/uploads
@@ -138,6 +157,7 @@ services:
       - "5007:5007"
     environment:
       - DB_HOST=db
+      - DB_PASSWORD=${DB_PASSWORD}
       - REDIS_URL=redis://redis:6379/0
     depends_on:
       - db
@@ -152,6 +172,7 @@ services:
     command: celery -A yt_d.tasks worker --loglevel=info -Q yt_d_queue
     environment:
       - DB_HOST=db
+      - DB_PASSWORD=${DB_PASSWORD}
       - REDIS_URL=redis://redis:6379/0
       - CELERY_BROKER_URL=redis://redis:6379/1
       - CELERY_RESULT_BACKEND=redis://redis:6379/1
