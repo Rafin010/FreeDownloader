@@ -54,10 +54,10 @@ pip install m3u8 streamlink
 # Network
 pip install requests httpx aiohttp
 
-# Parsing
+# = Parsing
 pip install beautifulsoup4 lxml
 
-# Video processing
+# -- Video processing
 pip install moviepy opencv-python pydub
 
 # Cookies / private access
