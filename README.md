@@ -1,4 +1,4 @@
-# FreeDownloader Ecosystem
+# FreeDownloader-Ecosystem
 
 A high-performance, multi-service video downloading platform supporting YouTube, Facebook, Instagram, TikTok, and more. Built with Flask, Redis, Celery, and Nginx.
 
