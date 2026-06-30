@@ -77,4 +77,4 @@ Create a `.env` file in the root directory. See `.env.example` for details.
 - **TLS Impersonation**: Uses `curl-cffi` to mimic real browser TLS fingerprints.
 - **Proxy Rotation**: Built-in proxy pool with automatic bad-proxy detection and cooldown.
 - **PO Token Support**: Injects Proof of Origin tokens for YouTube extraction.
-- **User-Agent Pool**: Automatically rotates through modern browser headers.
+- **User-Agent Pool**: Automatically rotates through modern browser headers.....
