@@ -49,7 +49,7 @@ def health():
     })
 
 
-# Initialize DB table on startup
+# Initialize DB table on startup/ Hello kemon achne apni
 with app.app_context():
     init_payments_table()
 
