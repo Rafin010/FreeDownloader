@@ -35,7 +35,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# ── Paths ──────────────────────────────────────────────────────
+# ── Paths ─────────────────b    ghjgfghfhg ─────────────────────────────────────
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DOWNLOAD_DIR = os.path.join(BASE_DIR, 'temp_videos')
 COOKIES_FILE = os.path.join(BASE_DIR, 'cookies.txt')
