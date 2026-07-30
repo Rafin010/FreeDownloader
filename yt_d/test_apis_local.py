@@ -33,7 +33,7 @@ def run_tests():
         print("Error:", res.json)
     print("-" * 40)
 
-    # Let's get the ID of the first search result to test the detail endpoint
+    # Let's get the ID of the first search result to test the detail endpoint (Demon push )
     if res.status_code == 200 and res.json.get("results"):
         video_id = res.json["results"][0]["id"]
         print(f"Testing /api/video/{video_id}...")
