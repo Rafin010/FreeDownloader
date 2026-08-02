@@ -27,7 +27,7 @@ The system is composed of several microservices, each specialized in a platform 
 - **Redis**: 
     - `DB 0`: Shared caching and rate-limiting storage.
     - `DB 1`: Celery broker and result backend.
-- **Celery**: Background workers for long-running download tasks.
+- **Celery**: Background workers for long-running download tasks.  Hello 
 - **MySQL**: Stores analytics, software catalog, and user session data.
 - **phpMyAdmin**: Web-based interface for MySQL database management.
 
