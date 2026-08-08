@@ -74,3 +74,6 @@ def celery_download_fb(self, video_url, res_height, title):
         update_progress(task_id, 'error', 0, user_message, error=user_message,
                         download_name=user_download_name)
         raise
+
+
+# Hello Task
