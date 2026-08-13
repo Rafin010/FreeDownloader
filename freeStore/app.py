@@ -1,11 +1,5 @@
-import sys
 import os
 from flask import Flask, render_template, abort
-
-# Add backend directory to sys.path to access utils/db.py
-backend_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'backend')
-if backend_dir not in sys.path:
-    sys.path.append(backend_dir)
 
 from utils.db import get_connection
 
