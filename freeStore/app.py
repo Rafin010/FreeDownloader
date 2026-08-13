@@ -11,7 +11,9 @@ app = Flask(__name__)
 def home():
     conn = get_connection()
     if not conn:
-        return "Database Error", 500
+        import os
+        host = os.getenv("DB_HOST", "Not Set")
+        return f"Database Error: Could not connect to host '{host}'. Please check Vercel Environment Variables.", 500
         
     cursor = conn.cursor(dictionary=True)
     cursor.execute("SELECT * FROM store_items WHERE is_active = TRUE ORDER BY created_at DESC")
@@ -25,7 +27,9 @@ def home():
 def item_detail(slug):
     conn = get_connection()
     if not conn:
-        return "Database Error", 500
+        import os
+        host = os.getenv("DB_HOST", "Not Set")
+        return f"Database Error: Could not connect to host '{host}'. Please check Vercel Environment Variables.", 500
         
     cursor = conn.cursor(dictionary=True)
     cursor.execute("SELECT * FROM store_items WHERE slug = %s AND is_active = TRUE", (slug,))
