@@ -247,12 +247,14 @@
         </div>
 
         <div class="flex-1 max-w-[720px] flex items-center justify-end sm:justify-center">
-            <form id="desktop-search-form" class="flex flex-1 w-full max-w-full sm:max-w-2xl flex-row">
-                <div class="flex-1 flex items-center border border-[#303030] bg-[#0f0f0f] rounded-l-xl px-4 overflow-hidden focus-within:border-blue-500 shadow-inner">
-                    <input type="text" id="desktop-search-input" placeholder="Search videos or paste link" class="w-full bg-transparent border-none py-2 text-gray-100 text-[16px] focus:outline-none placeholder-gray-500" aria-label="Search">
+            <form id="desktop-search-form" class="flex flex-1 w-full max-w-full sm:max-w-2xl flex-row group drop-shadow-sm">
+                <div class="flex-1 flex items-center border border-[#303030] hover:border-[#404040] bg-[#0f0f0f] rounded-l-lg px-4 overflow-hidden focus-within:border-[#3ea6ff] focus-within:shadow-[inset_0_0_4px_rgba(62,166,255,0.2)] transition-all duration-300">
+                    <div class="hidden sm:block text-[#555555] mr-3 group-focus-within:text-[#3ea6ff] transition-colors"><i class="fa-solid fa-magnifying-glass text-sm"></i></div>
+                    <input type="text" id="desktop-search-input" placeholder="Search videos or paste YouTube link..." class="w-full bg-transparent border-none py-2.5 text-[#f1f1f1] text-[16px] tracking-wide focus:outline-none placeholder-[#717171] font-medium" aria-label="Search">
                 </div>
-                <button type="submit" aria-label="Submit Search" class="border border-l-0 border-[#303030] bg-[#222222] hover:bg-[#333333] px-6 rounded-r-xl flex items-center justify-center transition-colors text-gray-300" title="Search">
-                    <i class="fa-solid fa-magnifying-glass text-[16px]"></i>
+                <button type="submit" aria-label="Submit Search" class="border border-l-0 border-[#303030] bg-[#222222] hover:bg-[#383838] px-6 rounded-r-lg flex items-center justify-center transition-colors text-gray-300 group-hover:border-[#404040]" title="Search">
+                    <span class="hidden sm:block font-medium mr-2 text-sm">Search</span>
+                    <i class="fa-solid fa-arrow-right text-[15px]"></i>
                 </button>
             </form>
         </div>
@@ -562,7 +564,22 @@
         // 7. Keyboard Shortcuts & Player Controls
         function setupEventListeners() {
             if (els.desktopSearch) {
+                els.desktopSearch.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const query = document.getElementById('desktop-search-input').value;
+                    handleSearch(query);
+                });
                 
+                // Auto-detect pasted YouTube links
+                const searchInput = document.getElementById('desktop-search-input');
+                if (searchInput) {
+                    searchInput.addEventListener('input', (e) => {
+                        const val = e.target.value.trim();
+                        if (val.includes('youtube.com/') || val.includes('youtu.be/')) {
+                            handleSearch(val);
+                        }
+                    });
+                }
             }
 
             document.addEventListener('keydown', (e) => {

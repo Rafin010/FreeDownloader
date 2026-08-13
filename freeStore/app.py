@@ -1,6 +1,8 @@
 import os
+import sys
 from flask import Flask, render_template, abort
 
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from utils.db import get_connection
 
 app = Flask(__name__)

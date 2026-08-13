@@ -1,27 +1,17 @@
-import urllib.request
-import urllib.parse
-import json
+import sys
+from curl_cffi import requests
+url = "https://www.tiktok.com/@khaby.lame/video/7154284852655869190"
 
 def test_cobalt():
-    url = "https://www.facebook.com/watch/?v=10156054817757912"
-    payload = {
-        'url': url,
+    headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json"
     }
-    api_url = "https://api.cobalt.tools/"
-    req = urllib.request.Request(api_url, data=json.dumps(payload).encode('utf-8'), headers={
-        'User-Agent': 'Mozilla/5.0',
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'Origin': 'https://cobalt.tools',
-        'Referer': 'https://cobalt.tools/'
-    })
+    data = {"url": url}
     try:
-        with urllib.request.urlopen(req, timeout=10) as resp:
-            print("SUCCESS:", resp.read().decode())
+        r = requests.post("https://api.cobalt.tools/api/json", json=data, headers=headers, impersonate="chrome110")
+        print("Cobalt:", r.status_code, r.text)
     except Exception as e:
-        if hasattr(e, 'read'):
-            print("ERROR BODY:", e.read().decode())
-        else:
-            print("ERROR:", e)
+        print("Cobalt err:", e)
 
 test_cobalt()

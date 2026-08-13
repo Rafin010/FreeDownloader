@@ -76,41 +76,15 @@
         async function handleDownloadClick(height) {
             selectedHeight = height;
             
-            // Trigger actual download with error handling
             let vidTitle = document.getElementById('videoTitle').innerText || 'Facebook_Video';
             const downloadUrl = `/api/download?url=${encodeURIComponent(currentVideoUrl)}&res=${selectedHeight}&title=${encodeURIComponent(vidTitle)}`;
             
-            // Show processing state
-            showCustomAlert('Processing your download... This may take a moment.', 'Downloading', 'fa-solid fa-spinner fa-spin');
-
-            try {
-                const response = await fetch(downloadUrl);
-                const contentType = response.headers.get('Content-Type') || '';
-
-                if (response.ok && (contentType.includes('video') || contentType.includes('octet-stream'))) {
-                    // Success — create blob download
-                    const blob = await response.blob();
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = `${vidTitle}.mp4`;
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    URL.revokeObjectURL(url);
-                    closeCustomAlert();
-                } else {
-                    // Error response — parse JSON and show error in modal
-                    try {
-                        const data = await response.json();
-                        showCustomAlert(data.error || 'Download failed. Please try again.');
-                    } catch (e) {
-                        showCustomAlert('Download failed. The server returned an unexpected response.');
-                    }
-                }
-            } catch (err) {
-                showCustomAlert('Download failed. Please check your connection and try again.');
-            }
+            // Native download bypasses CORS and RAM limits
+            window.location.href = downloadUrl;
+            
+            // Show a temporary success message
+            showCustomAlert('Download has started! Check your browser notifications.', 'Downloading', 'fa-solid fa-arrow-down');
+            setTimeout(() => { closeCustomAlert(); }, 3000);
         }
 
 
